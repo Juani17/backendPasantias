@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class HistorialMovimientoService extends BaseService<HistorialMovimiento, Long> {
+
     public HistorialMovimientoService(HistorialMovimientoRepository repository) {
         super(repository);
     }

@@ -5,7 +5,7 @@ import com.Ospuaye.BackendOspuaye.Service.MedicoService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/medicos")
+@RequestMapping("/api/medicos")
 public class MedicoController extends BaseController<Medico, Long> {
     public MedicoController(MedicoService service) {
         super(service);

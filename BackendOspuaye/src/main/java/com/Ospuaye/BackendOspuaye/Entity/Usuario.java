@@ -4,36 +4,21 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
-
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
 @Entity
 @Table(name = "usuarios")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class Usuario extends Base {
 
-    private String nombre;
-    private String apellido;
-    private Integer dni;
+    @Column(nullable = false, unique = true)
     private String email;
-    private String contrasenia;
-    private Integer telefono;
+
+    @Column(nullable = false)
+    private String contrasena;
 
     @ManyToOne
     @JoinColumn(name = "rol_id")
-    private InterfaceRol rol;
-
-    @OneToMany(mappedBy = "usuario")
-    private List<FormularioPodologia> formulariosPodologia;
-
-    @OneToMany(mappedBy = "usuario")
-    private List<FormularioOftalmologia> formulariosOftalmologia;
-
-    @OneToMany(mappedBy = "usuario")
-    private List<HistorialMovimiento> historialMovimientos;
-
-    @OneToMany(mappedBy = "subidoPor")
-    private List<Documento> documentosSubidos;
+    private Rol rol;
 }

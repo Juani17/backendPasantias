@@ -1,8 +1,9 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
+
 public enum Estado {
-    PENDIENTE,
-    ACEPTADO,
-    RECHAZADO,
-    LEIDO
+    Pendiente,
+    Aceptado,
+    Rechazado,
+    Leido
 }

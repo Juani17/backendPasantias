@@ -1,18 +1,21 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Date;
+import java.util.List;
+
 @Entity
-@Table(name = "areas")
+@Table(name = "pedidos_oftalmologia")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Area extends Base {
+public class PedidoOftalmologia extends Base {
 
-    @Column(nullable = false)
-    private String nombre;
+    private Boolean usaLentes;
+
+    private Boolean recetaMedica;
 }

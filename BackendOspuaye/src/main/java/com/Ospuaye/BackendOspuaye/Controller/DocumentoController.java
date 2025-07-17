@@ -5,7 +5,7 @@ import com.Ospuaye.BackendOspuaye.Service.DocumentoService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/documentos")
+@RequestMapping("/api/documentos")
 public class DocumentoController extends BaseController<Documento, Long> {
     public DocumentoController(DocumentoService service) {
         super(service);

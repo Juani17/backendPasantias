@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MedicoService extends BaseService<Medico, Long> {
+
     public MedicoService(MedicoRepository repository) {
         super(repository);
     }

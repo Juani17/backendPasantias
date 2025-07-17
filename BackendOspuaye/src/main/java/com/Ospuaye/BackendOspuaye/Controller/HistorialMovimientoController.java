@@ -5,7 +5,7 @@ import com.Ospuaye.BackendOspuaye.Service.HistorialMovimientoService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/historial-movimientos")
+@RequestMapping("/api/historiales")
 public class HistorialMovimientoController extends BaseController<HistorialMovimiento, Long> {
     public HistorialMovimientoController(HistorialMovimientoService service) {
         super(service);

@@ -6,16 +6,18 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
-@SuperBuilder
+@Entity
+@Table(name = "historial_movimientos")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@Entity
-@Table(name = "historial_movimiento")
+@SuperBuilder
 public class HistorialMovimiento extends Base {
 
-    private LocalDateTime fecha;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fecha;
 
     @Enumerated(EnumType.STRING)
     private Estado tipoMovimiento;
@@ -23,9 +25,10 @@ public class HistorialMovimiento extends Base {
     private String comentario;
 
     @ManyToOne
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "formulario_id")
-    private FormularioPodologia formulario; // Asumiendo solo uno, podrías extenderlo luego para ambos formularios
+    private Pedido pedido;
 }

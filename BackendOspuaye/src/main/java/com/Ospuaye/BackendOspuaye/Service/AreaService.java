@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AreaService extends BaseService<Area, Long> {
+
     public AreaService(AreaRepository repository) {
         super(repository);
     }

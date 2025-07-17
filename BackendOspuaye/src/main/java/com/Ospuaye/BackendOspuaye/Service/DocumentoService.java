@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DocumentoService extends BaseService<Documento, Long> {
+
     public DocumentoService(DocumentoRepository repository) {
         super(repository);
     }

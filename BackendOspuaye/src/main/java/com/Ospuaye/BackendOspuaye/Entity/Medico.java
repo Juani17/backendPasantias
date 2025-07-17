@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
 @Entity
 @Table(name = "medicos")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class Medico extends Base {
 
     @OneToOne

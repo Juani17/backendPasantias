@@ -6,19 +6,23 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
 @Entity
 @Table(name = "documentos")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class Documento extends Base {
 
+    @Column(nullable = false)
     private String nombreArchivo;
+
     private String path;
     private String observacion;
-    private LocalDateTime fechaSubida;
+
+    private Date fechaSubida;
 
     @ManyToOne
     @JoinColumn(name = "subido_por")
