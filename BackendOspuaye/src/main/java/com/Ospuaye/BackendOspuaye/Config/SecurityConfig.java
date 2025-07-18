@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -24,6 +25,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true) // Para @PreAuthorize
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -36,7 +38,15 @@ public class SecurityConfig {
                 .cors(cors -> {})
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // Endpoints públicos
                         .requestMatchers("/api/auth/**").permitAll()
+
+                        // Solo ADMIN puede crear Áreas, Roles y Médicos (POST)
+                        .requestMatchers("/api/areas/**").hasRole("ADMIN")
+                        .requestMatchers("/api/roles/**").hasRole("ADMIN")
+                        .requestMatchers("/api/medicos/**").hasRole("ADMIN")
+
+                        // Cualquier otra petición autenticada
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
