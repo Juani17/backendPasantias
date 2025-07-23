@@ -1,6 +1,7 @@
 package com.Ospuaye.BackendOspuaye.Controller;
 
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
+import com.Ospuaye.BackendOspuaye.Service.BaseService;
 import com.Ospuaye.BackendOspuaye.Service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,21 +11,16 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/usuarios")
-@RequiredArgsConstructor
-public class UsuarioController {
+public class UsuarioController extends BaseController<Usuario, Long> {
 
     private final UsuarioService usuarioService;
 
-    @GetMapping
-    public ResponseEntity<?> listar() {
-        return ResponseEntity.ok(usuarioService.listar());
+    public UsuarioController(UsuarioService usuarioService) {
+        super(usuarioService);
+        this.usuarioService = usuarioService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(usuarioService.buscarPorId(id));
-    }
-
+    // Método adicional que no está en BaseController
     @GetMapping("/buscarPorEmail")
     public ResponseEntity<?> buscarPorEmail(@RequestParam String email) {
         Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
@@ -32,6 +28,7 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // Método personalizado para creación con validación de email
     @PostMapping("/crear")
     public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario) {
         if (usuarioService.emailExiste(usuario.getEmail())) {
@@ -53,11 +50,5 @@ public class UsuarioController {
         }
 
         return ResponseEntity.ok(usuarioService.actualizar(usuario));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id) {
-        usuarioService.eliminar(id);
-        return ResponseEntity.noContent().build();
     }
 }

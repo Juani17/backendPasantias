@@ -24,20 +24,23 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<E>> buscarPorId(@PathVariable ID id) throws Exception {
-        return ResponseEntity.ok(service.buscarPorId(id));
+    public ResponseEntity<E> obtenerPorId(@PathVariable ID id) throws Exception {
+        Optional<E> entity = service.buscarPorId(id);
+        return entity.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<E> crear(@RequestBody E entity) throws Exception {
-        E entidadCreada = service.crear(entity);
-        return ResponseEntity.ok(entidadCreada);
+        E nuevo = service.crear(entity);
+        return ResponseEntity.ok(nuevo);
     }
 
-    @PutMapping
-    public ResponseEntity<E> actualizar(@RequestBody E entity) throws Exception {
-        E entidadActualizada = service.actualizar(entity);
-        return ResponseEntity.ok(entidadActualizada);
+    @PutMapping("/{id}")
+    public ResponseEntity<E> actualizar(@PathVariable ID id, @RequestBody E entity) throws Exception {
+        entity.setId((Long) id); // ⚠️ o haz un cast apropiado si no es Long
+        E actualizado = service.actualizar(entity);
+        return ResponseEntity.ok(actualizado);
     }
 
     @DeleteMapping("/{id}")

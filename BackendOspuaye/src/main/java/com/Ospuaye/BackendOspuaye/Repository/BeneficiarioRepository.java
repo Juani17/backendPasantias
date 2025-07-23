@@ -1,10 +1,13 @@
 package com.Ospuaye.BackendOspuaye.Repository;
 
+
+import com.Ospuaye.BackendOspuaye.Entity.Base;
 import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
-import org.springframework.data.jpa.repository.JpaRepository;
+
 
 import java.util.Optional;
 
-public interface BeneficiarioRepository extends JpaRepository<Beneficiario, Long> {
-    Optional<Beneficiario> findByDni(String dni);
+public interface BeneficiarioRepository extends BaseRepository<Beneficiario, Long> {
+    Optional<Beneficiario> findByDni(Integer dni);
+
 }

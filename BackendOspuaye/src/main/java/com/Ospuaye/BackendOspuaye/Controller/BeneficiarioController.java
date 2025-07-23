@@ -11,20 +11,15 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/beneficiarios")
-@RequiredArgsConstructor
-public class BeneficiarioController {
+public class BeneficiarioController extends BaseController<Beneficiario, Long> {
 
     private final BeneficiarioService beneficiarioService;
 
-    @GetMapping
-    public ResponseEntity<?> listar() {
-        return ResponseEntity.ok(beneficiarioService.listar());
+    public BeneficiarioController(BeneficiarioService beneficiarioService) {
+        super(beneficiarioService); // ✅ llamar al constructor del padre
+        this.beneficiarioService = beneficiarioService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(beneficiarioService.buscarPorId(id));
-    }
 
     @GetMapping("/buscarPorDni")
     public ResponseEntity<?> buscarPorDni(@RequestParam String dni) {
@@ -56,9 +51,4 @@ public class BeneficiarioController {
         return ResponseEntity.ok(beneficiarioService.actualizar(beneficiario));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id) {
-        beneficiarioService.eliminar(id);
-        return ResponseEntity.noContent().build();
-    }
 }
