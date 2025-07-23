@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/beneficiarios")
+@RequestMapping("/api/beneficiarios")
 public class BeneficiarioController extends BaseController<Beneficiario, Long> {
 
     private final BeneficiarioService beneficiarioService;
