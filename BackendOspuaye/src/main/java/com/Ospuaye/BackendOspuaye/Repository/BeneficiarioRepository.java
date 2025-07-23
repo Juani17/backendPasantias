@@ -1,8 +1,10 @@
 package com.Ospuaye.BackendOspuaye.Repository;
 
 import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
-public interface BeneficiarioRepository extends BaseRepository<Beneficiario, Long> {
+import java.util.Optional;
+
+public interface BeneficiarioRepository extends JpaRepository<Beneficiario, Long> {
+    Optional<Beneficiario> findByDni(String dni);
 }

@@ -32,7 +32,8 @@ dependencies {
 	implementation("org.springframework.security:spring-security-crypto")
 	implementation ("com.cloudinary:cloudinary-http44:1.37.0")
 	implementation("com.mercadopago:sdk-java:2.2.0")
-
+	implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+	implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
 }
 
 tasks.named('test') {
