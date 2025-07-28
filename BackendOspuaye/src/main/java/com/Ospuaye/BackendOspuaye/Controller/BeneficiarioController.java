@@ -16,7 +16,7 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
     private final BeneficiarioService beneficiarioService;
 
     public BeneficiarioController(BeneficiarioService beneficiarioService) {
-        super(beneficiarioService); // ✅ llamar al constructor del padre
+        super(beneficiarioService); //
         this.beneficiarioService = beneficiarioService;
     }
 
@@ -28,13 +28,6 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/crear")
-    public ResponseEntity<?> crearBeneficiario(@Valid @RequestBody Beneficiario beneficiario) {
-        if (beneficiarioService.dniExiste(String.valueOf(beneficiario.getDni()))) {
-            return ResponseEntity.badRequest().body("El DNI ya está registrado");
-        }
-        return ResponseEntity.ok(beneficiarioService.crear(beneficiario));
-    }
 
     @PutMapping("/actualizar")
     public ResponseEntity<?> actualizarBeneficiario(@RequestBody Beneficiario beneficiario) {

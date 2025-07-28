@@ -12,8 +12,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Medico extends Base {
 
-    @OneToOne
-    @JoinColumn(name = "usuario_id")
+    @OneToOne(optional = false)
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     private Usuario usuario;
 
     private String matricula;

@@ -1,13 +1,9 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "beneficiarios")
@@ -17,6 +13,10 @@ import jakarta.validation.constraints.*;
 @SuperBuilder
 public class Beneficiario extends Base {
 
+    @OneToOne(optional = false)
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
+    private Usuario usuario;
+
     private String nombre;
     private String apellido;
 
@@ -24,6 +24,6 @@ public class Beneficiario extends Base {
     @Min(value = 1000000, message = "El DNI debe tener al menos 7 dígitos")
     @Max(value = 99999999, message = "El DNI no puede tener más de 8 dígitos")
     private Integer dni;
-    private Integer cuil;
-    private Integer telefono;
+    private Long cuil;
+    private Long telefono;
 }
