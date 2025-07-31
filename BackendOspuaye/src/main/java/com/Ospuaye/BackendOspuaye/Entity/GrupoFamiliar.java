@@ -1,12 +1,15 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "grupos_familiares")
@@ -24,11 +27,10 @@ public class GrupoFamiliar extends Base {
     private Beneficiario titular;
 
     private Date fechaAlta;
-    private Integer dni;
-    private Integer cuil;
-
-    @Enumerated(EnumType.STRING)
-    private TipoParentesco tipoParentesco;
-
     private Boolean activo;
+
+    @OneToMany(mappedBy = "grupoFamiliar", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Familiar> familiares = new ArrayList<>();
+
 }

@@ -21,10 +21,13 @@ public class Documento extends Base {
 
     private String path;
     private String observacion;
-
     private Date fechaSubida;
 
     @ManyToOne
     @JoinColumn(name = "subido_por")
     private Usuario subidoPor;
+
+    @ManyToOne
+    @JoinColumn(name = "pedido_id")
+    private Pedido pedido;
 }

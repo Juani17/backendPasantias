@@ -7,16 +7,15 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "pedidos_ortopedia")
+@DiscriminatorValue("ORTOPEDIA")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class PedidoOrtopedia extends Base {
+public class PedidoOrtopedia extends Pedido {
 
     @Column(nullable = false)
-    private String tipoEstudio;
-
-    private Boolean usaLentes;
-
     private String motivoConsulta;
+    private Boolean recetaMedica;
+
 }

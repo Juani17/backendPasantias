@@ -5,7 +5,7 @@ import com.Ospuaye.BackendOspuaye.Service.GrupoFamiliarService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/grupos-familiares")
+@RequestMapping("/api/grupoFamiliar")
 public class GrupoFamiliarController extends BaseController<GrupoFamiliar, Long> {
     public GrupoFamiliarController(GrupoFamiliarService service) {
         super(service);

@@ -1,5 +1,6 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,11 +12,15 @@ import java.util.List;
 
 @Entity
 @Table(name = "pedidos")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "tipo_pedido")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Pedido extends Base {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
+public abstract  class Pedido extends Base {
 
     private String nombre;
 
@@ -35,7 +40,7 @@ public class Pedido extends Base {
     @Temporal(TemporalType.DATE)
     private Date fechaIngreso;
 
-    @OneToMany
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Documento> documentos;
 
     @Enumerated(EnumType.STRING)
