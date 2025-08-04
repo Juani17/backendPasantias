@@ -6,6 +6,8 @@ import com.Ospuaye.BackendOspuaye.Service.PedidoOrtopediaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/pedidos/ortopedia")
 public class PedidoOrtopediaController {
@@ -20,5 +22,11 @@ public class PedidoOrtopediaController {
     public ResponseEntity<?> crearPedido(@RequestBody PedidoRequest<PedidoOrtopedia> request) {
         PedidoOrtopedia creado = service.crearPedido(request.getPedido(), request.getDocumentos(), request.getUsuario());
         return ResponseEntity.ok(creado);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PedidoOrtopedia>> listarTodos() {
+        List<PedidoOrtopedia> pedidos = service.findAll();
+        return ResponseEntity.ok(pedidos);
     }
 }

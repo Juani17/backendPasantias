@@ -1,6 +1,7 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,8 +33,8 @@ public abstract  class Pedido extends Base {
     @JoinColumn(name = "grupo_familiar_id")
     private GrupoFamiliar grupoFamiliar;
 
-    private Integer dni;
-    private Integer telefono;
+    private Long dni;
+    private Long telefono;
     private String empresa;
     private String delegacion;
 
@@ -41,6 +42,7 @@ public abstract  class Pedido extends Base {
     private Date fechaIngreso;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Documento> documentos;
 
     @Enumerated(EnumType.STRING)
@@ -52,7 +54,7 @@ public abstract  class Pedido extends Base {
 
     @ManyToOne
     @JoinColumn(name = "paciente_id")
-    private Usuario paciente;
+    private Familiar paciente;
 
     @ManyToOne
     @JoinColumn(name = "medico_id")

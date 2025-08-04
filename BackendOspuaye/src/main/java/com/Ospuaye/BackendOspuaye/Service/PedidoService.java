@@ -43,4 +43,7 @@ public abstract class PedidoService<E extends Pedido> extends BaseService<E, Lon
                 .build();
         historialRepository.save(historial);
     }
+    public List<E> findAll() {
+        return baseRepository.findAll();
+    }
 }
