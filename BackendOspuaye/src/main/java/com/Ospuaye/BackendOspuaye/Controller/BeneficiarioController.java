@@ -1,24 +1,32 @@
 package com.Ospuaye.BackendOspuaye.Controller;
 
+import com.Ospuaye.BackendOspuaye.Dto.BeneficiarioDTO;
 import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
+import com.Ospuaye.BackendOspuaye.Repository.BeneficiarioRepository;
 import com.Ospuaye.BackendOspuaye.Service.BeneficiarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/beneficiarios")
 public class BeneficiarioController extends BaseController<Beneficiario, Long> {
 
     private final BeneficiarioService beneficiarioService;
+    private final BeneficiarioRepository beneficiarioRepository;
 
-    public BeneficiarioController(BeneficiarioService beneficiarioService) {
+    public BeneficiarioController(BeneficiarioService beneficiarioService, BeneficiarioRepository beneficiarioRepository) {
         super(beneficiarioService); //
         this.beneficiarioService = beneficiarioService;
+        this.beneficiarioRepository = beneficiarioRepository;
     }
+
+
 
 
     @GetMapping("/buscarPorDni")
@@ -43,5 +51,13 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
 
         return ResponseEntity.ok(beneficiarioService.actualizar(beneficiario));
     }
+
+    @GetMapping("/dto")
+    public ResponseEntity<List<BeneficiarioDTO>> listarBeneficiarios() {
+        List<BeneficiarioDTO> lista = beneficiarioService.listarDTOs();
+        return ResponseEntity.ok(lista);
+    }
+
+
 
 }

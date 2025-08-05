@@ -1,5 +1,6 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -26,4 +27,9 @@ public class Beneficiario extends Base {
     private Integer dni;
     private Long cuil;
     private Long telefono;
+
+    @OneToOne(mappedBy = "titular")
+    @JsonBackReference
+    private GrupoFamiliar grupoFamiliar;
+
 }
