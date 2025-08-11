@@ -47,12 +47,12 @@ public class DocumentoService extends BaseService<Documento, Long> {
             String fileExtension = fileOriginalName.substring(fileOriginalName.lastIndexOf("."));
             String newFileName = fileName + fileExtension;
 
-            File folder = new File("backendPasantias/BackendOspuaye/src/main/resources/pictures");
+            File folder = new File("C://Ospuaye/documentos");
             if(!folder.exists()){
                 folder.mkdirs();
             }
 
-            Path path = Paths.get("backendPasantias/BackendOspuaye/src/main/resources/pictures/" + newFileName);
+            Path path = Paths.get("C://Ospuaye/documentos/" + newFileName);
             Files.write(path, bytes);
             return "Archivo cargado correctamente";
 
