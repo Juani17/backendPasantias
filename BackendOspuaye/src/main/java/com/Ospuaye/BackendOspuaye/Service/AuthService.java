@@ -2,6 +2,7 @@ package com.Ospuaye.BackendOspuaye.Service;
 
 import com.Ospuaye.BackendOspuaye.Dto.*;
 import com.Ospuaye.BackendOspuaye.Entity.Area;
+import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
 import com.Ospuaye.BackendOspuaye.Entity.Medico;
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
 import com.Ospuaye.BackendOspuaye.Repository.*;
@@ -10,9 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -28,9 +27,15 @@ public class AuthService {
     private final AreaRepository areaRepository;
 
     public AuthResponse register(RegisterRequest request) {
-        // Buscar el rol por nombre (USER)
+        if (request.getEmail() == null || request.getEmail().isBlank()) throw new RuntimeException("Email es obligatorio");
+        if (request.getContrasena() == null || request.getContrasena().length() < 6) throw new RuntimeException("Contraseña mínimo 6 caracteres");
+
         var rolUser = rolRepository.findByNombre("USER")
                 .orElseThrow(() -> new RuntimeException("Rol USER no encontrado"));
+
+        if (usuarioRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("El email ya está en uso.");
+        }
 
         var usuario = Usuario.builder()
                 .email(request.getEmail())
@@ -75,12 +80,8 @@ public class AuthService {
 
     @Transactional
     public AuthResponse registerBeneficiario(RegisterBeneficiarioRequest request) {
-
+        if (request.getEmail() == null || request.getEmail().isBlank()) throw new RuntimeException("Email es obligatorio");
         if (usuarioRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("El email ya está en uso.");
-        }
-
-        if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("El email ya está en uso.");
         }
 
@@ -119,7 +120,7 @@ public class AuthService {
 
     @Transactional
     public AuthResponse registerMedico(RegisterMedicoRequest request) {
-
+        if (request.getEmail() == null || request.getEmail().isBlank()) throw new RuntimeException("Email es obligatorio");
         if (usuarioRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El email ya está en uso.");
         }

@@ -4,11 +4,9 @@ import com.Ospuaye.BackendOspuaye.Entity.Documento;
 import com.Ospuaye.BackendOspuaye.Entity.Estado;
 import com.Ospuaye.BackendOspuaye.Entity.PedidoOrtopedia;
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
-import com.Ospuaye.BackendOspuaye.Repository.BaseRepository;
 import com.Ospuaye.BackendOspuaye.Repository.PedidoOrtopediaRepository;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -16,25 +14,27 @@ import java.util.List;
 @Service
 public class PedidoOrtopediaService extends PedidoService<PedidoOrtopedia> {
 
-
     private final PedidoOrtopediaRepository pedidoOrtopediaRepository;
 
-    @Autowired
-    public PedidoOrtopediaService(PedidoOrtopediaRepository pedidoOrtopediaRepository, PedidoOrtopediaRepository pedidoOrtopediaRepository1) {
+    public PedidoOrtopediaService(PedidoOrtopediaRepository pedidoOrtopediaRepository) {
         super(pedidoOrtopediaRepository);
-        this.pedidoOrtopediaRepository = pedidoOrtopediaRepository1;
+        this.pedidoOrtopediaRepository = pedidoOrtopediaRepository;
     }
 
     @Transactional
-    public PedidoOrtopedia crearPedido(PedidoOrtopedia pedido, List<Documento> documentos, Usuario usuario) {
+    public PedidoOrtopedia crearPedido(PedidoOrtopedia pedido, List<Documento> documentos, Usuario usuario) throws Exception {
+        if (pedido == null) throw new Exception("Pedido no puede ser nulo");
+        if (usuario == null) throw new Exception("Usuario que crea el pedido es obligatorio");
+        if (pedido.getNombre() == null || pedido.getNombre().trim().isEmpty())
+            throw new Exception("El nombre del pedido es obligatorio");
+
         pedido.setEstado(Estado.Pendiente);
         pedido.setFechaIngreso(new Date());
 
-        PedidoOrtopedia guardado = baseRepository.save(pedido);
+        PedidoOrtopedia guardado = pedidoOrtopediaRepository.save(pedido);
         agregarDocumentos(guardado, documentos, usuario);
-        registrarMovimiento(guardado, Estado.Pendiente, usuario, "Pedido creado");
+        registrarMovimiento(guardado, Estado.Pendiente, usuario, "Pedido ortopedia creado");
 
         return guardado;
     }
 }
-

@@ -16,48 +16,46 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
         this.baseRepository = baseRepository;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<E> listar() throws Exception {
-        try {
-            return baseRepository.findAll();
-        } catch (Exception ex) {
-            throw new Exception(ex.getMessage());
-        }
+        return baseRepository.findAll();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<E> buscarPorId(ID id) throws Exception {
-        try {
-            return baseRepository.findById(id);
-        } catch (Exception ex) {
-            throw new Exception(ex.getMessage());
+        if (id == null) {
+            throw new IllegalArgumentException("El ID no puede ser nulo");
         }
+        return baseRepository.findById(id);
     }
 
     @Transactional
     public E crear(E entity) throws Exception {
-        try {
-            return baseRepository.save(entity);
-        } catch (Exception ex) {
-            throw new Exception(ex.getMessage());
+        if (entity == null) {
+            throw new IllegalArgumentException("La entidad no puede ser nula");
         }
+        return baseRepository.save(entity);
     }
 
     @Transactional
     public E actualizar(E entity) throws Exception {
-        try {
-            return baseRepository.save(entity);
-        } catch (Exception ex) {
-            throw new Exception(ex.getMessage());
+        if (entity == null || entity.getId() == null) {
+            throw new IllegalArgumentException("La entidad o su ID no pueden ser nulos");
         }
+        if (!baseRepository.existsById((ID) entity.getId())) {
+            throw new IllegalArgumentException("No se encontró la entidad con el ID proporcionado");
+        }
+        return baseRepository.save(entity);
     }
 
     @Transactional
     public void eliminar(ID id) throws Exception {
-        try {
-            baseRepository.deleteById(id);
-        } catch (Exception ex) {
-            throw new Exception(ex.getMessage());
+        if (id == null) {
+            throw new IllegalArgumentException("El ID no puede ser nulo");
         }
+        if (!baseRepository.existsById(id)) {
+            throw new IllegalArgumentException("No se encontró la entidad con el ID proporcionado");
+        }
+        baseRepository.deleteById(id);
     }
 }

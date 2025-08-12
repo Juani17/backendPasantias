@@ -7,45 +7,72 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 public abstract class BaseController<E extends Base, ID extends Serializable> {
 
-    protected BaseService<E, ID> service;
+    protected BaseService<E, ID> baseService;
 
-    public BaseController(BaseService<E, ID> service) {
-        this.service = service;
+    public BaseController(BaseService<E, ID> baseService) {
+        this.baseService = baseService;
     }
 
     @GetMapping
-    public ResponseEntity<List<E>> listar() throws Exception {
-        List<E> entities = service.listar();
-        return ResponseEntity.ok(entities);
+    public ResponseEntity<?> listar() {
+        try {
+            List<E> lista = baseService.listar();
+            return ResponseEntity.ok(lista);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<E> obtenerPorId(@PathVariable ID id) throws Exception {
-        Optional<E> entity = service.buscarPorId(id);
-        return entity.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> buscarPorId(@PathVariable ID id) {
+        try {
+            if (id == null) {
+                return ResponseEntity.badRequest().body("El ID no puede ser nulo");
+            }
+            return ResponseEntity.ok(baseService.buscarPorId(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping
-    public ResponseEntity<E> crear(@RequestBody E entity) throws Exception {
-        E nuevo = service.crear(entity);
-        return ResponseEntity.ok(nuevo);
+    public ResponseEntity<?> crear(@RequestBody E entity) {
+        try {
+            if (entity == null) {
+                return ResponseEntity.badRequest().body("La entidad no puede ser nula");
+            }
+            return ResponseEntity.ok(baseService.crear(entity));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<E> actualizar(@PathVariable ID id, @RequestBody E entity) throws Exception {
-        entity.setId((Long) id); // ⚠️ o haz un cast apropiado si no es Long
-        E actualizado = service.actualizar(entity);
-        return ResponseEntity.ok(actualizado);
+    public ResponseEntity<?> actualizar(@PathVariable ID id, @RequestBody E entity) {
+        try {
+            if (entity == null) {
+                return ResponseEntity.badRequest().body("La entidad no puede ser nula");
+            }
+            entity.setId((Long) id); // Aseguramos que use el ID correcto
+            return ResponseEntity.ok(baseService.actualizar(entity));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable ID id) throws Exception {
-        service.eliminar(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> eliminar(@PathVariable ID id) {
+        try {
+            if (id == null) {
+                return ResponseEntity.badRequest().body("El ID no puede ser nulo");
+            }
+            baseService.eliminar(id);
+            return ResponseEntity.ok("Registro eliminado correctamente");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

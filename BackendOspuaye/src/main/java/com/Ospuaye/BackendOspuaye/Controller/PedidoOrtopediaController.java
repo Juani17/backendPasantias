@@ -1,12 +1,12 @@
 package com.Ospuaye.BackendOspuaye.Controller;
 
 import com.Ospuaye.BackendOspuaye.Dto.PedidoRequest;
-import com.Ospuaye.BackendOspuaye.Entity.Documento;
 import com.Ospuaye.BackendOspuaye.Entity.PedidoOrtopedia;
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
 import com.Ospuaye.BackendOspuaye.Service.DocumentoService;
 import com.Ospuaye.BackendOspuaye.Service.PedidoOrtopediaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +26,12 @@ public class PedidoOrtopediaController {
     private final ObjectMapper objectMapper;
 
     @GetMapping
-    public ResponseEntity<List<PedidoOrtopedia>> listarPedidos() throws Exception {
-        return ResponseEntity.ok(service.listar());
+    public ResponseEntity<?> listarPedidos() {
+        try {
+            return ResponseEntity.ok(service.listar());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -35,25 +39,26 @@ public class PedidoOrtopediaController {
             @RequestPart("pedido") String pedidoJson,
             @RequestPart("usuario") String usuarioJson,
             @RequestPart("documentos") List<MultipartFile> files
-    ) throws Exception {
+    ) {
+        try {
+            PedidoOrtopedia pedido = objectMapper.readValue(pedidoJson, PedidoOrtopedia.class);
+            Usuario usuario = objectMapper.readValue(usuarioJson, Usuario.class);
 
-        PedidoOrtopedia pedido = objectMapper.readValue(pedidoJson, PedidoOrtopedia.class);
-        Usuario usuario = objectMapper.readValue(usuarioJson, Usuario.class);
+            List<com.Ospuaye.BackendOspuaye.Entity.Documento> documentos = new ArrayList<>();
+            for (MultipartFile file : files) {
+                String path = documentoService.handleFileUpload(file);
+                com.Ospuaye.BackendOspuaye.Entity.Documento doc = com.Ospuaye.BackendOspuaye.Entity.Documento.builder()
+                        .nombreArchivo(file.getOriginalFilename())
+                        .path(path)
+                        .observacion("Estudio previo adjunto")
+                        .build();
+                documentos.add(doc);
+            }
 
-        List<Documento> documentos = new ArrayList<>();
-        for (MultipartFile file : files) {
-            documentoService.handleFileUpload(file);
-
-            Documento doc = Documento.builder()
-                    .nombreArchivo(file.getOriginalFilename())
-                    .path("C://Ospuaye/documentos/" + file.getOriginalFilename())
-                    .observacion("Estudio previo adjunto")
-                    .build();
-
-            documentos.add(doc);
+            PedidoOrtopedia creado = service.crearPedido(pedido, documentos, usuario);
+            return ResponseEntity.ok(creado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        PedidoOrtopedia creado = service.crearPedido(pedido, documentos, usuario);
-        return ResponseEntity.ok(creado);
     }
 }

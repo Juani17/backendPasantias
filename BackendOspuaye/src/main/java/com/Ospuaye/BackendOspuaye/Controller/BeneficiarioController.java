@@ -5,13 +5,11 @@ import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
 import com.Ospuaye.BackendOspuaye.Repository.BeneficiarioRepository;
 import com.Ospuaye.BackendOspuaye.Service.BeneficiarioService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/beneficiarios")
@@ -21,43 +19,39 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
     private final BeneficiarioRepository beneficiarioRepository;
 
     public BeneficiarioController(BeneficiarioService beneficiarioService, BeneficiarioRepository beneficiarioRepository) {
-        super(beneficiarioService); //
+        super(beneficiarioService);
         this.beneficiarioService = beneficiarioService;
         this.beneficiarioRepository = beneficiarioRepository;
     }
 
-
-
-
     @GetMapping("/buscarPorDni")
     public ResponseEntity<?> buscarPorDni(@RequestParam String dni) {
-        Optional<Beneficiario> beneficiario = beneficiarioService.buscarPorDni(dni);
-        return beneficiario.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            Optional<Beneficiario> beneficiario = beneficiarioService.buscarPorDni(dni);
+            return beneficiario.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
-
     @PutMapping("/actualizar")
-    public ResponseEntity<?> actualizarBeneficiario(@RequestBody Beneficiario beneficiario) {
-        Optional<Beneficiario> existente = beneficiarioService.buscarPorId(beneficiario.getId());
-        if (existente.isEmpty()) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> actualizarBeneficiario(@Valid @RequestBody Beneficiario beneficiario) {
+        try {
+            // El servicio se encarga de validar existencia, DNI, etc.
+            Beneficiario actualizado = beneficiarioService.actualizar(beneficiario);
+            return ResponseEntity.ok(actualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        if (!existente.get().getDni().equals(beneficiario.getDni()) &&
-                beneficiarioService.dniExiste(String.valueOf(beneficiario.getDni()))) {
-            return ResponseEntity.badRequest().body("El nuevo DNI ya está en uso");
-        }
-
-        return ResponseEntity.ok(beneficiarioService.actualizar(beneficiario));
     }
 
     @GetMapping("/dto")
-    public ResponseEntity<List<BeneficiarioDTO>> listarBeneficiarios() {
-        List<BeneficiarioDTO> lista = beneficiarioService.listarDTOs();
-        return ResponseEntity.ok(lista);
+    public ResponseEntity<?> listarBeneficiariosDTO() {
+        try {
+            List<BeneficiarioDTO> lista = beneficiarioService.listarDTOs();
+            return ResponseEntity.ok(lista);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
-
-
-
 }

@@ -20,13 +20,21 @@ public class PedidoOftalmologiaController {
 
     @PostMapping
     public ResponseEntity<?> crearPedido(@RequestBody PedidoRequest<PedidoOftalmologia> request) {
-        PedidoOftalmologia creado = service.crearPedido(request.getPedido(), request.getDocumentos(), request.getUsuario());
-        return ResponseEntity.ok(creado);
+        try {
+            PedidoOftalmologia creado = service.crearPedido(request.getPedido(), request.getDocumentos(), request.getUsuario());
+            return ResponseEntity.ok(creado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping
-    public ResponseEntity<List<PedidoOftalmologia>> listarTodos() {
-        List<PedidoOftalmologia> pedidos = service.findAll();
-        return ResponseEntity.ok(pedidos);
+    public ResponseEntity<?> listarTodos() {
+        try {
+            List<PedidoOftalmologia> pedidos = service.findAll();
+            return ResponseEntity.ok(pedidos);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
