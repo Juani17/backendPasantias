@@ -1,11 +1,14 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
+import com.Ospuaye.BackendOspuaye.Dto.BeneficiarioDTO;
 import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
 import com.Ospuaye.BackendOspuaye.Repository.BeneficiarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BeneficiarioService extends BaseService<Beneficiario, Long> {
@@ -84,5 +87,11 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
             String tel = b.getTelefono().toString();
             if (tel.length() < 6) throw new Exception("Teléfono inválido");
         }
+    }
+
+    public List<BeneficiarioDTO> listarDTOs() {
+        return beneficiarioRepository.findAll().stream()
+                .map(BeneficiarioDTO::new)
+                .collect(Collectors.toList());
     }
 }
