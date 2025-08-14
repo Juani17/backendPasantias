@@ -27,6 +27,9 @@ public class PedidoOftalmologiaService extends PedidoService<PedidoOftalmologia>
         if (usuario == null) throw new Exception("Usuario que crea el pedido es obligatorio");
         if (pedido.getNombre() == null || pedido.getNombre().trim().isEmpty())
             throw new Exception("El nombre del pedido es obligatorio");
+        if (pedido.getPaciente() != null && (pedido.getPaciente().getId() == null)) {
+            pedido.setPaciente(null);
+        }
 
         pedido.setEstado(Estado.Pendiente);
         pedido.setFechaIngreso(new Date());

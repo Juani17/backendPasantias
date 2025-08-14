@@ -6,6 +6,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/familiares")
 public class FamiliarController extends BaseController<Familiar, Long> {
@@ -21,6 +23,15 @@ public class FamiliarController extends BaseController<Familiar, Long> {
     public ResponseEntity<?> crear(@Valid @RequestBody Familiar f) {
         try {
             return ResponseEntity.ok(service.crear(f));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/beneficiario/{beneficiarioId}")
+    public ResponseEntity<?> listarPorBeneficiario(@PathVariable Long beneficiarioId) {
+        try {
+            List<Familiar> familiares = service.listarPorBeneficiario(beneficiarioId);
+            return ResponseEntity.ok(familiares);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

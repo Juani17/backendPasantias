@@ -5,6 +5,8 @@ import com.Ospuaye.BackendOspuaye.Repository.FamiliarRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class FamiliarService extends BaseService<Familiar, Long> {
 
@@ -30,5 +32,11 @@ public class FamiliarService extends BaseService<Familiar, Long> {
         if (f == null || f.getId() == null) throw new Exception("ID obligatorio para actualizar");
         if (!repository.existsById(f.getId())) throw new Exception("Familiar no encontrado");
         return crear(f);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Familiar> listarPorBeneficiario(Long beneficiarioId) throws Exception {
+        if (beneficiarioId == null) throw new Exception("El ID del beneficiario es obligatorio");
+        return repository.findByBeneficiarioId(beneficiarioId);
     }
 }

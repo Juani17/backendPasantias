@@ -16,6 +16,9 @@ public class Medico extends Base {
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     private Usuario usuario;
 
+    private String nombre;
+    private String apellido;
+    private Long telefono;
     private String matricula;
 
     @ManyToOne
