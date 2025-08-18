@@ -9,5 +9,7 @@ import java.util.Optional;
 @Repository
 public interface MedicoRepository extends BaseRepository<Medico, Long> {
     Optional<Medico> findByUsuario(Usuario usuario);
+    Optional<Medico> findByMatricula(String matricula);
+    Optional<Medico> findByUsuarioId(Long usuarioId);
 
 }

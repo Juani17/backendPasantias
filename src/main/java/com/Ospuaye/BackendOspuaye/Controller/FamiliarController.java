@@ -2,36 +2,36 @@ package com.Ospuaye.BackendOspuaye.Controller;
 
 import com.Ospuaye.BackendOspuaye.Entity.Familiar;
 import com.Ospuaye.BackendOspuaye.Service.FamiliarService;
-import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/familiares")
 public class FamiliarController extends BaseController<Familiar, Long> {
 
-    private final FamiliarService service;
+    private final FamiliarService familiarService;
 
     public FamiliarController(FamiliarService service) {
         super(service);
-        this.service = service;
+        this.familiarService = service;
     }
 
-    @PostMapping
-    public ResponseEntity<?> crear(@Valid @RequestBody Familiar f) {
+    @PostMapping("/crear")
+    public ResponseEntity<?> crear(@Valid @RequestBody Familiar familiar) {
         try {
-            return ResponseEntity.ok(service.crear(f));
+            return ResponseEntity.status(HttpStatus.CREATED).body(familiarService.crear(familiar));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @GetMapping("/beneficiario/{beneficiarioId}")
-    public ResponseEntity<?> listarPorBeneficiario(@PathVariable Long beneficiarioId) {
+
+    @PutMapping("/actualizar")
+    public ResponseEntity<?> actualizar(@Valid @RequestBody Familiar familiar) {
         try {
-            List<Familiar> familiares = service.listarPorBeneficiario(beneficiarioId);
-            return ResponseEntity.ok(familiares);
+            return ResponseEntity.ok(familiarService.actualizar(familiar));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

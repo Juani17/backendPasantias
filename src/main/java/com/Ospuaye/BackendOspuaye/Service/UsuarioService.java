@@ -1,6 +1,9 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
+import com.Ospuaye.BackendOspuaye.Entity.Rol;
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
+import com.Ospuaye.BackendOspuaye.Repository.BaseRepository;
+import com.Ospuaye.BackendOspuaye.Repository.RolRepository;
 import com.Ospuaye.BackendOspuaye.Repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,12 +14,15 @@ import java.util.regex.Pattern;
 public class UsuarioService extends BaseService<Usuario, Long> {
 
     private final UsuarioRepository usuarioRepository;
+    private final RolRepository rolRepository;
+
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
-        super(usuarioRepository);
+    public UsuarioService(BaseRepository<Usuario, Long> baseRepository, UsuarioRepository usuarioRepository, RolRepository rolRepository) {
+        super(baseRepository);
         this.usuarioRepository = usuarioRepository;
+        this.rolRepository = rolRepository;
     }
 
     @Override
@@ -25,32 +31,52 @@ public class UsuarioService extends BaseService<Usuario, Long> {
         if (emailExiste(usuario.getEmail())) {
             throw new Exception("El email ya está registrado");
         }
-        if (usuario.getContrasena() == null || usuario.getContrasena().length() < 6) {
-            throw new Exception("La contraseña debe tener al menos 6 caracteres");
-        }
+        validarPassword(usuario.getContrasena());
+        validarRolExiste(usuario.getRol());
         return usuarioRepository.save(usuario);
     }
 
     @Override
     public Usuario actualizar(Usuario usuario) throws Exception {
-        validarEmail(usuario.getEmail());
-        if (!usuarioRepository.existsById(usuario.getId())) {
+        if (usuario.getId() == null || !usuarioRepository.existsById(usuario.getId())) {
             throw new Exception("No se encontró el usuario con el ID proporcionado");
+        }
+        if (usuario.getEmail() != null) {
+            validarEmail(usuario.getEmail());
+            Optional<Usuario> existente = usuarioRepository.findByEmail(usuario.getEmail());
+            if (existente.isPresent() && !existente.get().getId().equals(usuario.getId())) {
+                throw new Exception("El nuevo email ya está en uso");
+            }
+        }
+        if (usuario.getContrasena() != null) {
+            validarPassword(usuario.getContrasena());
+        }
+        if (usuario.getRol() != null) {
+            validarRolExiste(usuario.getRol());
         }
         return usuarioRepository.save(usuario);
     }
 
-    public Optional<Usuario> buscarPorEmail(String email) {
-        return usuarioRepository.findByEmail(email);
-    }
-
+    // Helpers
     public boolean emailExiste(String email) {
         return usuarioRepository.findByEmail(email).isPresent();
     }
-
+    public Optional<Usuario> buscarPorEmail(String email) {
+        return usuarioRepository.findByEmail(email);
+    }
     private void validarEmail(String email) throws Exception {
-        if (email == null || !EMAIL_PATTERN.matcher(email).matches()) {
+        if (email == null || email.isBlank() || !EMAIL_PATTERN.matcher(email).matches()) {
             throw new Exception("Formato de email inválido");
+        }
+    }
+    private void validarPassword(String raw) throws Exception {
+        if (raw == null || raw.length() < 6) {
+            throw new Exception("La contraseña debe tener al menos 6 caracteres");
+        }
+    }
+    private void validarRolExiste(Rol rol) throws Exception {
+        if (rol == null || rol.getId() == null || !rolRepository.existsById(rol.getId())) {
+            throw new Exception("El rol proporcionado no existe");
         }
     }
 }

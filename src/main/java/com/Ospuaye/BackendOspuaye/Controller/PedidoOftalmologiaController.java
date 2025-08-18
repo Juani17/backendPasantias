@@ -3,9 +3,11 @@ package com.Ospuaye.BackendOspuaye.Controller;
 import com.Ospuaye.BackendOspuaye.Dto.PedidoRequest;
 import com.Ospuaye.BackendOspuaye.Entity.PedidoOftalmologia;
 import com.Ospuaye.BackendOspuaye.Service.PedidoOftalmologiaService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -19,22 +21,17 @@ public class PedidoOftalmologiaController {
     }
 
     @PostMapping
-    public ResponseEntity<?> crearPedido(@RequestBody PedidoRequest<PedidoOftalmologia> request) {
+    public ResponseEntity<?> crearPedido(@Valid @RequestBody PedidoRequest<PedidoOftalmologia> request) {
         try {
-            PedidoOftalmologia creado = service.crearPedido(request.getPedido(), request.getDocumentos(), request.getUsuario());
-            return ResponseEntity.ok(creado);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            var creado = service.crearPedido(request.getPedido(), request.getDocumentos(), request.getUsuario());
+            return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
     @GetMapping
-    public ResponseEntity<?> listarTodos() {
-        try {
-            List<PedidoOftalmologia> pedidos = service.findAll();
-            return ResponseEntity.ok(pedidos);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<List<PedidoOftalmologia>> listarTodos() {
+        return ResponseEntity.ok(service.findAll());
     }
 }

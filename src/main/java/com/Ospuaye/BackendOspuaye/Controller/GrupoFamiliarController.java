@@ -2,9 +2,11 @@ package com.Ospuaye.BackendOspuaye.Controller;
 
 import com.Ospuaye.BackendOspuaye.Entity.GrupoFamiliar;
 import com.Ospuaye.BackendOspuaye.Service.GrupoFamiliarService;
-import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/grupoFamiliar")
@@ -17,16 +19,16 @@ public class GrupoFamiliarController extends BaseController<GrupoFamiliar, Long>
         this.service = service;
     }
 
-    @PostMapping
+    @PostMapping("/crear")
     public ResponseEntity<?> crear(@Valid @RequestBody GrupoFamiliar gf) {
         try {
-            return ResponseEntity.ok(service.crear(gf));
+            return ResponseEntity.status(HttpStatus.CREATED).body(service.crear(gf));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PutMapping
+    @PutMapping("/actualizar")
     public ResponseEntity<?> actualizar(@Valid @RequestBody GrupoFamiliar gf) {
         try {
             return ResponseEntity.ok(service.actualizar(gf));

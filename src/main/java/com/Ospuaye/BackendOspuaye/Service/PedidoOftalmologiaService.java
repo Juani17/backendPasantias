@@ -1,12 +1,9 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
-import com.Ospuaye.BackendOspuaye.Entity.Documento;
-import com.Ospuaye.BackendOspuaye.Entity.Estado;
-import com.Ospuaye.BackendOspuaye.Entity.PedidoOftalmologia;
-import com.Ospuaye.BackendOspuaye.Entity.Usuario;
+import com.Ospuaye.BackendOspuaye.Entity.*;
 import com.Ospuaye.BackendOspuaye.Repository.PedidoOftalmologiaRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -14,30 +11,35 @@ import java.util.List;
 @Service
 public class PedidoOftalmologiaService extends PedidoService<PedidoOftalmologia> {
 
-    private final PedidoOftalmologiaRepository pedidoOftalmologiaRepository;
+    private final PedidoOftalmologiaRepository repo;
 
     public PedidoOftalmologiaService(PedidoOftalmologiaRepository pedidoOftalmologiaRepository) {
         super(pedidoOftalmologiaRepository);
-        this.pedidoOftalmologiaRepository = pedidoOftalmologiaRepository;
+        this.repo = pedidoOftalmologiaRepository;
     }
 
     @Transactional
-    public PedidoOftalmologia crearPedido(PedidoOftalmologia pedido, List<Documento> documentos, Usuario usuario) throws Exception {
-        if (pedido == null) throw new Exception("Pedido no puede ser nulo");
-        if (usuario == null) throw new Exception("Usuario que crea el pedido es obligatorio");
-        if (pedido.getNombre() == null || pedido.getNombre().trim().isEmpty())
-            throw new Exception("El nombre del pedido es obligatorio");
-        if (pedido.getPaciente() != null && (pedido.getPaciente().getId() == null)) {
-            pedido.setPaciente(null);
+    public PedidoOftalmologia crearPedido(PedidoOftalmologia pedido,
+                                          List<Documento> documentos,
+                                          Usuario usuario) {
+        try {
+            validarPedidoComun(pedido);
+            if (pedido.getMotivoConsulta() == null || pedido.getMotivoConsulta().isBlank())
+                throw new Exception("El motivo de consulta es obligatorio");
+            if (pedido.getUsaLentes() == null)
+                throw new Exception("Debe indicar si usa lentes");
+            if (pedido.getRecetaMedica() == null)
+                throw new Exception("Debe indicar si adjunta receta");
+
+            pedido.setEstado(Estado.Pendiente);
+            pedido.setFechaIngreso(new Date());
+
+            PedidoOftalmologia guardado = baseRepository.save(pedido);
+            agregarDocumentos(guardado, documentos, usuario);
+            registrarMovimiento(guardado, Estado.Pendiente, usuario, "Pedido creado");
+            return guardado;
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
-
-        pedido.setEstado(Estado.Pendiente);
-        pedido.setFechaIngreso(new Date());
-
-        PedidoOftalmologia guardado = pedidoOftalmologiaRepository.save(pedido);
-        agregarDocumentos(guardado, documentos, usuario);
-        registrarMovimiento(guardado, Estado.Pendiente, usuario, "Pedido oftalmología creado");
-
-        return guardado;
     }
 }

@@ -10,5 +10,6 @@ import java.util.Optional;
 @Repository
 public interface BeneficiarioRepository extends BaseRepository<Beneficiario, Long> {
     Optional<Beneficiario> findByDni(Integer dni);
-
+    Optional<Beneficiario> findByCuil(Long cuil);
+    Optional<Beneficiario> findByUsuarioId(Long usuarioId);
 }
