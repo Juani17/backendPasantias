@@ -7,7 +7,10 @@ import com.Ospuaye.BackendOspuaye.Entity.TipoParentesco;
 import com.Ospuaye.BackendOspuaye.Repository.BeneficiarioRepository;
 import com.Ospuaye.BackendOspuaye.Repository.FamiliarRepository;
 import com.Ospuaye.BackendOspuaye.Repository.GrupoFamiliarRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FamiliarService extends BaseService<Familiar, Long> {
@@ -65,5 +68,10 @@ public class FamiliarService extends BaseService<Familiar, Long> {
         if (b == null || b.getId() == null || !beneficiarioRepository.existsById(b.getId())) {
             throw new Exception("El beneficiario asociado no existe");
         }
+    }
+    @Transactional
+    public List<Familiar> listarPorBeneficiario(Long beneficiarioId) throws Exception {
+        if (beneficiarioId == null) throw new Exception("El ID del beneficiario es obligatorio");
+        return familiarRepository.findByBeneficiarioId(beneficiarioId);
     }
 }

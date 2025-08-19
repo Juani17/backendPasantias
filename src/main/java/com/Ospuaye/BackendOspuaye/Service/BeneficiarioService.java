@@ -73,7 +73,9 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
         if (b.getDni() == null) throw new Exception("El DNI es obligatorio");
         if (b.getDni() < 1_000_000 || b.getDni() > 99_999_999) throw new Exception("El DNI debe tener entre 7 y 8 dígitos");
         if (b.getCuil() == null) throw new Exception("El CUIL es obligatorio");
+        if (b.getCuil() < 1_000_000_000 || b.getCuil() > 99_999_999_999L) throw new Exception("El CUIL debe tener entre 10 y 11 digitos");
         if (b.getTelefono() == null) throw new Exception("El teléfono es obligatorio");
+        if (b.getTelefono() < 10_000_000_000L || b.getTelefono() > 99_999_999_999L) throw new Exception("El Telefono debe tener 10 numeros");
         if (b.getUsuario() == null) throw new Exception("El usuario asociado es obligatorio");
     }
     private void validarDni(Integer dni, Long idActual) throws Exception {

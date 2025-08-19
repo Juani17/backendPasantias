@@ -1,5 +1,6 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -30,7 +31,7 @@ public abstract  class Pedido extends Base {
     private Beneficiario beneficiario;
 
     @ManyToOne
-    @JoinColumn(name = "grupo_familiar_id")
+    @JoinColumn(name = "grupo_familiar_id", nullable = true)
     private GrupoFamiliar grupoFamiliar;
 
     private Long dni;
@@ -53,14 +54,14 @@ public abstract  class Pedido extends Base {
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "paciente_id")
+    @JoinColumn(name = "paciente_id", nullable = true)
     private Familiar paciente;
 
     @ManyToOne
     @JoinColumn(name = "medico_id")
     private Medico medico;
 
-    @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private Date fechaRevision;
 
     private String observacionMedico;

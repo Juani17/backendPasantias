@@ -17,6 +17,8 @@ public abstract class PedidoService<E extends Pedido> extends BaseService<E, Lon
     @Autowired protected GrupoFamiliarRepository grupoFamiliarRepository;
     @Autowired protected UsuarioRepository usuarioRepository;
     @Autowired protected MedicoRepository medicoRepository;
+    @Autowired protected FamiliarRepository familiarRepository;
+
 
     public PedidoService(BaseRepository<E, Long> baseRepository) {
         super(baseRepository);
@@ -51,6 +53,13 @@ public abstract class PedidoService<E extends Pedido> extends BaseService<E, Lon
 
         if (p.getDni() != null && (p.getDni() < 1_000_000 || p.getDni() > 99_999_999))
             throw new Exception("El DNI del pedido debe tener entre 7 y 8 dígitos");
+
+        if (p.getPaciente() != null) {
+            if (p.getPaciente().getId() == null ||
+                    !familiarRepository.existsById(p.getPaciente().getId())) {
+                throw new Exception("El paciente no existe");
+            }
+        }
     }
 
     @Transactional

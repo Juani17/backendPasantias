@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/familiares")
 public class FamiliarController extends BaseController<Familiar, Long> {
@@ -32,6 +34,15 @@ public class FamiliarController extends BaseController<Familiar, Long> {
     public ResponseEntity<?> actualizar(@Valid @RequestBody Familiar familiar) {
         try {
             return ResponseEntity.ok(familiarService.actualizar(familiar));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/beneficiario/{beneficiarioId}")
+    public ResponseEntity<?> listarPorBeneficiario(@PathVariable Long beneficiarioId) {
+        try {
+            List<Familiar> familiares = familiarService.listarPorBeneficiario(beneficiarioId);
+            return ResponseEntity.ok(familiares);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
