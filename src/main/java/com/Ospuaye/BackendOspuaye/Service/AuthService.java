@@ -27,8 +27,10 @@ public class AuthService {
     private final AreaRepository areaRepository;
 
     public AuthResponse register(RegisterRequest request) {
-        if (request.getEmail() == null || request.getEmail().isBlank()) throw new RuntimeException("Email es obligatorio");
-        if (request.getContrasena() == null || request.getContrasena().length() < 6) throw new RuntimeException("Contraseña mínimo 6 caracteres");
+        if (request.getEmail() == null || request.getEmail().isBlank())
+            throw new RuntimeException("Email es obligatorio");
+        if (request.getContrasena() == null || request.getContrasena().length() < 6)
+            throw new RuntimeException("Contraseña mínimo 6 caracteres");
 
         var rolUser = rolRepository.findByNombre("USER")
                 .orElseThrow(() -> new RuntimeException("Rol USER no encontrado"));
@@ -53,7 +55,10 @@ public class AuthService {
                         .build()
         );
 
-        return new AuthResponse(jwtToken);
+        return AuthResponse.builder()
+                .token(jwtToken)
+                .rol(rolUser.getNombre())
+                .build();
     }
 
     public AuthResponse authenticate(AuthRequest request) {
@@ -75,12 +80,16 @@ public class AuthService {
                         .build()
         );
 
-        return new AuthResponse(jwtToken);
+        return AuthResponse.builder()
+                .token(jwtToken)
+                .rol(usuario.getRol().getNombre())
+                .build();
     }
 
     @Transactional
     public AuthResponse registerBeneficiario(RegisterBeneficiarioRequest request) {
-        if (request.getEmail() == null || request.getEmail().isBlank()) throw new RuntimeException("Email es obligatorio");
+        if (request.getEmail() == null || request.getEmail().isBlank())
+            throw new RuntimeException("Email es obligatorio");
         if (usuarioRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El email ya está en uso.");
         }
@@ -115,12 +124,16 @@ public class AuthService {
                         .build()
         );
 
-        return new AuthResponse(token);
+        return AuthResponse.builder()
+                .token(token)
+                .rol(rolUser.getNombre())
+                .build();
     }
 
     @Transactional
     public AuthResponse registerMedico(RegisterMedicoRequest request) {
-        if (request.getEmail() == null || request.getEmail().isBlank()) throw new RuntimeException("Email es obligatorio");
+        if (request.getEmail() == null || request.getEmail().isBlank())
+            throw new RuntimeException("Email es obligatorio");
         if (usuarioRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El email ya está en uso.");
         }
@@ -155,6 +168,9 @@ public class AuthService {
                         .build()
         );
 
-        return new AuthResponse(token);
+        return AuthResponse.builder()
+                .token(token)
+                .rol(rolMedico.getNombre())
+                .build();
     }
 }
