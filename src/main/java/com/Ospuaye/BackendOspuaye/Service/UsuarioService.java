@@ -5,16 +5,22 @@ import com.Ospuaye.BackendOspuaye.Entity.Usuario;
 import com.Ospuaye.BackendOspuaye.Repository.BaseRepository;
 import com.Ospuaye.BackendOspuaye.Repository.RolRepository;
 import com.Ospuaye.BackendOspuaye.Repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.regex.Pattern;
+
+
 
 @Service
 public class UsuarioService extends BaseService<Usuario, Long> {
 
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
@@ -41,20 +47,34 @@ public class UsuarioService extends BaseService<Usuario, Long> {
         if (usuario.getId() == null || !usuarioRepository.existsById(usuario.getId())) {
             throw new Exception("No se encontró el usuario con el ID proporcionado");
         }
+
+        // Recuperamos el usuario actual de la BD
+        Usuario usuarioExistente = usuarioRepository.findById(usuario.getId())
+                .orElseThrow(() -> new Exception("Usuario no encontrado"));
+
+        // Validar y actualizar email
         if (usuario.getEmail() != null) {
             validarEmail(usuario.getEmail());
             Optional<Usuario> existente = usuarioRepository.findByEmail(usuario.getEmail());
             if (existente.isPresent() && !existente.get().getId().equals(usuario.getId())) {
                 throw new Exception("El nuevo email ya está en uso");
             }
+            usuarioExistente.setEmail(usuario.getEmail());
         }
-        if (usuario.getContrasena() != null) {
+
+        // Validar y actualizar contraseña
+        if (usuario.getContrasena() != null && !usuario.getContrasena().isBlank()) {
             validarPassword(usuario.getContrasena());
+            usuarioExistente.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
         }
+
+        // Validar y actualizar rol
         if (usuario.getRol() != null) {
             validarRolExiste(usuario.getRol());
+            usuarioExistente.setRol(usuario.getRol());
         }
-        return usuarioRepository.save(usuario);
+
+        return usuarioRepository.save(usuarioExistente);
     }
 
     // Helpers
