@@ -22,7 +22,7 @@ public class GrupoFamiliar extends Base {
     @Column(nullable = false)
     private String nombreGrupo;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "titular_id")
     private Beneficiario titular;
 
