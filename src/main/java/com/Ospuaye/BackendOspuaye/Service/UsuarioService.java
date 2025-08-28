@@ -99,4 +99,18 @@ public class UsuarioService extends BaseService<Usuario, Long> {
             throw new Exception("El rol proporcionado no existe");
         }
     }
+
+    public void cambiarContrasena(String email, String actual, String nueva) throws Exception {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+        if (usuarioOpt.isEmpty()) {
+            throw new Exception("Usuario no encontrado");
+        }
+        Usuario usuario = usuarioOpt.get();
+        if (!passwordEncoder.matches(actual, usuario.getContrasena())) {
+            throw new Exception("La contraseña actual es incorrecta");
+        }
+        validarPassword(nueva);
+        usuario.setContrasena(passwordEncoder.encode(nueva));
+        usuarioRepository.save(usuario);
+    }
 }

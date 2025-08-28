@@ -1,5 +1,6 @@
 package com.Ospuaye.BackendOspuaye.Controller;
 
+import com.Ospuaye.BackendOspuaye.Dto.CambiarContrasenaRequest;
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
 import com.Ospuaye.BackendOspuaye.Service.UsuarioService;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,16 @@ public class UsuarioController extends BaseController<Usuario, Long> {
     public ResponseEntity<?> actualizarUsuario(@Valid @RequestBody Usuario usuario) {
         try {
             return ResponseEntity.ok(usuarioService.actualizar(usuario));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/cambiarContrasena")
+    public ResponseEntity<?> cambiarContrasena(@RequestBody CambiarContrasenaRequest request) {
+        try {
+            usuarioService.cambiarContrasena(request.getEmail(), request.getActual(), request.getNueva());
+            return ResponseEntity.ok("Contraseña actualizada correctamente");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
