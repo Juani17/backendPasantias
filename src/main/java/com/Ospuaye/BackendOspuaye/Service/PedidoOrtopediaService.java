@@ -21,24 +21,36 @@ public class PedidoOrtopediaService extends PedidoService<PedidoOrtopedia> {
     @Transactional
     public PedidoOrtopedia crearPedido(PedidoOrtopedia pedido,
                                        List<Documento> documentos,
-                                       Usuario usuario) {
-        try {
-            validarPedidoComun(pedido);
-            if (pedido.getMotivoConsulta() == null || pedido.getMotivoConsulta().isBlank())
-                throw new Exception("El motivo de consulta es obligatorio");
-            if (pedido.getRecetaMedica() == null)
-                throw new Exception("Debe indicar si adjunta receta");
+                                       Usuario usuario) throws Exception {
 
-            pedido.setEstado(Estado.Pendiente);
-            pedido.setFechaIngreso(new Date());
+        // Validaciones generales
+        validarPedidoComun(pedido);
 
-            PedidoOrtopedia guardado = baseRepository.save(pedido);
+        // Validaciones específicas
+        if (pedido.getMotivoConsulta() == null || pedido.getMotivoConsulta().isBlank())
+            throw new Exception("El motivo de consulta es obligatorio");
+        if (pedido.getRecetaMedica() == null)
+            throw new Exception("Debe indicar si adjunta receta");
+
+        // Estado y fecha
+        pedido.setEstado(Estado.Pendiente);
+        pedido.setFechaIngreso(new Date());
+
+        // Guardar pedido
+        PedidoOrtopedia guardado = baseRepository.save(pedido);
+
+        // Validar y agregar documentos
+        if (documentos != null) {
+            for (Documento doc : documentos) {
+                if (doc.getNombreArchivo() == null || doc.getNombreArchivo().isBlank())
+                    throw new Exception("Cada documento debe tener un nombre de archivo");
+            }
             agregarDocumentos(guardado, documentos, usuario);
-            registrarMovimiento(guardado, Estado.Pendiente, usuario, "Pedido creado");
-
-            return guardado;
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
         }
+
+        // Registrar movimiento
+        registrarMovimiento(guardado, Estado.Pendiente, usuario, "Pedido creado");
+
+        return guardado;
     }
 }

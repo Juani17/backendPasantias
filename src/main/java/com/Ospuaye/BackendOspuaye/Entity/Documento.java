@@ -1,12 +1,9 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -22,6 +19,8 @@ public class Documento extends Base {
 
     private String path;
     private String observacion;
+
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaSubida;
 
     @ManyToOne

@@ -1,103 +1,155 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
-import com.Ospuaye.BackendOspuaye.Dto.BeneficiarioDTO;
 import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
-import com.Ospuaye.BackendOspuaye.Entity.Usuario;
+import com.Ospuaye.BackendOspuaye.Entity.Empresa;
 import com.Ospuaye.BackendOspuaye.Repository.BeneficiarioRepository;
+import com.Ospuaye.BackendOspuaye.Repository.EmpresaRepository;
+import com.Ospuaye.BackendOspuaye.Repository.PersonaRepository;
 import com.Ospuaye.BackendOspuaye.Repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class BeneficiarioService extends BaseService<Beneficiario, Long> {
 
     private final BeneficiarioRepository beneficiarioRepository;
     private final UsuarioRepository usuarioRepository;
+    private final PersonaRepository personaRepository;
+    private final EmpresaRepository empresaRepository;
 
     public BeneficiarioService(BeneficiarioRepository beneficiarioRepository,
-                               UsuarioRepository usuarioRepository) {
+                               UsuarioRepository usuarioRepository,
+                               PersonaRepository personaRepository,
+                               EmpresaRepository empresaRepository) {
         super(beneficiarioRepository);
         this.beneficiarioRepository = beneficiarioRepository;
         this.usuarioRepository = usuarioRepository;
+        this.personaRepository = personaRepository;
+        this.empresaRepository = empresaRepository;
     }
 
     @Override
-    public Beneficiario crear(Beneficiario beneficiario) throws Exception {
-        validarObligatorios(beneficiario);
-        validarDni(beneficiario.getDni(), null);
-        validarCuil(beneficiario.getCuil(), null);
-        validarUsuario(beneficiario.getUsuario());
-        return beneficiarioRepository.save(beneficiario);
+    @Transactional
+    public Beneficiario crear(Beneficiario entity) throws Exception {
+        // Null checks
+        if (entity == null) throw new IllegalArgumentException("El beneficiario no puede ser nulo");
+
+        // Usuario validation
+        if (entity.getUsuario() == null || entity.getUsuario().getId() == null)
+            throw new IllegalArgumentException("El usuario asociado es obligatorio");
+        if (!usuarioRepository.existsById(entity.getUsuario().getId()))
+            throw new IllegalArgumentException("El usuario asociado no existe");
+        if (beneficiarioRepository.existsByUsuario_Id(entity.getUsuario().getId()))
+            throw new IllegalArgumentException("Ya existe un beneficiario asociado a ese usuario");
+
+        // Persona validation
+        if (entity.getPersona() == null || entity.getPersona().getId() == null)
+            throw new IllegalArgumentException("La persona asociada es obligatoria");
+        if (!personaRepository.existsById(entity.getPersona().getId()))
+            throw new IllegalArgumentException("La persona asociada no existe");
+        if (beneficiarioRepository.existsByPersona_Id(entity.getPersona().getId()))
+            throw new IllegalArgumentException("Ya existe un beneficiario asociado a esa persona");
+
+        // Empresa (opcional) validation
+        if (entity.getEmpresa() != null) {
+            Long empresaId = entity.getEmpresa().getId();
+            if (empresaId == null) throw new IllegalArgumentException("La empresa debe tener id");
+            Optional<Empresa> opt = empresaRepository.findById(empresaId);
+            if (opt.isEmpty()) throw new IllegalArgumentException("La empresa asociada no existe");
+            Empresa empresa = opt.get();
+            if (empresa.getActivo() != null && !empresa.getActivo())
+                throw new IllegalArgumentException("No se puede asociar a una empresa inactiva");
+        }
+
+        // Defaults
+        if (entity.getAfiliadoSindical() == null) entity.setAfiliadoSindical(false);
+        if (entity.getEsJubilado() == null) entity.setEsJubilado(false);
+
+        return beneficiarioRepository.save(entity);
     }
 
     @Override
-    public Beneficiario actualizar(Beneficiario beneficiario) throws Exception {
-        if (beneficiario.getId() == null || !beneficiarioRepository.existsById(beneficiario.getId())) {
-            throw new Exception("Beneficiario no encontrado");
+    @Transactional
+    public Beneficiario actualizar(Beneficiario entity) throws Exception {
+        if (entity == null || entity.getId() == null)
+            throw new IllegalArgumentException("La entidad o su ID no pueden ser nulos");
+        if (!beneficiarioRepository.existsById(entity.getId()))
+            throw new IllegalArgumentException("Beneficiario no encontrado");
+
+        Beneficiario existente = beneficiarioRepository.findById(entity.getId()).orElseThrow(() -> new IllegalArgumentException("Beneficiario no encontrado"));
+
+        // If usuario changed, validate
+        if (entity.getUsuario() != null && entity.getUsuario().getId() != null) {
+            Long nuevoUsuarioId = entity.getUsuario().getId();
+            if (!usuarioRepository.existsById(nuevoUsuarioId))
+                throw new IllegalArgumentException("El usuario asociado no existe");
+            Optional<Beneficiario> byUser = beneficiarioRepository.findByUsuario_Id(nuevoUsuarioId);
+            if (byUser.isPresent() && !byUser.get().getId().equals(entity.getId()))
+                throw new IllegalArgumentException("El usuario ya está vinculado a otro beneficiario");
+            existente.setUsuario(entity.getUsuario());
         }
-        if (beneficiario.getDni() != null) validarDni(beneficiario.getDni(), beneficiario.getId());
-        if (beneficiario.getCuil() != null) validarCuil(beneficiario.getCuil(), beneficiario.getId());
-        if (beneficiario.getUsuario() != null) validarUsuario(beneficiario.getUsuario());
-        return beneficiarioRepository.save(beneficiario);
+
+        // If persona changed, validate
+        if (entity.getPersona() != null && entity.getPersona().getId() != null) {
+            Long nuevaPersonaId = entity.getPersona().getId();
+            if (!personaRepository.existsById(nuevaPersonaId))
+                throw new IllegalArgumentException("La persona asociada no existe");
+            Optional<Beneficiario> byPersona = beneficiarioRepository.findByPersona_Id(nuevaPersonaId);
+            if (byPersona.isPresent() && !byPersona.get().getId().equals(entity.getId()))
+                throw new IllegalArgumentException("La persona ya está vinculada a otro beneficiario");
+            existente.setPersona(entity.getPersona());
+        }
+
+        // Empresa update (can set or remove)
+        if (entity.getEmpresa() != null) {
+            Long empresaId = entity.getEmpresa().getId();
+            if (empresaId == null) throw new IllegalArgumentException("La empresa debe tener id");
+            Empresa empresa = empresaRepository.findById(empresaId).orElseThrow(() -> new IllegalArgumentException("La empresa asociada no existe"));
+            if (empresa.getActivo() != null && !empresa.getActivo())
+                throw new IllegalArgumentException("No se puede asociar a una empresa inactiva");
+            existente.setEmpresa(empresa);
+        } else {
+            // if explicitly null in payload, remove association
+            existente.setEmpresa(null);
+        }
+
+        // Afiliado / jubilado flags
+        if (entity.getAfiliadoSindical() != null) existente.setAfiliadoSindical(entity.getAfiliadoSindical());
+        if (entity.getEsJubilado() != null) existente.setEsJubilado(entity.getEsJubilado());
+
+        return beneficiarioRepository.save(existente);
     }
 
-    public Optional<Beneficiario> buscarPorDni(String dni) {
-        try {
-            return beneficiarioRepository.findByDni(Integer.valueOf(dni));
-        } catch (NumberFormatException e) {
-            return Optional.empty();
+    @Override
+    @Transactional
+    public void eliminar(Long id) throws Exception {
+        if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+        Beneficiario b = beneficiarioRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Beneficiario no encontrado"));
+        // Prevent delete if titular de grupo familiar (business rule)
+        if (b.getGrupoFamiliar() != null) {
+            throw new IllegalArgumentException("No se puede eliminar el beneficiario porque es titular de un grupo familiar. Elimine o reasigne el grupo primero.");
         }
+        super.eliminar(id);
     }
 
-    public boolean dniExiste(String dni) {
-        try {
-            return beneficiarioRepository.findByDni(Integer.valueOf(dni)).isPresent();
-        } catch (NumberFormatException e) {
-            return false;
-        }
+    @Transactional(readOnly = true)
+    public List<Beneficiario> listarPorEmpresaId(Long empresaId) throws Exception {
+        if (empresaId == null) throw new IllegalArgumentException("El id de empresa no puede ser nulo");
+        Empresa empresa = empresaRepository.findById(empresaId).orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada"));
+        return beneficiarioRepository.findByEmpresa(empresa);
     }
 
-    public List<BeneficiarioDTO> listarDTOs() {
-        return beneficiarioRepository.findAll().stream()
-                .map(BeneficiarioDTO::new)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Optional<Beneficiario> buscarPorDni(Integer dni) {
+        if (dni == null) return Optional.empty();
+        return beneficiarioRepository.findByPersona_Dni(dni);
     }
 
-    // Helpers
-    private void validarObligatorios(Beneficiario b) throws Exception {
-        if (b.getNombre() == null || b.getNombre().isBlank()) throw new Exception("El nombre es obligatorio");
-        if (b.getApellido() == null || b.getApellido().isBlank()) throw new Exception("El apellido es obligatorio");
-        if (b.getDni() == null) throw new Exception("El DNI es obligatorio");
-        if (b.getDni() < 1_000_000 || b.getDni() > 99_999_999) throw new Exception("El DNI debe tener entre 7 y 8 dígitos");
-        if (b.getCuil() == null) throw new Exception("El CUIL es obligatorio");
-        if (b.getCuil() < 1_000_000_000 || b.getCuil() > 99_999_999_999L) throw new Exception("El CUIL debe tener entre 10 y 11 digitos");
-        if (b.getTelefono() == null) throw new Exception("El teléfono es obligatorio");
-        if (b.getTelefono() < 10_000_000_000L || b.getTelefono() > 99_999_999_999L) throw new Exception("El Telefono debe tener 10 numeros");
-        if (b.getUsuario() == null) throw new Exception("El usuario asociado es obligatorio");
-    }
-    private void validarDni(Integer dni, Long idActual) throws Exception {
-        var found = beneficiarioRepository.findByDni(dni);
-        if (found.isPresent() && (idActual == null || !found.get().getId().equals(idActual))) {
-            throw new Exception("Ya existe un beneficiario con ese DNI");
-        }
-    }
-    private void validarCuil(Long cuil, Long idActual) throws Exception {
-        var found = beneficiarioRepository.findByCuil(cuil);
-        if (found.isPresent() && (idActual == null || !found.get().getId().equals(idActual))) {
-            throw new Exception("Ya existe un beneficiario con ese CUIL");
-        }
-    }
-    private void validarUsuario(Usuario u) throws Exception {
-        if (u == null || u.getId() == null || !usuarioRepository.existsById(u.getId())) {
-            throw new Exception("El usuario asociado no existe");
-        }
-        // que no esté ya tomado por otro beneficiario
-        var existing = beneficiarioRepository.findByUsuarioId(u.getId());
-        if (existing.isPresent()) {
-            throw new Exception("El usuario ya está vinculado a otro beneficiario");
-        }
+    @Transactional(readOnly = true)
+    public List<Beneficiario> listarAfiliadosSindicato() {
+        return beneficiarioRepository.findByAfiliadoSindicalTrue();
     }
 }

@@ -14,24 +14,15 @@ public class AreaController extends BaseController<Area, Long> {
 
     private final AreaService areaService;
 
-    public AreaController(AreaService service) {
-        super(service);
-        this.areaService = service;
+    public AreaController(AreaService areaService) {
+        super(areaService);
+        this.areaService = areaService;
     }
 
     @PostMapping("/crear")
     public ResponseEntity<?> crear(@Valid @RequestBody Area area) {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(areaService.crear(area));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @PutMapping("/actualizar")
-    public ResponseEntity<?> actualizar(@Valid @RequestBody Area area) {
-        try {
-            return ResponseEntity.ok(areaService.actualizar(area));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

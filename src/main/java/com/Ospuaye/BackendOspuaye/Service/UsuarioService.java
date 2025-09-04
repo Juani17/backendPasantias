@@ -1,116 +1,121 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
-import com.Ospuaye.BackendOspuaye.Entity.Rol;
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
-import com.Ospuaye.BackendOspuaye.Repository.BaseRepository;
-import com.Ospuaye.BackendOspuaye.Repository.RolRepository;
 import com.Ospuaye.BackendOspuaye.Repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
-
-
 
 @Service
 public class UsuarioService extends BaseService<Usuario, Long> {
 
     private final UsuarioRepository usuarioRepository;
-    private final RolRepository rolRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    private static final Pattern EMAIL_PATTERN =
-            Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
-
-    public UsuarioService(BaseRepository<Usuario, Long> baseRepository, UsuarioRepository usuarioRepository, RolRepository rolRepository) {
-        super(baseRepository);
+    public UsuarioService(UsuarioRepository usuarioRepository,
+                          PasswordEncoder passwordEncoder) {
+        super(usuarioRepository);
         this.usuarioRepository = usuarioRepository;
-        this.rolRepository = rolRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public Usuario crear(Usuario usuario) throws Exception {
-        validarEmail(usuario.getEmail());
-        if (emailExiste(usuario.getEmail())) {
-            throw new Exception("El email ya está registrado");
-        }
-        validarPassword(usuario.getContrasena());
-        validarRolExiste(usuario.getRol());
-        return usuarioRepository.save(usuario);
+    @Transactional
+    public Usuario crear(Usuario entity) throws Exception {
+        if (entity == null) throw new IllegalArgumentException("El usuario no puede ser nulo");
+        if (entity.getEmail() == null || entity.getEmail().isBlank())
+            throw new IllegalArgumentException("El email es obligatorio");
+        String email = entity.getEmail().trim().toLowerCase();
+        if (!email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"))
+            throw new IllegalArgumentException("El email no tiene un formato válido");
+        if (usuarioRepository.existsByEmail(email))
+            throw new IllegalArgumentException("El email ya está registrado");
+
+        if (entity.getContrasena() == null || entity.getContrasena().isBlank())
+            throw new IllegalArgumentException("La contraseña es obligatoria");
+        if (entity.getContrasena().length() < 6)
+            throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres");
+
+        entity.setEmail(email);
+        entity.setContrasena(passwordEncoder.encode(entity.getContrasena()));
+
+        // rol es opcional; si lo envías se guarda tal cual.
+        return usuarioRepository.save(entity);
     }
 
     @Override
-    public Usuario actualizar(Usuario usuario) throws Exception {
-        if (usuario.getId() == null || !usuarioRepository.existsById(usuario.getId())) {
-            throw new Exception("No se encontró el usuario con el ID proporcionado");
-        }
+    @Transactional
+    public Usuario actualizar(Usuario entity) throws Exception {
+        if (entity == null || entity.getId() == null)
+            throw new IllegalArgumentException("El usuario o su ID no pueden ser nulos");
 
-        // Recuperamos el usuario actual de la BD
-        Usuario usuarioExistente = usuarioRepository.findById(usuario.getId())
-                .orElseThrow(() -> new Exception("Usuario no encontrado"));
+        Usuario existente = usuarioRepository.findById(entity.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-        // Validar y actualizar email
-        if (usuario.getEmail() != null) {
-            validarEmail(usuario.getEmail());
-            Optional<Usuario> existente = usuarioRepository.findByEmail(usuario.getEmail());
-            if (existente.isPresent() && !existente.get().getId().equals(usuario.getId())) {
-                throw new Exception("El nuevo email ya está en uso");
+        // email
+        if (entity.getEmail() != null && !entity.getEmail().isBlank()) {
+            String nuevoEmail = entity.getEmail().trim().toLowerCase();
+            if (!nuevoEmail.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"))
+                throw new IllegalArgumentException("El email no tiene un formato válido");
+            if (!nuevoEmail.equalsIgnoreCase(existente.getEmail())
+                    && usuarioRepository.existsByEmail(nuevoEmail)) {
+                throw new IllegalArgumentException("El email ya está registrado por otro usuario");
             }
-            usuarioExistente.setEmail(usuario.getEmail());
+            existente.setEmail(nuevoEmail);
         }
 
-        // Validar y actualizar contraseña
-        if (usuario.getContrasena() != null && !usuario.getContrasena().isBlank()) {
-            validarPassword(usuario.getContrasena());
-            usuarioExistente.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
+        // NO cambiamos contraseña aquí para evitar riesgos.
+        // Usar el método cambiarContrasena(...) de abajo.
+
+        if (entity.getRol() != null) {
+            existente.setRol(entity.getRol());
         }
 
-        // Validar y actualizar rol
-        if (usuario.getRol() != null) {
-            validarRolExiste(usuario.getRol());
-            usuarioExistente.setRol(usuario.getRol());
-        }
-
-        return usuarioRepository.save(usuarioExistente);
+        return usuarioRepository.save(existente);
     }
 
-    // Helpers
-    public boolean emailExiste(String email) {
-        return usuarioRepository.findByEmail(email).isPresent();
-    }
+    @Transactional(readOnly = true)
     public Optional<Usuario> buscarPorEmail(String email) {
-        return usuarioRepository.findByEmail(email);
-    }
-    private void validarEmail(String email) throws Exception {
-        if (email == null || email.isBlank() || !EMAIL_PATTERN.matcher(email).matches()) {
-            throw new Exception("Formato de email inválido");
-        }
-    }
-    private void validarPassword(String raw) throws Exception {
-        if (raw == null || raw.length() < 6) {
-            throw new Exception("La contraseña debe tener al menos 6 caracteres");
-        }
-    }
-    private void validarRolExiste(Rol rol) throws Exception {
-        if (rol == null || rol.getId() == null || !rolRepository.existsById(rol.getId())) {
-            throw new Exception("El rol proporcionado no existe");
-        }
+        if (email == null || email.isBlank()) return Optional.empty();
+        return usuarioRepository.findByEmail(email.trim().toLowerCase());
     }
 
-    public void cambiarContrasena(String email, String actual, String nueva) throws Exception {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
-        if (usuarioOpt.isEmpty()) {
-            throw new Exception("Usuario no encontrado");
-        }
-        Usuario usuario = usuarioOpt.get();
-        if (!passwordEncoder.matches(actual, usuario.getContrasena())) {
-            throw new Exception("La contraseña actual es incorrecta");
-        }
-        validarPassword(nueva);
-        usuario.setContrasena(passwordEncoder.encode(nueva));
+    @Transactional(readOnly = true)
+    public List<Usuario> listarPorRol(String nombreRol) {
+        if (nombreRol == null || nombreRol.isBlank())
+            throw new IllegalArgumentException("El nombre del rol es obligatorio");
+        return usuarioRepository.findByRol_NombreIgnoreCase(nombreRol.trim());
+    }
+
+    /** Cambio de contraseña seguro (valida contraseña actual y confirmación). */
+    @Transactional
+    public void cambiarContrasena(Long usuarioId,
+                                  String contrasenaActual,
+                                  String nuevaContrasena,
+                                  String confirmarContrasena) throws Exception {
+        if (usuarioId == null) throw new IllegalArgumentException("El ID de usuario es obligatorio");
+        if (contrasenaActual == null || contrasenaActual.isBlank())
+            throw new IllegalArgumentException("Debe indicar la contraseña actual");
+        if (nuevaContrasena == null || nuevaContrasena.isBlank())
+            throw new IllegalArgumentException("Debe indicar la nueva contraseña");
+        if (nuevaContrasena.length() < 6)
+            throw new IllegalArgumentException("La nueva contraseña debe tener al menos 6 caracteres");
+        if (!nuevaContrasena.equals(confirmarContrasena))
+            throw new IllegalArgumentException("La confirmación de contraseña no coincide");
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        if (!passwordEncoder.matches(contrasenaActual, usuario.getContrasena()))
+            throw new IllegalArgumentException("La contraseña actual es incorrecta");
+
+        if (passwordEncoder.matches(nuevaContrasena, usuario.getContrasena()))
+            throw new IllegalArgumentException("La nueva contraseña no puede ser igual a la actual");
+
+        usuario.setContrasena(passwordEncoder.encode(nuevaContrasena));
         usuarioRepository.save(usuario);
     }
 }

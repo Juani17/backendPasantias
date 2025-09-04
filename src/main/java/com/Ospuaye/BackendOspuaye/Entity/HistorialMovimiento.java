@@ -1,11 +1,8 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
-import com.Ospuaye.BackendOspuaye.Entity.Estado;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -20,7 +17,8 @@ public class HistorialMovimiento extends Base {
     private Date fecha;
 
     @Enumerated(EnumType.STRING)
-    private Estado tipoMovimiento;
+    @Column(name = "estado")
+    private Estado estado; // <-- usa Estado del diagrama
 
     private String comentario;
 
@@ -29,6 +27,6 @@ public class HistorialMovimiento extends Base {
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "formulario_id")
+    @JoinColumn(name = "pedido_id")
     private Pedido pedido;
 }

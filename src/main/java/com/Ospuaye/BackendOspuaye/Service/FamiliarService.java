@@ -1,77 +1,115 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
-import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
-import com.Ospuaye.BackendOspuaye.Entity.Familiar;
-import com.Ospuaye.BackendOspuaye.Entity.GrupoFamiliar;
-import com.Ospuaye.BackendOspuaye.Entity.TipoParentesco;
-import com.Ospuaye.BackendOspuaye.Repository.BeneficiarioRepository;
-import com.Ospuaye.BackendOspuaye.Repository.FamiliarRepository;
-import com.Ospuaye.BackendOspuaye.Repository.GrupoFamiliarRepository;
-import jakarta.transaction.Transactional;
+import com.Ospuaye.BackendOspuaye.Entity.*;
+import com.Ospuaye.BackendOspuaye.Repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FamiliarService extends BaseService<Familiar, Long> {
 
     private final FamiliarRepository familiarRepository;
-    private final BeneficiarioRepository beneficiarioRepository;
     private final GrupoFamiliarRepository grupoFamiliarRepository;
+    private final BeneficiarioRepository beneficiarioRepository;
+    private final PersonaRepository personaRepository;
 
-    public FamiliarService(FamiliarRepository repository,
+    public FamiliarService(FamiliarRepository familiarRepository,
+                           GrupoFamiliarRepository grupoFamiliarRepository,
                            BeneficiarioRepository beneficiarioRepository,
-                           GrupoFamiliarRepository grupoFamiliarRepository) {
-        super(repository);
-        this.familiarRepository = repository;
-        this.beneficiarioRepository = beneficiarioRepository;
+                           PersonaRepository personaRepository) {
+        super(familiarRepository);
+        this.familiarRepository = familiarRepository;
         this.grupoFamiliarRepository = grupoFamiliarRepository;
+        this.beneficiarioRepository = beneficiarioRepository;
+        this.personaRepository = personaRepository;
     }
 
     @Override
-    public Familiar crear(Familiar familiar) throws Exception {
-        validar(familiar, null);
-        return familiarRepository.save(familiar);
-    }
-
-    @Override
-    public Familiar actualizar(Familiar familiar) throws Exception {
-        if (familiar.getId() == null || !familiarRepository.existsById(familiar.getId())) {
-            throw new Exception("Familiar no encontrado");
-        }
-        validar(familiar, familiar.getId());
-        return familiarRepository.save(familiar);
-    }
-
-    private void validar(Familiar f, Long idActual) throws Exception {
-        if (f.getNombre() == null || f.getNombre().isBlank()) throw new Exception("El nombre es obligatorio");
-        if (f.getApellido() == null || f.getApellido().isBlank()) throw new Exception("El apellido es obligatorio");
-        if (f.getDni() == null) throw new Exception("El DNI es obligatorio");
-        if (f.getDni() < 1_000_000 || f.getDni() > 99_999_999) throw new Exception("El DNI debe tener entre 7 y 8 dígitos");
-
-        var existente = familiarRepository.findByDni(f.getDni());
-        if (existente.isPresent() && (idActual == null || !existente.get().getId().equals(idActual))) {
-            throw new Exception("Ya existe un familiar con ese DNI");
-        }
-
-        if (f.getTipoParentesco() == null || f.getTipoParentesco() == TipoParentesco.Solo_Parentescos
-                || f.getTipoParentesco() == TipoParentesco.Sin_Informacion) {
-            throw new Exception("El tipo de parentesco es obligatorio");
-        }
-
-        GrupoFamiliar gf = f.getGrupoFamiliar();
-        if (gf == null || gf.getId() == null || !grupoFamiliarRepository.existsById(gf.getId())) {
-            throw new Exception("El grupo familiar asociado no existe");
-        }
-
-        Beneficiario b = f.getBeneficiario();
-        if (b == null || b.getId() == null || !beneficiarioRepository.existsById(b.getId())) {
-            throw new Exception("El beneficiario asociado no existe");
-        }
-    }
     @Transactional
+    public Familiar crear(Familiar entity) throws Exception {
+        if (entity == null) throw new IllegalArgumentException("El familiar no puede ser nulo");
+
+        // persona obligatoria y única en familiares
+        if (entity.getPersona() == null || entity.getPersona().getId() == null)
+            throw new IllegalArgumentException("La persona asociada es obligatoria");
+        if (!personaRepository.existsById(entity.getPersona().getId()))
+            throw new IllegalArgumentException("La persona asociada no existe");
+        Optional<Familiar> existente = familiarRepository.findByPersona_Id(entity.getPersona().getId());
+        if (existente.isPresent())
+            throw new IllegalArgumentException("Ya existe un familiar con esa persona");
+
+        // beneficiario (opcional, pero si viene debe existir)
+        if (entity.getBeneficiario() != null) {
+            Long benId = entity.getBeneficiario().getId();
+            if (benId == null || !beneficiarioRepository.existsById(benId))
+                throw new IllegalArgumentException("Beneficiario no encontrado");
+        }
+
+        // grupo familiar (opcional, pero si viene debe existir)
+        if (entity.getGrupoFamiliar() != null) {
+            Long gfId = entity.getGrupoFamiliar().getId();
+            if (gfId == null || !grupoFamiliarRepository.existsById(gfId))
+                throw new IllegalArgumentException("Grupo familiar no encontrado");
+        }
+
+        return familiarRepository.save(entity);
+    }
+
+    @Override
+    @Transactional
+    public Familiar actualizar(Familiar entity) throws Exception {
+        if (entity == null || entity.getId() == null)
+            throw new IllegalArgumentException("El familiar o su ID no pueden ser nulos");
+
+        Familiar existente = familiarRepository.findById(entity.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Familiar no encontrado"));
+
+        if (entity.getPersona() != null) {
+            Long personaId = entity.getPersona().getId();
+            if (personaId == null || !personaRepository.existsById(personaId))
+                throw new IllegalArgumentException("Persona no encontrada");
+            Optional<Familiar> byPersona = familiarRepository.findByPersona_Id(personaId);
+            if (byPersona.isPresent() && !byPersona.get().getId().equals(entity.getId()))
+                throw new IllegalArgumentException("La persona ya está vinculada a otro familiar");
+            existente.setPersona(entity.getPersona());
+        }
+
+        if (entity.getBeneficiario() != null) {
+            Long benId = entity.getBeneficiario().getId();
+            if (benId == null || !beneficiarioRepository.existsById(benId))
+                throw new IllegalArgumentException("Beneficiario no encontrado");
+            existente.setBeneficiario(entity.getBeneficiario());
+        }
+
+        if (entity.getGrupoFamiliar() != null) {
+            Long gfId = entity.getGrupoFamiliar().getId();
+            if (gfId == null || !grupoFamiliarRepository.existsById(gfId))
+                throw new IllegalArgumentException("Grupo familiar no encontrado");
+            existente.setGrupoFamiliar(entity.getGrupoFamiliar());
+        }
+
+        if (entity.getTipoParentesco() != null)
+            existente.setTipoParentesco(entity.getTipoParentesco());
+
+        return familiarRepository.save(existente);
+    }
+
+    @Transactional(readOnly = true)
     public List<Familiar> listarPorBeneficiario(Long beneficiarioId) throws Exception {
-        if (beneficiarioId == null) throw new Exception("El ID del beneficiario es obligatorio");
-        return familiarRepository.findByBeneficiarioId(beneficiarioId);
+        if (beneficiarioId == null) throw new IllegalArgumentException("ID de beneficiario es obligatorio");
+        Beneficiario b = beneficiarioRepository.findById(beneficiarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Beneficiario no encontrado"));
+        return familiarRepository.findByBeneficiario(b);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Familiar> listarPorGrupoFamiliar(Long grupoFamiliarId) throws Exception {
+        if (grupoFamiliarId == null) throw new IllegalArgumentException("ID de grupo familiar es obligatorio");
+        GrupoFamiliar gf = grupoFamiliarRepository.findById(grupoFamiliarId)
+                .orElseThrow(() -> new IllegalArgumentException("Grupo familiar no encontrado"));
+        return familiarRepository.findByGrupoFamiliar(gf);
     }
 }

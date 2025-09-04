@@ -16,9 +16,10 @@ public class Medico extends Base {
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     private Usuario usuario;
 
-    private String nombre;
-    private String apellido;
-    private Long telefono;
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "persona_id", nullable = false, unique = true)
+    private Persona persona;
+
     private String matricula;
 
     @ManyToOne

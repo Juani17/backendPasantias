@@ -4,11 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-
 import java.util.Date;
 import java.util.List;
 
@@ -21,8 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-
-public abstract  class Pedido extends Base {
+public abstract class Pedido extends Base {
 
     private String nombre;
 
@@ -31,10 +27,10 @@ public abstract  class Pedido extends Base {
     private Beneficiario beneficiario;
 
     @ManyToOne
-    @JoinColumn(name = "grupo_familiar_id", nullable = true)
+    @JoinColumn(name = "grupo_familiar_id")
     private GrupoFamiliar grupoFamiliar;
 
-    private Long dni;
+    private Long dni;          // si querés, podés tomarlo de persona/paciente
     private Long telefono;
     private String empresa;
     private String delegacion;
@@ -54,7 +50,7 @@ public abstract  class Pedido extends Base {
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "paciente_id", nullable = true)
+    @JoinColumn(name = "paciente_id")
     private Familiar paciente;
 
     @ManyToOne

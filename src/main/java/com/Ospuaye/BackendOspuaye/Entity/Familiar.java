@@ -2,9 +2,7 @@ package com.Ospuaye.BackendOspuaye.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -13,8 +11,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+public class Familiar extends Base {
 
-public class Familiar extends Base{
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "grupo_familiar_id")
@@ -24,12 +22,11 @@ public class Familiar extends Base{
     @JoinColumn(name = "beneficiario_id")
     private Beneficiario beneficiario;
 
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "persona_id", nullable = false, unique = true)
+    private Persona persona;
 
-    private String nombre;
-    private String apellido;
-    private Long dni;
-    private Long cuil;
-    private Long telefono;
     @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_parentesco")
     private TipoParentesco tipoParentesco;
 }

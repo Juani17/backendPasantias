@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.util.Date;
-import java.util.List;
-
 @Entity
 @Table(name = "pedidos_oftalmologia")
 @DiscriminatorValue("OFTALMOLOGIA")
@@ -15,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 public class PedidoOftalmologia extends Pedido {
-
     private String motivoConsulta;
     private Boolean usaLentes;
     private Boolean recetaMedica;

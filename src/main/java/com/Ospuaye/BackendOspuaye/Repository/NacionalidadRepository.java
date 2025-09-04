@@ -1,0 +1,10 @@
+package com.Ospuaye.BackendOspuaye.Repository;
+
+import com.Ospuaye.BackendOspuaye.Entity.Nacionalidad;
+import org.springframework.stereotype.Repository;
+import java.util.Optional;
+
+@Repository
+public interface NacionalidadRepository extends BaseRepository<Nacionalidad, Long> {
+    Optional<Nacionalidad> findByNombre(String nombre);
+}
