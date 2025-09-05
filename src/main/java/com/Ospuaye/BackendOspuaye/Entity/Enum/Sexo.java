@@ -1,4 +1,4 @@
-package com.Ospuaye.BackendOspuaye.Entity;
+package com.Ospuaye.BackendOspuaye.Entity.Enum;
 
 public enum Sexo {
     MASCULINO("Masculino"),

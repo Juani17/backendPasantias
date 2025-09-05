@@ -1,11 +1,14 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
+import com.Ospuaye.BackendOspuaye.Entity.Enum.EstadoPersona;
+import com.Ospuaye.BackendOspuaye.Entity.Enum.Sexo;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "personas")
+@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,12 +19,12 @@ public class Persona extends Base {
     private String apellido;
 
     @Column(unique = true)
-    private Integer dni;
+    private Long dni;
 
     @Column(unique = true)
-    private String cuil;
+    private Long cuil;
 
-    private String telefono;
+    private Long telefono;
 
     @Column(name = "correo_electronico")
     private String correoElectronico;

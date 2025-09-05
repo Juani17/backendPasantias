@@ -42,7 +42,7 @@ public class PaisController extends BaseController<Pais, Long> {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/actualizar/{id}")
     public ResponseEntity<?> actualizarPais(@PathVariable Long id, @RequestBody Pais pais) {
         try {
             pais.setId(id);

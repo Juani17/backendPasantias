@@ -23,8 +23,4 @@ public class Usuario extends Base {
     @JoinColumn(name = "rol_id")
     private Rol rol;
 
-    @OneToOne(mappedBy = "usuario")
-    @JsonBackReference
-    private Beneficiario beneficiario;
-
 }

@@ -3,7 +3,7 @@ package com.Ospuaye.BackendOspuaye.Controller;
 import com.Ospuaye.BackendOspuaye.Entity.HistorialMovimiento;
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
 import com.Ospuaye.BackendOspuaye.Entity.Pedido;
-import com.Ospuaye.BackendOspuaye.Entity.Estado;
+import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
 import com.Ospuaye.BackendOspuaye.Repository.PedidoRepository;
 import com.Ospuaye.BackendOspuaye.Service.HistorialMovimientoService;
 import com.Ospuaye.BackendOspuaye.Service.UsuarioService;

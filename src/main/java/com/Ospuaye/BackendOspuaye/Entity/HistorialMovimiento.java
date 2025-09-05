@@ -1,5 +1,6 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
+import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

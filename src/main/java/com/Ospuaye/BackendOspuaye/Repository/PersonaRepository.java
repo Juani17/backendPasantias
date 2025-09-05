@@ -7,6 +7,6 @@ import java.util.Optional;
 
 @Repository
 public interface PersonaRepository extends BaseRepository<Persona, Long> {
-    Optional<Persona> findByDni(Integer dni);
-    Optional<Persona> findByCuil(String cuil);
+    Optional<Persona> findByDni(Long dni);
+    Optional<Persona> findByCuil(Long cuil);
 }

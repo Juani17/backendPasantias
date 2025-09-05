@@ -10,15 +10,11 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Medico extends Base {
+public class Medico extends Persona {
 
     @OneToOne(optional = false)
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     private Usuario usuario;
-
-    @OneToOne(optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "persona_id", nullable = false, unique = true)
-    private Persona persona;
 
     private String matricula;
 

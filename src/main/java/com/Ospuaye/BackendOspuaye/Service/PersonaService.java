@@ -1,13 +1,13 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
 import com.Ospuaye.BackendOspuaye.Entity.*;
+import com.Ospuaye.BackendOspuaye.Entity.Enum.EstadoPersona;
 import com.Ospuaye.BackendOspuaye.Repository.PersonaRepository;
 import com.Ospuaye.BackendOspuaye.Repository.NacionalidadRepository;
 import com.Ospuaye.BackendOspuaye.Repository.DomicilioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.List;
 
 @Service
@@ -39,7 +39,7 @@ public class PersonaService extends BaseService<Persona, Long> {
         if (personaRepository.findByDni(persona.getDni()).isPresent())
             throw new Exception("Ya existe una persona con ese DNI");
 
-        if (persona.getCuil() == null || persona.getCuil().isBlank())
+        if (persona.getCuil() == null || persona.getCuil().describeConstable().isEmpty())
             throw new Exception("El CUIL es obligatorio");
         if (personaRepository.findByCuil(persona.getCuil()).isPresent())
             throw new Exception("Ya existe una persona con ese CUIL");

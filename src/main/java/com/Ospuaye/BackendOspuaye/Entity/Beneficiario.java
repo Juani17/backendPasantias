@@ -15,15 +15,11 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Beneficiario extends Base {
+public class Beneficiario extends Persona {
 
     @OneToOne(optional = false)
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     private Usuario usuario;
-
-    @OneToOne(optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "persona_id", nullable = false, unique = true)
-    private Persona persona;
 
     private Boolean afiliadoSindical;
     private Boolean esJubilado;
@@ -32,7 +28,6 @@ public class Beneficiario extends Base {
     @JsonBackReference
     private GrupoFamiliar grupoFamiliar;
 
-    // 🔗 Relación con Empresa (muchos beneficiarios pueden pertenecer a una empresa)
     @ManyToOne
     @JoinColumn(name = "empresa_id")
     @JsonManagedReference

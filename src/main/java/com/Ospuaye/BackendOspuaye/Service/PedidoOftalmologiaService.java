@@ -1,6 +1,7 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
 import com.Ospuaye.BackendOspuaye.Entity.*;
+import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
 import com.Ospuaye.BackendOspuaye.Repository.PedidoOftalmologiaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;

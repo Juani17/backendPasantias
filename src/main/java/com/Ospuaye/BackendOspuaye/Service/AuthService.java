@@ -25,6 +25,7 @@ public class AuthService {
     private final BeneficiarioRepository beneficiarioRepository;
     private final MedicoRepository medicoRepository;
     private final AreaRepository areaRepository;
+    private final EmpresaRepository empresaRepository;
 
     public AuthResponse register(RegisterRequest request) {
         if (request.getEmail() == null || request.getEmail().isBlank())
@@ -109,10 +110,21 @@ public class AuthService {
                 .usuario(usuario)
                 .nombre(request.getNombre())
                 .apellido(request.getApellido())
-                .dni(request.getDni())
-                .cuil(request.getCuil())
-                .telefono(request.getTelefono())
+                .dni(Long.valueOf(request.getDni()))
+                .cuil(Long.valueOf(request.getCuil()))
+                .telefono(Long.valueOf(request.getTelefono()))
+                .sexo(request.getSexo())
+                .estado(request.getEstado())
+                .afiliadoSindical(request.getAfiliadoSindical() != null && request.getAfiliadoSindical())
+                .esJubilado(request.getEsJubilado() != null && request.getEsJubilado())
                 .build();
+
+        // Empresa opcional
+        if (request.getEmpresaId() != null) {
+            var empresa = empresaRepository.findById(request.getEmpresaId())
+                    .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
+            beneficiario.setEmpresa(empresa);
+        }
 
         beneficiarioRepository.save(beneficiario);
 
@@ -129,6 +141,7 @@ public class AuthService {
                 .rol(rolUser.getNombre())
                 .build();
     }
+
 
     @Transactional
     public AuthResponse registerMedico(RegisterMedicoRequest request) {
@@ -154,6 +167,13 @@ public class AuthService {
 
         Medico medico = Medico.builder()
                 .usuario(usuario)
+                .nombre(request.getNombre())
+                .apellido(request.getApellido())
+                .dni(request.getDni())
+                .cuil(request.getCuil())
+                .telefono(request.getTelefono())
+                .sexo(request.getSexo())
+                .estado(request.getEstado())
                 .matricula(request.getMatricula())
                 .area(area)
                 .build();
@@ -173,4 +193,5 @@ public class AuthService {
                 .rol(rolMedico.getNombre())
                 .build();
     }
+
 }

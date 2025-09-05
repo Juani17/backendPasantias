@@ -8,7 +8,7 @@ public class BeneficiarioDTO {
     private Long id;
     private String nombre;
     private String apellido;
-    private Integer dni;
+    private Long dni;
     private Long cuil;
     private Long telefono;
     private Long usuarioId;

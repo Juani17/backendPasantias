@@ -33,6 +33,7 @@ public class MedicoService extends BaseService<Medico, Long> {
     public Medico crear(Medico entity) throws Exception {
         if (entity == null) throw new IllegalArgumentException("El médico no puede ser nulo");
 
+        // Usuario obligatorio
         if (entity.getUsuario() == null || entity.getUsuario().getId() == null)
             throw new IllegalArgumentException("El usuario es obligatorio");
 
@@ -42,12 +43,11 @@ public class MedicoService extends BaseService<Medico, Long> {
         if (medicoRepository.findByUsuario_Id(entity.getUsuario().getId()).isPresent())
             throw new IllegalArgumentException("Ya existe un médico asociado a este usuario");
 
-        if (entity.getPersona() == null || entity.getPersona().getId() == null)
-            throw new IllegalArgumentException("La persona es obligatoria");
-
+        // Matrícula obligatoria
         if (entity.getMatricula() == null || entity.getMatricula().isEmpty())
             throw new IllegalArgumentException("La matrícula es obligatoria");
 
+        // Área opcional
         if (entity.getArea() != null && entity.getArea().getId() != null) {
             Area a = areaRepository.findById(entity.getArea().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Área no encontrada"));
@@ -55,6 +55,44 @@ public class MedicoService extends BaseService<Medico, Long> {
         }
 
         return medicoRepository.save(entity);
+    }
+
+    @Override
+    @Transactional
+    public Medico actualizar(Medico entity) throws Exception {
+        if (entity == null || entity.getId() == null)
+            throw new IllegalArgumentException("La entidad o su ID no pueden ser nulos");
+
+        Medico existente = medicoRepository.findById(entity.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Médico no encontrado"));
+
+        // Validar usuario
+        if (entity.getUsuario() != null && entity.getUsuario().getId() != null) {
+            Long nuevoUsuarioId = entity.getUsuario().getId();
+            if (!usuarioRepository.existsById(nuevoUsuarioId))
+                throw new IllegalArgumentException("El usuario asociado no existe");
+
+            Optional<Medico> byUser = medicoRepository.findByUsuario_Id(nuevoUsuarioId);
+            if (byUser.isPresent() && !byUser.get().getId().equals(entity.getId()))
+                throw new IllegalArgumentException("El usuario ya está vinculado a otro médico");
+
+            existente.setUsuario(entity.getUsuario());
+        }
+
+        // Matrícula
+        if (entity.getMatricula() != null && !entity.getMatricula().isEmpty())
+            existente.setMatricula(entity.getMatricula());
+
+        // Área (puede cambiar o quedar null)
+        if (entity.getArea() != null && entity.getArea().getId() != null) {
+            Area a = areaRepository.findById(entity.getArea().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Área no encontrada"));
+            existente.setArea(a);
+        } else {
+            existente.setArea(null);
+        }
+
+        return medicoRepository.save(existente);
     }
 
     @Transactional(readOnly = true)
