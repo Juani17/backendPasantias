@@ -152,7 +152,9 @@ public class AuthService {
         }
 
         var rolMedico = rolRepository.findByNombre("MEDICO")
-                .orElseThrow(() -> new RuntimeException("Rol MEDICO no encontrado"));
+                .or(() -> rolRepository.findByNombre("MEDICO OFTALMOLOGO"))
+                .or(() -> rolRepository.findByNombre("MEDICO ORTOPEDIA"))
+                .orElseThrow(() -> new RuntimeException("Ninguno de los roles buscados fue encontrado"));
 
         Usuario usuario = Usuario.builder()
                 .email(request.getEmail())
