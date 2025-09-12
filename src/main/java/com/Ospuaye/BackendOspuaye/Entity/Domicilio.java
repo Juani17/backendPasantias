@@ -1,6 +1,7 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Tipo;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -32,4 +33,8 @@ public class Domicilio extends Base {
     @ManyToOne
     @JoinColumn(name = "localidad_id")
     private Localidad localidad;
+
+    @OneToOne(mappedBy = "domicilio")
+    @JsonBackReference(value = "empresa-domicilio")
+    private Empresa empresa;
 }

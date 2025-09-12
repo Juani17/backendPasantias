@@ -36,22 +36,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> {})
+                // 🔹 Activamos CORS usando nuestro bean CorsConfigurationSource
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints públicos
                         .requestMatchers("/api/auth/**").permitAll()
-
                         // Permitir todos los GET sin autenticación
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
-
                         // Solo ADMIN puede crear Áreas, Roles y Médicos
                         .requestMatchers("/api/areas/**").hasRole("ADMIN")
                         .requestMatchers("/api/roles/**").hasRole("ADMIN")
                         .requestMatchers("/api/medicos/**").hasRole("ADMIN")
                         .requestMatchers("/api/beneficiarios/**").hasRole("ADMIN")
-
-
                         // Todo lo demás requiere autenticación
                         .anyRequest().authenticated()
                 )
@@ -80,13 +77,15 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // 🔹 Configuración de CORS para permitir solicitudes desde el frontend
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // tu front
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*", "Authorization"));
         configuration.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

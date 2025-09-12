@@ -1,6 +1,7 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -24,8 +25,12 @@ public class Empresa extends Base {
 
     private Boolean activo;
 
-    // 🔗 Relación inversa con Beneficiarios
     @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = false)
-    @JsonBackReference
+    @JsonManagedReference(value = "empresa-beneficiarios")
     private Set<Beneficiario> beneficiarios = new HashSet<>();
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "domicilio_id", referencedColumnName = "id")
+    @JsonManagedReference(value = "empresa-domicilio")
+    private Domicilio domicilio;
 }

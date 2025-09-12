@@ -1,7 +1,9 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
+import com.Ospuaye.BackendOspuaye.Entity.Domicilio;
 import com.Ospuaye.BackendOspuaye.Entity.Empresa;
 import com.Ospuaye.BackendOspuaye.Repository.BeneficiarioRepository;
+import com.Ospuaye.BackendOspuaye.Repository.DomicilioRepository;
 import com.Ospuaye.BackendOspuaye.Repository.EmpresaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,12 +15,15 @@ public class EmpresaService extends BaseService<Empresa, Long> {
 
     private final EmpresaRepository empresaRepository;
     private final BeneficiarioRepository beneficiarioRepository;
+    private final DomicilioRepository domicilioRepository;
+
 
     public EmpresaService(EmpresaRepository empresaRepository,
-                          BeneficiarioRepository beneficiarioRepository) {
+                          BeneficiarioRepository beneficiarioRepository, DomicilioRepository domicilioRepository) {
         super(empresaRepository);
         this.empresaRepository = empresaRepository;
         this.beneficiarioRepository = beneficiarioRepository;
+        this.domicilioRepository = domicilioRepository;
     }
 
     @Override
@@ -38,6 +43,11 @@ public class EmpresaService extends BaseService<Empresa, Long> {
 
         entity.setCuit(cuit);
         if (entity.getActivo() == null) entity.setActivo(true);
+        if (entity.getDomicilio() != null && entity.getDomicilio().getId() != null) {
+            Domicilio domicilio = domicilioRepository.findById(entity.getDomicilio().getId())
+                    .orElseThrow(() -> new RuntimeException("Domicilio no encontrado"));
+            entity.setDomicilio(domicilio);
+        }
 
         return empresaRepository.save(entity);
     }
