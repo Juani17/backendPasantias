@@ -30,6 +30,6 @@ public class Beneficiario extends Persona {
 
     @ManyToOne
     @JoinColumn(name = "empresa_id")
-    @JsonManagedReference
+    @JsonBackReference(value = "empresa-beneficiarios")
     private Empresa empresa;
 }
