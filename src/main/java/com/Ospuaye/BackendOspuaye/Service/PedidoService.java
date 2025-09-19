@@ -30,19 +30,22 @@ public abstract class PedidoService<E extends Pedido> extends BaseService<E, Lon
         if (p.getNombre() == null || p.getNombre().isBlank())
             throw new Exception("El nombre del pedido es obligatorio");
 
-        if (p.getUsuario() == null || p.getUsuario().getId() == null)
-            throw new Exception("El usuario que crea el pedido es obligatorio");
-
-        Usuario u = usuarioRepository.findById(p.getUsuario().getId())
-                .orElseThrow(() -> new Exception("El usuario que crea el pedido no existe"));
-        p.setUsuario(u);
-
+        // ✅ Validar beneficiario y obtener usuario desde ahí
         if (p.getBeneficiario() != null) {
             if (p.getBeneficiario().getId() == null)
                 throw new Exception("El beneficiario tiene ID inválido");
+
             Beneficiario b = beneficiarioRepository.findById(p.getBeneficiario().getId())
                     .orElseThrow(() -> new Exception("El beneficiario no existe"));
             p.setBeneficiario(b);
+
+            if (b.getUsuario() != null) {
+                p.setUsuario(b.getUsuario()); // usuario viene del beneficiario
+            } else {
+                throw new Exception("El beneficiario no tiene usuario asociado");
+            }
+        } else {
+            throw new Exception("El pedido debe tener un beneficiario");
         }
 
         if (p.getGrupoFamiliar() != null) {
@@ -80,6 +83,7 @@ public abstract class PedidoService<E extends Pedido> extends BaseService<E, Lon
             }
         }
     }
+
 
     @Transactional
     public void agregarDocumentos(E pedido, List<Documento> documentos, Usuario usuario) throws Exception {

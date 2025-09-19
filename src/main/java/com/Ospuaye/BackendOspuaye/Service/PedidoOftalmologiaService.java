@@ -21,8 +21,7 @@ public class PedidoOftalmologiaService extends PedidoService<PedidoOftalmologia>
 
     @Transactional
     public PedidoOftalmologia crearPedido(PedidoOftalmologia pedido,
-                                          List<Documento> documentos,
-                                          Usuario usuario) throws Exception {
+                                          List<Documento> documentos) throws Exception {
 
         // Validaciones generales
         validarPedidoComun(pedido);
@@ -42,8 +41,11 @@ public class PedidoOftalmologiaService extends PedidoService<PedidoOftalmologia>
         // Guardar pedido
         PedidoOftalmologia guardado = baseRepository.save(pedido);
 
+        // Tomamos el usuario del beneficiario
+        Usuario usuario = guardado.getBeneficiario().getUsuario();
+
         // Validar y agregar documentos
-        if (documentos != null) {
+        if (documentos != null && !documentos.isEmpty()) {
             for (Documento doc : documentos) {
                 if (doc.getNombreArchivo() == null || doc.getNombreArchivo().isBlank())
                     throw new Exception("Cada documento debe tener un nombre de archivo");
@@ -56,4 +58,5 @@ public class PedidoOftalmologiaService extends PedidoService<PedidoOftalmologia>
 
         return guardado;
     }
+
 }

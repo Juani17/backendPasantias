@@ -28,35 +28,38 @@ public class PedidoOftalmologiaController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> crearPedido(
             @RequestPart("pedido") String pedidoJson,
-            @RequestPart("usuario") String usuarioJson,
-            @RequestPart("documentos") List<MultipartFile> files
+            @RequestPart(value = "documentos", required = false) List<MultipartFile> files
     ) {
         try {
-            // Deserializar pedido y usuario
+            // Deserializar el pedido desde el JSON recibido
             PedidoOftalmologia pedido = objectMapper.readValue(pedidoJson, PedidoOftalmologia.class);
-            Usuario usuario = objectMapper.readValue(usuarioJson, Usuario.class);
 
             // Procesar documentos subidos
             List<Documento> documentos = new ArrayList<>();
-            for (MultipartFile file : files) {
-                String msg = documentoService.handleFileUpload(file);
-                if (!"Archivo cargado correctamente".equals(msg)) {
-                    return ResponseEntity.badRequest().body(msg);
+            if (files != null) {
+                for (MultipartFile file : files) {
+                    String msg = documentoService.handleFileUpload(file);
+                    if (!"Archivo cargado correctamente".equals(msg)) {
+                        return ResponseEntity.badRequest().body(msg);
+                    }
+                    Documento doc = Documento.builder()
+                            .nombreArchivo(file.getOriginalFilename())
+                            .path("C://Ospuaye/documentos/" + file.getOriginalFilename())
+                            .observacion("Estudio oftalmológico adjunto")
+                            .build();
+                    documentos.add(doc);
                 }
-                Documento doc = Documento.builder()
-                        .nombreArchivo(file.getOriginalFilename())
-                        .path("C://Ospuaye/documentos/" + file.getOriginalFilename())
-                        .observacion("Estudio oftalmológico adjunto")
-                        .build();
-                documentos.add(doc);
             }
 
-            var creado = service.crearPedido(pedido, documentos, usuario);
+            // Ahora el service ya no recibe Usuario
+            var creado = service.crearPedido(pedido, documentos);
             return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al crear pedido oftalmología: " + e.getMessage());
         }
     }
+
 
     @GetMapping
     public ResponseEntity<List<PedidoOftalmologia>> listarTodos() {
