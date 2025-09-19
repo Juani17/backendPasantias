@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class FamiliarService extends BaseService<Familiar, Long> {
@@ -14,17 +13,14 @@ public class FamiliarService extends BaseService<Familiar, Long> {
     private final FamiliarRepository familiarRepository;
     private final GrupoFamiliarRepository grupoFamiliarRepository;
     private final BeneficiarioRepository beneficiarioRepository;
-    private final PersonaRepository personaRepository;
 
     public FamiliarService(FamiliarRepository familiarRepository,
                            GrupoFamiliarRepository grupoFamiliarRepository,
-                           BeneficiarioRepository beneficiarioRepository,
-                           PersonaRepository personaRepository) {
+                           BeneficiarioRepository beneficiarioRepository) {
         super(familiarRepository);
         this.familiarRepository = familiarRepository;
         this.grupoFamiliarRepository = grupoFamiliarRepository;
         this.beneficiarioRepository = beneficiarioRepository;
-        this.personaRepository = personaRepository;
     }
 
     @Override
@@ -32,31 +28,48 @@ public class FamiliarService extends BaseService<Familiar, Long> {
     public Familiar crear(Familiar entity) throws Exception {
         if (entity == null) throw new IllegalArgumentException("El familiar no puede ser nulo");
 
-        // persona obligatoria y única en familiares
-        if (entity.getPersona() == null || entity.getPersona().getId() == null)
-            throw new IllegalArgumentException("La persona asociada es obligatoria");
-        if (!personaRepository.existsById(entity.getPersona().getId()))
-            throw new IllegalArgumentException("La persona asociada no existe");
-        Optional<Familiar> existente = familiarRepository.findByPersona_Id(entity.getPersona().getId());
-        if (existente.isPresent())
-            throw new IllegalArgumentException("Ya existe un familiar con esa persona");
+        // Validaciones obligatorias
+        if (entity.getNombre() == null || entity.getNombre().isBlank())
+            throw new IllegalArgumentException("El nombre es obligatorio");
+        if (entity.getApellido() == null || entity.getApellido().isBlank())
+            throw new IllegalArgumentException("El apellido es obligatorio");
+        if (entity.getDni() == null)
+            throw new IllegalArgumentException("El DNI es obligatorio");
+        if (entity.getCuil() == null)
+            throw new IllegalArgumentException("El CUIL es obligatorio");
+        if (entity.getSexo() == null)
+            throw new IllegalArgumentException("El sexo es obligatorio");
+
+        // Validar unicidad de DNI y CUIL
+        if (familiarRepository.existsByDni(entity.getDni()))
+            throw new IllegalArgumentException("Ya existe un familiar con ese DNI");
+        if (familiarRepository.existsByCuil(entity.getCuil()))
+            throw new IllegalArgumentException("Ya existe un familiar con ese CUIL");
 
         // beneficiario (opcional, pero si viene debe existir)
         if (entity.getBeneficiario() != null) {
             Long benId = entity.getBeneficiario().getId();
-            if (benId == null || !beneficiarioRepository.existsById(benId))
-                throw new IllegalArgumentException("Beneficiario no encontrado");
+            Beneficiario b = beneficiarioRepository.findById(benId)
+                    .orElseThrow(() -> new IllegalArgumentException("Beneficiario no encontrado"));
+            entity.setBeneficiario(b);
         }
 
         // grupo familiar (opcional, pero si viene debe existir)
         if (entity.getGrupoFamiliar() != null) {
             Long gfId = entity.getGrupoFamiliar().getId();
-            if (gfId == null || !grupoFamiliarRepository.existsById(gfId))
-                throw new IllegalArgumentException("Grupo familiar no encontrado");
+            GrupoFamiliar gf = grupoFamiliarRepository.findById(gfId)
+                    .orElseThrow(() -> new IllegalArgumentException("Grupo familiar no encontrado"));
+            entity.setGrupoFamiliar(gf);
+        }
+
+        // Nacionalidad opcional, pero si viene, se asigna
+        if (entity.getNacionalidad() != null) {
+            // opcional: podrías validar si existe en la DB
         }
 
         return familiarRepository.save(entity);
     }
+
 
     @Override
     @Transactional
@@ -67,32 +80,32 @@ public class FamiliarService extends BaseService<Familiar, Long> {
         Familiar existente = familiarRepository.findById(entity.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Familiar no encontrado"));
 
-        if (entity.getPersona() != null) {
-            Long personaId = entity.getPersona().getId();
-            if (personaId == null || !personaRepository.existsById(personaId))
-                throw new IllegalArgumentException("Persona no encontrada");
-            Optional<Familiar> byPersona = familiarRepository.findByPersona_Id(personaId);
-            if (byPersona.isPresent() && !byPersona.get().getId().equals(entity.getId()))
-                throw new IllegalArgumentException("La persona ya está vinculada a otro familiar");
-            existente.setPersona(entity.getPersona());
-        }
+        // Actualizar campos simples
+        if (entity.getNombre() != null) existente.setNombre(entity.getNombre());
+        if (entity.getApellido() != null) existente.setApellido(entity.getApellido());
+        if (entity.getDni() != null) existente.setDni(entity.getDni());
+        if (entity.getCuil() != null) existente.setCuil(entity.getCuil());
+        if (entity.getTelefono() != null) existente.setTelefono(entity.getTelefono());
+        if (entity.getCorreoElectronico() != null) existente.setCorreoElectronico(entity.getCorreoElectronico());
+        if (entity.getSexo() != null) existente.setSexo(entity.getSexo());
+        if (entity.getTipoParentesco() != null) existente.setTipoParentesco(entity.getTipoParentesco());
+        if (entity.getNacionalidad() != null) existente.setNacionalidad(entity.getNacionalidad());
 
+        // Actualizar beneficiario si viene
         if (entity.getBeneficiario() != null) {
             Long benId = entity.getBeneficiario().getId();
-            if (benId == null || !beneficiarioRepository.existsById(benId))
-                throw new IllegalArgumentException("Beneficiario no encontrado");
-            existente.setBeneficiario(entity.getBeneficiario());
+            Beneficiario b = beneficiarioRepository.findById(benId)
+                    .orElseThrow(() -> new IllegalArgumentException("Beneficiario no encontrado"));
+            existente.setBeneficiario(b);
         }
 
+        // Actualizar grupo familiar si viene
         if (entity.getGrupoFamiliar() != null) {
             Long gfId = entity.getGrupoFamiliar().getId();
-            if (gfId == null || !grupoFamiliarRepository.existsById(gfId))
-                throw new IllegalArgumentException("Grupo familiar no encontrado");
-            existente.setGrupoFamiliar(entity.getGrupoFamiliar());
+            GrupoFamiliar gf = grupoFamiliarRepository.findById(gfId)
+                    .orElseThrow(() -> new IllegalArgumentException("Grupo familiar no encontrado"));
+            existente.setGrupoFamiliar(gf);
         }
-
-        if (entity.getTipoParentesco() != null)
-            existente.setTipoParentesco(entity.getTipoParentesco());
 
         return familiarRepository.save(existente);
     }

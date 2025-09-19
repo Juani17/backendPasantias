@@ -1,9 +1,7 @@
 package com.Ospuaye.BackendOspuaye.Controller;
 
-import com.Ospuaye.BackendOspuaye.Dto.PedidoRequest;
 import com.Ospuaye.BackendOspuaye.Entity.Documento;
 import com.Ospuaye.BackendOspuaye.Entity.PedidoOrtopedia;
-import com.Ospuaye.BackendOspuaye.Entity.Usuario;
 import com.Ospuaye.BackendOspuaye.Service.DocumentoService;
 import com.Ospuaye.BackendOspuaye.Service.PedidoOrtopediaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,31 +36,33 @@ public class PedidoOrtopediaController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> crearPedido(
             @RequestPart("pedido") String pedidoJson,
-            @RequestPart("usuario") String usuarioJson,
-            @RequestPart("documentos") List<MultipartFile> files
+            @RequestPart(value = "documentos", required = false) List<MultipartFile> files
     ) {
         try {
             PedidoOrtopedia pedido = objectMapper.readValue(pedidoJson, PedidoOrtopedia.class);
-            Usuario usuario = objectMapper.readValue(usuarioJson, Usuario.class);
 
+            // Procesar documentos (opcional)
             List<Documento> documentos = new ArrayList<>();
-            for (MultipartFile file : files) {
-                String msg = documentoService.handleFileUpload(file);
-                if (!"Archivo cargado correctamente".equals(msg)) {
-                    return ResponseEntity.badRequest().body(msg);
+            if (files != null) {
+                for (MultipartFile file : files) {
+                    String msg = documentoService.handleFileUpload(file);
+                    if (!"Archivo cargado correctamente".equals(msg)) {
+                        return ResponseEntity.badRequest().body(msg);
+                    }
+                    Documento doc = Documento.builder()
+                            .nombreArchivo(file.getOriginalFilename())
+                            .path("C://Ospuaye/documentos/" + file.getOriginalFilename())
+                            .observacion("Estudio previo adjunto")
+                            .build();
+                    documentos.add(doc);
                 }
-                Documento doc = Documento.builder()
-                        .nombreArchivo(file.getOriginalFilename())
-                        .path("C://Ospuaye/documentos/" + file.getOriginalFilename())
-                        .observacion("Estudio previo adjunto")
-                        .build();
-                documentos.add(doc);
             }
 
-            var creado = service.crearPedido(pedido, documentos, usuario);
+            var creado = service.crearPedido(pedido, documentos);
             return ResponseEntity.status(HttpStatus.CREATED).body(creado);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al crear el pedido: " + e.getMessage());
         }
     }
+
 }

@@ -21,13 +21,12 @@ public class PedidoOrtopediaService extends PedidoService<PedidoOrtopedia> {
 
     @Transactional
     public PedidoOrtopedia crearPedido(PedidoOrtopedia pedido,
-                                       List<Documento> documentos,
-                                       Usuario usuario) throws Exception {
+                                       List<Documento> documentos) throws Exception {
 
-        // Validaciones generales
+        // ✅ Validaciones generales (ya asigna usuario desde beneficiario)
         validarPedidoComun(pedido);
 
-        // Validaciones específicas
+        // ✅ Validaciones específicas de Ortopedia
         if (pedido.getMotivoConsulta() == null || pedido.getMotivoConsulta().isBlank())
             throw new Exception("El motivo de consulta es obligatorio");
         if (pedido.getRecetaMedica() == null)
@@ -40,11 +39,15 @@ public class PedidoOrtopediaService extends PedidoService<PedidoOrtopedia> {
         // Guardar pedido
         PedidoOrtopedia guardado = baseRepository.save(pedido);
 
+        // ✅ Tomamos el usuario desde el beneficiario (ya lo resolvió validarPedidoComun)
+        Usuario usuario = guardado.getBeneficiario().getUsuario();
+
         // Validar y agregar documentos
-        if (documentos != null) {
+        if (documentos != null && !documentos.isEmpty()) {
             for (Documento doc : documentos) {
-                if (doc.getNombreArchivo() == null || doc.getNombreArchivo().isBlank())
+                if (doc.getNombreArchivo() == null || doc.getNombreArchivo().isBlank()) {
                     throw new Exception("Cada documento debe tener un nombre de archivo");
+                }
             }
             agregarDocumentos(guardado, documentos, usuario);
         }

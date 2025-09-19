@@ -11,5 +11,4 @@ import java.util.List;
 public class PedidoRequest<T extends Pedido> {
     private T pedido;
     private List<Documento> documentos;
-    private Usuario usuario;
 }
