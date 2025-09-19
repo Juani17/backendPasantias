@@ -81,7 +81,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // tu front
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://vps-5301866-x.dattaweb.com:9000")); // tu front
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*", "Authorization"));
         configuration.setAllowCredentials(true);
