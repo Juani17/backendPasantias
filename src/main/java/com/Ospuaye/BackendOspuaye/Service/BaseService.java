@@ -58,4 +58,18 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
         }
         baseRepository.deleteById(id);
     }
+
+    @Transactional
+    public E alternarEstado(ID id) throws Exception {
+        if (id == null) {
+            throw new IllegalArgumentException("El ID no puede ser nulo");
+        }
+        E entity = baseRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No se encontró la entidad con el ID proporcionado"));
+
+        entity.setActivo(!entity.isActivo()); // invierte el estado actual
+
+        return baseRepository.save(entity);
+    }
+
 }

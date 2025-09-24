@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Persona extends Base {
+public abstract class Persona extends Base {
 
     private String nombre;
     private String apellido;

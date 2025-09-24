@@ -16,4 +16,6 @@ public abstract class Base implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected Long id;
 
+    private boolean activo = true;
+
 }

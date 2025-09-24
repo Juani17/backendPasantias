@@ -75,4 +75,15 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<?> alternarEstado(@PathVariable ID id) {
+        try {
+            return ResponseEntity.ok(baseService.alternarEstado(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
 }

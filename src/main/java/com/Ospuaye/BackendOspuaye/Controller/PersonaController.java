@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/personas")
-public class PersonaController extends BaseController<Persona, Long> {
+public abstract class PersonaController extends BaseController<Persona, Long> {
 
     private final PersonaService personaService;
 
