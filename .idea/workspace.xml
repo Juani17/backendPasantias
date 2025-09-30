@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9e82dc1f-9b89-4eec-a91e-a75d0b85ffc0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules/BackendOspuaye.main.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/01-BKpBwobe.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/FondoAdmin-odahXUZi.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/LineIcons--A_6HXRF.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/LineIcons-BJUrqD8W.eot" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/LineIcons-BZgAh_1U.woff2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/LineIcons-Cqb3QtOe.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/LineIcons-DrihXZZM.woff" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/about-B1cDR52S.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/atencion_03-w6KLGUbj.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/bg1-q6HdIkBT.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/bread-bg-Cib1qcxc.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/canales-CTlIbFWS.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/index-Cw7W0DuN.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/index-DEd7bTgl.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/logo1-DGtyJESI.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/medico_13-D7i7qBrO.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/pattern-BMHaxBKe.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/receta_electronica-CChM403q.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/sss-DHN63mVc.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/assets/white-logo1-CbbNuAnC.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/resources/static/vite.svg" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.BackendOspuaye [:com.Ospuaye.BackendOspuaye.BackendOspuayeApplication.main()].executor": "Run",
+    "git-widget-placeholder": "developer"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
+      <envs>
+        <env name="DB_PASSWORD" value="" />
+        <env name="DB_PLATFORM" value="org.hibernate.dialect.MySQLDialect" />
+        <env name="DB_URL" value="jdbc:mysql://localhost:3306/backendOspuaye?useUnicode=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC" />
+        <env name="DB_USER_NAME" value="root" />
+      </envs>
+      <option name="MAIN_CLASS_NAME" value="com.Ospuaye.BackendOspuaye.BackendOspuayeApplication" />
+      <module name="BackendOspuaye.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <servers />
+  </component>
+</project>
