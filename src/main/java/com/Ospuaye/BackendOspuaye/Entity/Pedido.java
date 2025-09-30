@@ -3,7 +3,6 @@ package com.Ospuaye.BackendOspuaye.Entity;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -18,20 +17,21 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public abstract class Pedido extends Base {
 
     private String nombre;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "beneficiario_id")
     private Beneficiario beneficiario;
 
-    @ManyToOne
-    @JoinColumn(name = "grupo_familiar_id")
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "grupo_familiar_id", nullable = true)
+    @JsonIgnoreProperties({"familiares", "titular"}) // evita loops
     private GrupoFamiliar grupoFamiliar;
 
-    private Long dni;          // si querés, podés tomarlo de persona/paciente
+
+    private Long dni;
     private Long telefono;
     private String empresa;
     private String delegacion;
@@ -40,21 +40,20 @@ public abstract class Pedido extends Base {
     private Date fechaIngreso;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Documento> documentos;
 
     @Enumerated(EnumType.STRING)
     private Estado estado;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "paciente_id")
     private Familiar paciente;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "medico_id")
     private Medico medico;
 

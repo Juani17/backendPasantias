@@ -1,35 +1,21 @@
 package com.Ospuaye.BackendOspuaye.Dto;
 
-import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
-import lombok.Getter;
+import lombok.*;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Setter
 public class BeneficiarioDTO {
     private Long id;
     private String nombre;
     private String apellido;
     private Long dni;
-    private Long cuil;
-    private Long telefono;
-    private Long usuarioId;
-    private String email;
-    private Long grupoFamiliarId;
-    private String nombreGrupo;
-
-    public BeneficiarioDTO(Beneficiario b) {
-        this.id = b.getId();
-        this.nombre = b.getNombre();
-        this.apellido = b.getApellido();
-        this.dni = b.getDni();
-        this.cuil = b.getCuil();
-        this.telefono = b.getTelefono();
-        this.usuarioId = b.getUsuario().getId();
-        this.email = b.getUsuario().getEmail();
-
-        if (b.getGrupoFamiliar() != null) {
-            this.grupoFamiliarId = b.getGrupoFamiliar().getId();
-            this.nombreGrupo = b.getGrupoFamiliar().getNombreGrupo();
-        }
-    }
+    private String correoElectronico;
+    private Boolean afiliadoSindical;
+    private Boolean esJubilado;
+    private UsuarioDTO usuario;
+    private String empresa; // r
 }
-

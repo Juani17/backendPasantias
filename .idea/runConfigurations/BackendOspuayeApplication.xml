@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="BackendOspuayeApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <envs>
+      <env name="DB_URL" value="jdbc:mysql://localhost:3306/backendOspuaye?useUnicode=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC" />
+      <env name="DB_USER_NAME" value="root" />
+      <env name="DB_PLATFORM" value="org.hibernate.dialect.MySQLDialect" />
+    </envs>
+    <option name="envFilePaths">
+      <option value="$PROJECT_DIR$/build/resources/main/application.properties" />
+    </option>
+    <module name="BackendOspuaye.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.Ospuaye.BackendOspuaye.BackendOspuayeApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

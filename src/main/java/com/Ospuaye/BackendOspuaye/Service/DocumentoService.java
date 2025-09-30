@@ -63,38 +63,60 @@ public class DocumentoService extends BaseService<Documento, Long> {
         }
     }
 
-    // Upload físico (el que ya tenías) con validaciones extra
-    public String handleFileUpload(MultipartFile file) throws Exception {
+    // 🔹 MÉTODO NUEVO: Devuelve el nombre del archivo generado
+    public String subirArchivo(MultipartFile file) throws Exception {
         try {
             if (file == null || file.isEmpty()) {
-                return "No se recibió archivo";
+                throw new Exception("No se recibió archivo o está vacío");
             }
 
             String original = file.getOriginalFilename();
             if (original == null) {
-                return "El archivo no tiene nombre válido";
+                throw new Exception("El archivo no tiene nombre válido");
             }
 
             long size = file.getSize();
             long maxSize = 5 * 1024 * 1024; // 5MB
             if (size > maxSize) {
-                return "El tamaño del archivo debe ser de 5MB o menor";
+                throw new Exception("El tamaño del archivo debe ser de 5MB o menor");
             }
 
             String lower = original.toLowerCase();
             if (!(lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png")
                     || lower.endsWith(".pdf") || lower.endsWith(".doc") || lower.endsWith(".docx"))) {
-                return "Solo se aceptan archivos JPG, JPEG, PNG, PDF, DOC o DOCX";
+                throw new Exception("Solo se aceptan archivos JPG, JPEG, PNG, PDF, DOC o DOCX");
             }
 
+            // Generar nombre único para evitar conflictos
             String ext = original.substring(original.lastIndexOf("."));
             String newName = UUID.randomUUID() + ext;
 
+            // Crear directorio si no existe
             File folder = new File("C://Ospuaye/documentos");
-            if (!folder.exists()) folder.mkdirs();
+            if (!folder.exists()) {
+                boolean created = folder.mkdirs();
+                if (!created) {
+                    throw new Exception("No se pudo crear el directorio de documentos");
+                }
+            }
 
+            // Escribir archivo físico
             Path path = Paths.get(folder.getAbsolutePath(), newName);
             Files.write(path, file.getBytes());
+
+            // 🔹 CAMBIO IMPORTANTE: Devolver el nombre real del archivo generado
+            return newName;
+
+        } catch (Exception e) {
+            throw new Exception("Error al subir archivo: " + e.getMessage());
+        }
+    }
+
+    // 🔹 Mantener método legacy para compatibilidad (DEPRECADO)
+    @Deprecated
+    public String handleFileUpload(MultipartFile file) throws Exception {
+        try {
+            subirArchivo(file);
             return "Archivo cargado correctamente";
         } catch (Exception e) {
             throw new Exception(e.getMessage());

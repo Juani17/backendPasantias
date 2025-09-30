@@ -15,7 +15,10 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public abstract class Persona extends Base {
 
+    @Column(nullable = false)
     private String nombre;
+
+    @Column(nullable = false)
     private String apellido;
 
     @Column(unique = true)
@@ -38,11 +41,11 @@ public abstract class Persona extends Base {
     @Column(name = "estado_persona")
     private EstadoPersona estado;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nacionalidad_id")
     private Nacionalidad nacionalidad;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "domicilio_id")
     private Domicilio domicilio;
 }

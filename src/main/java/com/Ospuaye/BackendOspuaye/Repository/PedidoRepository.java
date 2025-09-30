@@ -6,15 +6,16 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PedidoRepository extends BaseRepository<Pedido, Long> {
+public interface PedidoRepository<E extends Pedido> extends BaseRepository<E, Long> {
 
-    List<Pedido> findByBeneficiario(Beneficiario beneficiario);
+    List<E> findByBeneficiario(Beneficiario beneficiario);
 
-    List<Pedido> findByGrupoFamiliar(GrupoFamiliar grupoFamiliar);
+    List<E> findByGrupoFamiliar(GrupoFamiliar grupoFamiliar);
 
-    List<Pedido> findByUsuario(Usuario usuario);
+    List<E> findByUsuario(Usuario usuario);
 
-    List<Pedido> findByMedico(Medico medico);
+    List<E> findByMedico(Medico medico);
 
-    List<Pedido> findByDni(Integer dni);
+    List<E> findByDni(Integer dni);
 }
+

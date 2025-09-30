@@ -1,6 +1,6 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -11,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Usuario extends Base {
 
     @Column(nullable = false, unique = true)
@@ -19,8 +20,7 @@ public class Usuario extends Base {
     @Column(nullable = false)
     private String contrasena;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rol_id")
     private Rol rol;
-
 }

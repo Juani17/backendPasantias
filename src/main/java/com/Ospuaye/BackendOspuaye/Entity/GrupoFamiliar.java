@@ -1,10 +1,9 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -17,13 +16,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@Getter
+@Setter
 public class GrupoFamiliar extends Base {
 
     @Column(nullable = false)
     private String nombreGrupo;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "titular_id")
+    @JsonIgnoreProperties({"grupoFamiliar"}) // evita loop con Beneficiario
     private Beneficiario titular;
 
     private Date fechaAlta;
@@ -33,4 +35,25 @@ public class GrupoFamiliar extends Base {
     @JsonManagedReference
     private List<Familiar> familiares = new ArrayList<>();
 
+    // ---------------- Getters y Setters ----------------
+
+    public void setNombreGrupo(String nombreGrupo) {
+        this.nombreGrupo = nombreGrupo;
+    }
+
+    public void setTitular(Beneficiario titular) {
+        this.titular = titular;
+    }
+
+    public void setFechaAlta(Date fechaAlta) {
+        this.fechaAlta = fechaAlta;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    public void setFamiliares(List<Familiar> familiares) {
+        this.familiares = familiares;
+    }
 }

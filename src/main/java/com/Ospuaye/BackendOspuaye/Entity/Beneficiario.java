@@ -1,13 +1,9 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "beneficiarios")
@@ -17,19 +13,19 @@ import java.util.Set;
 @SuperBuilder
 public class Beneficiario extends Persona {
 
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     private Usuario usuario;
 
     private Boolean afiliadoSindical;
     private Boolean esJubilado;
 
-    @OneToOne(mappedBy = "titular")
-    @JsonBackReference
+    @OneToOne(mappedBy = "titular", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"titular", "familiares"}) // evita loop
     private GrupoFamiliar grupoFamiliar;
 
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "empresa_id")
-    @JsonBackReference(value = "empresa-beneficiarios")
     private Empresa empresa;
 }

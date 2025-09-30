@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HistorialMovimientoService extends BaseService<HistorialMovimiento, Long> {
@@ -29,47 +30,47 @@ public class HistorialMovimientoService extends BaseService<HistorialMovimiento,
 
     @Override
     @Transactional
-    public HistorialMovimiento crear(HistorialMovimiento entity) throws Exception {
+    public HistorialMovimiento crear(HistorialMovimiento entity) {
         if (entity == null) throw new IllegalArgumentException("El historial de movimiento no puede ser nulo");
 
         if (entity.getUsuario() == null || entity.getUsuario().getId() == null)
             throw new IllegalArgumentException("El usuario asociado es obligatorio");
-        Usuario u = usuarioRepository.findById(entity.getUsuario().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-        entity.setUsuario(u);
+        Optional<Usuario> uOpt = usuarioRepository.findById(entity.getUsuario().getId());
+        if (!uOpt.isPresent()) throw new IllegalArgumentException("Usuario no encontrado");
+        entity.setUsuario(uOpt.get());
 
         if (entity.getPedido() == null || entity.getPedido().getId() == null)
             throw new IllegalArgumentException("El pedido asociado es obligatorio");
-        Pedido p = pedidoRepository.findById(entity.getPedido().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado"));
-        entity.setPedido(p);
+        Optional<Pedido> pOpt = pedidoRepository.findById(entity.getPedido().getId());
+        if (!pOpt.isPresent()) throw new IllegalArgumentException("Pedido no encontrado");
+        entity.setPedido(pOpt.get());
 
         if (entity.getFecha() == null) entity.setFecha(new Date());
-        if (entity.getEstado() == null)
-            throw new IllegalArgumentException("El estado es obligatorio");
+        if (entity.getEstado() == null) throw new IllegalArgumentException("El estado es obligatorio");
 
         return historialRepository.save(entity);
     }
 
     @Override
     @Transactional
-    public HistorialMovimiento actualizar(HistorialMovimiento entity) throws Exception {
+    public HistorialMovimiento actualizar(HistorialMovimiento entity) {
         if (entity == null || entity.getId() == null)
             throw new IllegalArgumentException("El historial o su ID no pueden ser nulos");
 
-        HistorialMovimiento existente = historialRepository.findById(entity.getId())
-                .orElseThrow(() -> new IllegalArgumentException("HistorialMovimiento no encontrado"));
+        Optional<HistorialMovimiento> existOpt = historialRepository.findById(entity.getId());
+        if (!existOpt.isPresent()) throw new IllegalArgumentException("HistorialMovimiento no encontrado");
+        HistorialMovimiento existente = existOpt.get();
 
         if (entity.getUsuario() != null && entity.getUsuario().getId() != null) {
-            Usuario u = usuarioRepository.findById(entity.getUsuario().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-            existente.setUsuario(u);
+            Optional<Usuario> uOpt = usuarioRepository.findById(entity.getUsuario().getId());
+            if (!uOpt.isPresent()) throw new IllegalArgumentException("Usuario no encontrado");
+            existente.setUsuario(uOpt.get());
         }
 
         if (entity.getPedido() != null && entity.getPedido().getId() != null) {
-            Pedido p = pedidoRepository.findById(entity.getPedido().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado"));
-            existente.setPedido(p);
+            Optional<Pedido> pOpt = pedidoRepository.findById(entity.getPedido().getId());
+            if (!pOpt.isPresent()) throw new IllegalArgumentException("Pedido no encontrado");
+            existente.setPedido(pOpt.get());
         }
 
         if (entity.getEstado() != null) existente.setEstado(entity.getEstado());

@@ -29,9 +29,6 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable ID id) {
         try {
-            if (id == null) {
-                return ResponseEntity.badRequest().body("El ID no puede ser nulo");
-            }
             return ResponseEntity.ok(baseService.buscarPorId(id));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -41,9 +38,6 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody E entity) {
         try {
-            if (entity == null) {
-                return ResponseEntity.badRequest().body("La entidad no puede ser nula");
-            }
             return ResponseEntity.ok(baseService.crear(entity));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -53,10 +47,7 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable ID id, @RequestBody E entity) {
         try {
-            if (entity == null) {
-                return ResponseEntity.badRequest().body("La entidad no puede ser nula");
-            }
-            entity.setId((Long) id); // Aseguramos que use el ID correcto
+            entity.setId((Long) id);
             return ResponseEntity.ok(baseService.actualizar(entity));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -66,24 +57,10 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable ID id) {
         try {
-            if (id == null) {
-                return ResponseEntity.badRequest().body("El ID no puede ser nulo");
-            }
             baseService.eliminar(id);
             return ResponseEntity.ok("Registro eliminado correctamente");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    @PatchMapping("/{id}/estado")
-    public ResponseEntity<?> alternarEstado(@PathVariable ID id) {
-        try {
-            return ResponseEntity.ok(baseService.alternarEstado(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-
 }

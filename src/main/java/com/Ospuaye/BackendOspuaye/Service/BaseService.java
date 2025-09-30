@@ -23,53 +23,34 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
 
     @Transactional(readOnly = true)
     public Optional<E> buscarPorId(ID id) throws Exception {
-        if (id == null) {
-            throw new IllegalArgumentException("El ID no puede ser nulo");
-        }
+        if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
         return baseRepository.findById(id);
     }
 
     @Transactional
     public E crear(E entity) throws Exception {
-        if (entity == null) {
-            throw new IllegalArgumentException("La entidad no puede ser nula");
-        }
+        if (entity == null) throw new IllegalArgumentException("La entidad no puede ser nula");
         return baseRepository.save(entity);
     }
 
     @Transactional
     public E actualizar(E entity) throws Exception {
-        if (entity == null || entity.getId() == null) {
+        if (entity == null || entity.getId() == null)
             throw new IllegalArgumentException("La entidad o su ID no pueden ser nulos");
-        }
-        if (!baseRepository.existsById((ID) entity.getId())) {
+
+        if (!baseRepository.existsById((ID) entity.getId()))
             throw new IllegalArgumentException("No se encontró la entidad con el ID proporcionado");
-        }
+
         return baseRepository.save(entity);
     }
 
     @Transactional
     public void eliminar(ID id) throws Exception {
-        if (id == null) {
-            throw new IllegalArgumentException("El ID no puede ser nulo");
-        }
-        if (!baseRepository.existsById(id)) {
+        if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+
+        if (!baseRepository.existsById(id))
             throw new IllegalArgumentException("No se encontró la entidad con el ID proporcionado");
-        }
+
         baseRepository.deleteById(id);
     }
-
-    @Transactional
-    public E alternarEstado(ID id) throws Exception {
-        if (id == null) {
-            throw new IllegalArgumentException("El ID no puede ser nulo");
-        }
-        E entity = baseRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró la entidad con el ID proporcionado"));
-
-        entity.setActivo(!entity.isActivo()); // invierte el estado actual
-
-        return baseRepository.save(entity);
-    }
-
 }

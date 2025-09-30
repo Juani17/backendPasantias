@@ -49,6 +49,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/roles/**").hasRole("ADMIN")
                         .requestMatchers("/api/medicos/**").hasRole("ADMIN")
                         .requestMatchers("/api/beneficiarios/**").hasRole("ADMIN")
+                        // Users y Medicos
+                        .requestMatchers("/api/pedidos/oftalmologia/**").hasRole("USER")
+                        .requestMatchers("/api/pedidos/ortopedia/**").hasRole("USER")
+                        .requestMatchers("/api/pedidos/ortopedia/**").hasRole("MEDICO ORTOPEDIA")
+                        .requestMatchers("/api/pedidos/oftalmologia/**").hasRole("MEDICO OFTALMOLOGO")
                         // Todo lo demás requiere autenticación
                         .anyRequest().authenticated()
                 )

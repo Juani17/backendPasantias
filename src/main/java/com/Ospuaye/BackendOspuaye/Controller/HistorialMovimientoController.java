@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/historial-movimientos")
@@ -31,11 +32,31 @@ public class HistorialMovimientoController extends BaseController<HistorialMovim
         this.pedidoRepository = pedidoRepository;
     }
 
+    private Usuario obtenerUsuario(Long id) {
+        try {
+            Optional<Usuario> uOpt = usuarioService.buscarPorId(id);
+            if (!uOpt.isPresent()) throw new IllegalArgumentException("Usuario no encontrado");
+            return uOpt.get();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error al buscar usuario: " + e.getMessage(), e);
+        }
+    }
+
+    private Pedido obtenerPedido(Long id) {
+        try {
+            Optional<Pedido> pOpt = pedidoRepository.findById(id);
+            if (!pOpt.isPresent()) throw new IllegalArgumentException("Pedido no encontrado");
+            return pOpt.get();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error al buscar pedido: " + e.getMessage(), e);
+        }
+    }
+
+
     @PostMapping("/crear")
     public ResponseEntity<?> crear(@RequestBody HistorialMovimiento entity) {
         try {
-            HistorialMovimiento creado = historialService.crear(entity);
-            return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+            return ResponseEntity.status(HttpStatus.CREATED).body(historialService.crear(entity));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -47,8 +68,7 @@ public class HistorialMovimientoController extends BaseController<HistorialMovim
     public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody HistorialMovimiento entity) {
         try {
             entity.setId(id);
-            HistorialMovimiento actualizado = historialService.actualizar(entity);
-            return ResponseEntity.ok(actualizado);
+            return ResponseEntity.ok(historialService.actualizar(entity));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -59,10 +79,8 @@ public class HistorialMovimientoController extends BaseController<HistorialMovim
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<?> listarPorUsuario(@PathVariable Long usuarioId) {
         try {
-            Usuario u = usuarioService.buscarPorId(usuarioId)
-                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-            List<HistorialMovimiento> lista = historialService.listarPorUsuario(u);
-            return ResponseEntity.ok(lista);
+            Usuario u = obtenerUsuario(usuarioId);
+            return ResponseEntity.ok(historialService.listarPorUsuario(u));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -73,10 +91,8 @@ public class HistorialMovimientoController extends BaseController<HistorialMovim
     @GetMapping("/pedido/{pedidoId}")
     public ResponseEntity<?> listarPorPedido(@PathVariable Long pedidoId) {
         try {
-            Pedido p = pedidoRepository.findById(pedidoId)
-                    .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado"));
-            List<HistorialMovimiento> lista = historialService.listarPorPedido(p);
-            return ResponseEntity.ok(lista);
+            Pedido p = obtenerPedido(pedidoId);
+            return ResponseEntity.ok(historialService.listarPorPedido(p));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -84,12 +100,10 @@ public class HistorialMovimientoController extends BaseController<HistorialMovim
         }
     }
 
-    // Cambio aquí: se usa Estado en lugar de TipoMovimiento
     @GetMapping("/estado/{estado}")
     public ResponseEntity<?> listarPorEstado(@PathVariable Estado estado) {
         try {
-            List<HistorialMovimiento> lista = historialService.listarPorEstado(estado);
-            return ResponseEntity.ok(lista);
+            return ResponseEntity.ok(historialService.listarPorEstado(estado));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -100,8 +114,7 @@ public class HistorialMovimientoController extends BaseController<HistorialMovim
     @GetMapping("/rango-fecha")
     public ResponseEntity<?> listarPorRangoFecha(@RequestParam Date inicio, @RequestParam Date fin) {
         try {
-            List<HistorialMovimiento> lista = historialService.listarPorRangoFecha(inicio, fin);
-            return ResponseEntity.ok(lista);
+            return ResponseEntity.ok(historialService.listarPorRangoFecha(inicio, fin));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
