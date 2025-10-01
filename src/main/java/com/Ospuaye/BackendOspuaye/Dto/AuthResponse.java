@@ -14,4 +14,7 @@ import java.util.Set;
 public class AuthResponse {
     private String token;
     private String rol;
+    private Long idBeneficiario;
+    private Long idMedico;
+    private Long idUser;
 }

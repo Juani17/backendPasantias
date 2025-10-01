@@ -1,6 +1,8 @@
 package com.Ospuaye.BackendOspuaye.Controller;
 
 import com.Ospuaye.BackendOspuaye.Entity.Documento;
+import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
+import com.Ospuaye.BackendOspuaye.Entity.PedidoOftalmologia;
 import com.Ospuaye.BackendOspuaye.Entity.PedidoOrtopedia;
 import com.Ospuaye.BackendOspuaye.Service.DocumentoService;
 import com.Ospuaye.BackendOspuaye.Service.PedidoOrtopediaService;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pedidos/ortopedia")
@@ -64,5 +67,54 @@ public class PedidoOrtopediaController {
             return ResponseEntity.badRequest().body("Error al crear el pedido: " + e.getMessage());
         }
     }
+
+    @GetMapping("/beneficiario/{id}")
+    public ResponseEntity<?> listarPorBeneficiario(@PathVariable Long id) {
+        try {
+            List<PedidoOrtopedia> pedidos = service.findByBeneficiarioId(id);
+            return ResponseEntity.ok(pedidos);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al obtener pedidos: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/medico/{id}")
+    public ResponseEntity<?> listarPorMedico(@PathVariable Long id) {
+        try {
+            List<PedidoOrtopedia> pedidos = service.findByMedicoId(id);
+            return ResponseEntity.ok(pedidos);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al obtener pedidos: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<?> actualizarEstado(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body
+    ) {
+        try {
+            String estadoStr = body.get("estado");
+            if (estadoStr == null || estadoStr.isBlank()) {
+                return ResponseEntity.badRequest().body("Debe enviar un estado válido");
+            }
+
+            // Validar que el estado exista en el enum
+            Estado nuevoEstado;
+            try {
+                nuevoEstado = Estado.valueOf(estadoStr);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body("El estado '" + estadoStr + "' no es válido. " +
+                        "Debe ser uno de: Pendiente, Aceptado, Rechazado, Leido");
+            }
+
+            PedidoOrtopedia actualizado = service.actualizarEstado(id, nuevoEstado);
+            return ResponseEntity.ok(actualizado);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al actualizar el estado: " + e.getMessage());
+        }
+    }
+
 
 }

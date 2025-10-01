@@ -49,6 +49,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/roles/**").hasRole("ADMIN")
                         .requestMatchers("/api/medicos/**").hasRole("ADMIN")
                         .requestMatchers("/api/beneficiarios/**").hasRole("ADMIN")
+                        // Users y Medicos
+                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/oftalmologia/actualizar/**").hasAnyRole("MEDICO OFTALMOLOGO", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/ortopedia/actualizar/**").hasAnyRole("MEDICO ORTOPEDIA", "ADMIN")
+                        .requestMatchers("/api/pedidos/ortopedia/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/pedidos/oftalmologia/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/usuarios/cambiarContrasena").hasAnyRole("USER", "ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO")
+
+
                         // Todo lo demás requiere autenticación
                         .anyRequest().authenticated()
                 )
@@ -81,7 +89,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://vps-5301866-x.dattaweb.com:9000")); // tu front
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://vps-5301866-x.dattaweb.com:9000")); // front
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*", "Authorization"));
         configuration.setAllowCredentials(true);

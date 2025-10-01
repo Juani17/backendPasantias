@@ -1,5 +1,6 @@
 package com.Ospuaye.BackendOspuaye.Controller;
 
+import com.Ospuaye.BackendOspuaye.Dto.CambiarContrasenaRequest;
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
 import com.Ospuaye.BackendOspuaye.Service.UsuarioService;
 import jakarta.validation.Valid;
@@ -91,6 +92,30 @@ public class UsuarioController extends BaseController<Usuario, Long> {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/cambiarContrasena/{id}")
+    public ResponseEntity<?> cambiarContrasena(
+            @PathVariable Long id,
+            @Valid @RequestBody CambiarContrasenaRequest request
+    ) {
+        try {
+            // Llamamos al service pasando el id del usuario
+            usuarioService.cambiarContrasena(
+                    id,
+                    request.getActual(),
+                    request.getNueva(),
+                    request.getNueva() // usamos la misma como confirmación
+            );
+
+            return ResponseEntity.ok("Contraseña cambiada correctamente");
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al cambiar la contraseña");
         }
     }
 }

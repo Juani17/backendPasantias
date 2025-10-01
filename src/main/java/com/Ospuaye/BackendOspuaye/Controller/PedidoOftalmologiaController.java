@@ -1,6 +1,7 @@
 package com.Ospuaye.BackendOspuaye.Controller;
 
 import com.Ospuaye.BackendOspuaye.Entity.Documento;
+import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
 import com.Ospuaye.BackendOspuaye.Entity.PedidoOftalmologia;
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
 import com.Ospuaye.BackendOspuaye.Service.DocumentoService;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pedidos/oftalmologia")
@@ -65,4 +67,54 @@ public class PedidoOftalmologiaController {
     public ResponseEntity<List<PedidoOftalmologia>> listarTodos() {
         return ResponseEntity.ok(service.findAll());
     }
+    @GetMapping("/beneficiario/{id}")
+    public ResponseEntity<?> listarPorBeneficiario(@PathVariable Long id) {
+        try {
+            List<PedidoOftalmologia> pedidos = service.findByBeneficiarioId(id);
+            return ResponseEntity.ok(pedidos);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al obtener pedidos: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/medico/{id}")
+    public ResponseEntity<?> listarPorMedico(@PathVariable Long id) {
+        try {
+            List<PedidoOftalmologia> pedidos = service.findByMedicoId(id);
+            return ResponseEntity.ok(pedidos);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al obtener pedidos: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<?> actualizarEstado(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body
+    ) {
+        try {
+            String estadoStr = body.get("estado");
+            if (estadoStr == null || estadoStr.isBlank()) {
+                return ResponseEntity.badRequest().body("Debe enviar un estado válido");
+            }
+
+            // Validar que el estado exista en el enum
+            Estado nuevoEstado;
+            try {
+                nuevoEstado = Estado.valueOf(estadoStr);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body("El estado '" + estadoStr + "' no es válido. " +
+                        "Debe ser uno de: Pendiente, Aceptado, Rechazado, Leido");
+            }
+
+            PedidoOftalmologia actualizado = service.actualizarEstado(id, nuevoEstado);
+            return ResponseEntity.ok(actualizado);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al actualizar el estado: " + e.getMessage());
+        }
+    }
+
+
+
 }

@@ -9,8 +9,6 @@ import lombok.*;
 @Setter
 @Getter
 public class CambiarContrasenaRequest {
-    // Getters y setters
-    private String email;
     private String actual;
     private String nueva;
 

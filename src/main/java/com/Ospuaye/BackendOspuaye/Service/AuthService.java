@@ -80,10 +80,22 @@ public class AuthService {
                         .authorities("ROLE_" + usuario.getRol().getNombre().toUpperCase())
                         .build()
         );
+        // 🔍 buscar si este usuario es un beneficiario
+        Long idBeneficiario = beneficiarioRepository.findByUsuario_Id(usuario.getId())
+                .map(Beneficiario::getId)
+                .orElse(null);
+
+        // 🔍 buscar si este usuario es un medico
+        Long idMedico = medicoRepository.findByUsuario_Id(usuario.getId())
+                .map(Medico::getId)
+                .orElse(null);
 
         return AuthResponse.builder()
                 .token(jwtToken)
                 .rol(usuario.getRol().getNombre())
+                .idBeneficiario(idBeneficiario)
+                .idMedico(idMedico)
+                .idUser(usuario.getId())
                 .build();
     }
 
@@ -139,6 +151,7 @@ public class AuthService {
         return AuthResponse.builder()
                 .token(token)
                 .rol(rolUser.getNombre())
+                .idBeneficiario(beneficiario.getId())
                 .build();
     }
 
@@ -193,6 +206,7 @@ public class AuthService {
         return AuthResponse.builder()
                 .token(token)
                 .rol(rolMedico.getNombre())
+                .idMedico(medico.getId())
                 .build();
     }
 
