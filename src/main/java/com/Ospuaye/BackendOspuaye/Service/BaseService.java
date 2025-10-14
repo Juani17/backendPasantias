@@ -34,6 +34,10 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
         if (entity == null) {
             throw new IllegalArgumentException("La entidad no puede ser nula");
         }
+        // aseguramos que activo nunca sea null al crear
+        if (entity.getActivo() == null) {
+            entity.setActivo(true);
+        }
         return baseRepository.save(entity);
     }
 
@@ -67,7 +71,9 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
         E entity = baseRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No se encontró la entidad con el ID proporcionado"));
 
-        entity.setActivo(!entity.isActivo()); // invierte el estado actual
+        // invertimos el estado, si es null lo ponemos en true
+        Boolean activoActual = entity.getActivo();
+        entity.setActivo(activoActual == null ? true : !activoActual);
 
         return baseRepository.save(entity);
     }
