@@ -6,28 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9e82dc1f-9b89-4eec-a91e-a75d0b85ffc0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/01-BKpBwobe.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/FondoAdmin-odahXUZi.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/LineIcons--A_6HXRF.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/LineIcons-BJUrqD8W.eot" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/LineIcons-BZgAh_1U.woff2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/LineIcons-Cqb3QtOe.ttf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/LineIcons-DrihXZZM.woff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/about-B1cDR52S.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/atencion_03-w6KLGUbj.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/bg1-q6HdIkBT.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/bread-bg-Cib1qcxc.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/canales-CTlIbFWS.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/index-hZt721kG.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/index-lLGLyCuB.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/logo1-DGtyJESI.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/medico_13-D7i7qBrO.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/pattern-BMHaxBKe.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/receta_electronica-CChM403q.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/sss-DHN63mVc.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/assets/white-logo1-CbbNuAnC.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/vite.svg" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,16 +15,40 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Fbarraco1"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Juani17/backendPasantias.git",
+    "accountId": "f281ad16-f1e4-48c8-9eda-e5fa7a3080e3"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="3442KfTc6xf42KbOv7uGobPqMPW" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.BackendOspuaye [:com.Ospuaye.BackendOspuaye.BackendOspuayeApplication.main()].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;developer&quot;
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.BackendOspuaye [:com.Ospuaye.BackendOspuaye.BackendOspuayeApplication.main()].executor": "Run",
+    "Gradle.Download Sources.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "developer",
+    "kotlin-language-version-configured": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
       <envs>
@@ -63,6 +65,13 @@
     </configuration>
   </component>
   <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9e82dc1f-9b89-4eec-a91e-a75d0b85ffc0" name="Changes" comment="" />
+      <created>1760458468244</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1760458468244</updated>
+    </task>
     <servers />
   </component>
 </project>
