@@ -29,8 +29,6 @@ public abstract class Persona extends Base {
     @Column(name = "correo_electronico")
     private String correoElectronico;
 
-    private Boolean activo;
-
     @Enumerated(EnumType.STRING)
     private Sexo sexo;
 
