@@ -78,4 +78,9 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
         return baseRepository.save(entity);
     }
 
+    @Transactional(readOnly = true)
+    public List<E> listarActivos() throws Exception {
+        return baseRepository.findByActivoTrue();
+    }
+
 }

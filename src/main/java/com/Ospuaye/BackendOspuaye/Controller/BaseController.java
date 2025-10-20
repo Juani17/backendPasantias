@@ -85,5 +85,13 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
         }
     }
 
-
+    @GetMapping("/activos")
+    public ResponseEntity<?> listarActivos() {
+        try {
+            List<E> lista = baseService.listarActivos();
+            return ResponseEntity.ok(lista);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());}
+    }
 }
+
