@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "personas")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -33,6 +35,9 @@ public abstract class Persona extends Base {
 
     @Column(name = "correo_electronico")
     private String correoElectronico;
+
+    @Column(name = "fecha_nacimiento")
+    private Date fechaNacimiento;
 
     @Enumerated(EnumType.STRING)
     private Sexo sexo;

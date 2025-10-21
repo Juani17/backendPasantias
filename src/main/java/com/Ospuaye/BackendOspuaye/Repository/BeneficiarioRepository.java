@@ -20,4 +20,5 @@ public interface BeneficiarioRepository extends BaseRepository<Beneficiario, Lon
 
     Optional<Beneficiario> findByUsuario_Id(Long usuarioId);
 
+    Optional<Beneficiario> findByCuil(Long cuil);
 }

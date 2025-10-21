@@ -7,5 +7,6 @@ public enum TipoDeBeneficiarioTitular {
     Adherente,                    // 3
     Monotributista_Autonomo,      // 4
     Servicio_Domestico,           // 5
-    Desempleado                   // 8
+    Desempleado,                   // 8
+    SIN_INFORMACION
 }

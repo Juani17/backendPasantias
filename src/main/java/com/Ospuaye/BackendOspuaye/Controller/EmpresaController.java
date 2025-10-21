@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/empresas")
@@ -64,7 +65,7 @@ public class EmpresaController extends BaseController<Empresa, Long> {
     @GetMapping("/cuit/{cuit}")
     public ResponseEntity<?> buscarPorCuit(@PathVariable String cuit) {
         try {
-            Empresa e = empresaService.buscarPorCuit(cuit);
+            Optional<Empresa> e = empresaService.buscarPorCuit(cuit);
             if (e == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empresa no encontrada");
             return ResponseEntity.ok(e);
         } catch (Exception ex) {

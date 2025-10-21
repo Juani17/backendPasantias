@@ -17,7 +17,6 @@ public class Localidad extends Base {
     @Column(name = "codigo_postal")
     private String codigoPostal;
 
-    private Boolean activo;
 
     @ManyToOne
     @JoinColumn(name = "departamento_id")

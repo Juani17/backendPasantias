@@ -30,7 +30,6 @@ public class GrupoFamiliar extends Base {
     private TipoDeBeneficiarioTitular tipoBeneficiarioTitular;
 
     private Date fechaAlta;
-    private Boolean activo;
 
     @OneToMany(mappedBy = "grupoFamiliar", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference

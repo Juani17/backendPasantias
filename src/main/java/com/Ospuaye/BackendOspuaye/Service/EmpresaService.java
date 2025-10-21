@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmpresaService extends BaseService<Empresa, Long> {
@@ -91,12 +92,6 @@ public class EmpresaService extends BaseService<Empresa, Long> {
     }
 
     @Transactional(readOnly = true)
-    public Empresa buscarPorCuit(String cuit) {
-        if (cuit == null || cuit.isBlank()) return null;
-        return empresaRepository.findByCuit(cuit.trim()).orElse(null);
-    }
-
-    @Transactional(readOnly = true)
     public List<Empresa> listarPorActivo(Boolean activo) {
         return empresaRepository.findByActivo(activo);
     }
@@ -114,4 +109,35 @@ public class EmpresaService extends BaseService<Empresa, Long> {
         }
         super.eliminar(id);
     }
+    @Transactional(readOnly = true)
+    public Optional<Empresa> buscarPorCuit(String cuit) throws Exception {
+        if (cuit == null || cuit.trim().isEmpty()) {
+            throw new IllegalArgumentException("El CUIT no puede ser nulo ni vacío");
+        }
+
+        Optional<Empresa> empresa = empresaRepository.findByCuit(cuit);
+
+        if (empresa.isEmpty()) {
+            throw new IllegalArgumentException("No se encontró una empresa con el CUIT especificado");
+        }
+
+        return empresa;
+    }
+
+    @Transactional(readOnly = true)
+    public Empresa buscarPorCuit2(String cuit) throws Exception {
+        if (cuit == null || cuit.trim().isEmpty()) {
+            throw new IllegalArgumentException("El CUIT no puede ser nulo ni vacío");
+        }
+
+        Optional<Empresa> empresa = empresaRepository.findByCuit(cuit);
+
+        if (empresa.isEmpty() || empresa.get()==null) {
+            throw new IllegalArgumentException("No se encontró una empresa con el CUIT especificado");
+        }
+
+        return empresa.get();
+    }
+
+
 }

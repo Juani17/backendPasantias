@@ -1,8 +1,9 @@
-package com.Ospuaye.BackendOspuaye.Util;
+package com.Ospuaye.BackendOspuaye.Service;
 
 import com.Ospuaye.BackendOspuaye.Entity.*;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.*;
 import com.Ospuaye.BackendOspuaye.Repository.*;
+import com.Ospuaye.BackendOspuaye.Service.*;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,13 @@ public class ExcelBeneficiarioImporter {
     private final NacionalidadRepository nacionalidadRepository;
     private final LocalidadRepository localidadRepository;
 
+    private final LocalidadService localidadService;
+    private final EmpresaService empresaService;
+    private final BeneficiarioService beneficiarioService;
+    private final GrupoFamiliarService grupoFamiliarService;
+    private final DepartamentoService departamentoService;
+    private final NacionalidadService nacionalidadService;
+
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
     public ExcelBeneficiarioImporter(BeneficiarioRepository beneficiarioRepository,
@@ -28,13 +36,19 @@ public class ExcelBeneficiarioImporter {
                                      EmpresaRepository empresaRepository,
                                      DomicilioRepository domicilioRepository,
                                      NacionalidadRepository nacionalidadRepository,
-                                     LocalidadRepository localidadRepository) {
+                                     LocalidadRepository localidadRepository, LocalidadService localidadService, EmpresaService empresaService, BeneficiarioService beneficiarioService, GrupoFamiliarService grupoFamiliarService, DepartamentoService departamentoService, NacionalidadService nacionalidadService) {
         this.beneficiarioRepository = beneficiarioRepository;
         this.grupoFamiliarRepository = grupoFamiliarRepository;
         this.empresaRepository = empresaRepository;
         this.domicilioRepository = domicilioRepository;
         this.nacionalidadRepository = nacionalidadRepository;
         this.localidadRepository = localidadRepository;
+        this.localidadService = localidadService;
+        this.empresaService = empresaService;
+        this.beneficiarioService = beneficiarioService;
+        this.grupoFamiliarService = grupoFamiliarService;
+        this.departamentoService = departamentoService;
+        this.nacionalidadService = nacionalidadService;
     }
 
     @Transactional
@@ -49,9 +63,10 @@ public class ExcelBeneficiarioImporter {
 
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            StringTokenizer st = new StringTokenizer(line, "\t");
+            StringTokenizer st = new StringTokenizer(line, "|");
 
             // --- Leer campos del Excel ---
+            String rnos = st.nextToken();
             String cuitEmpresa = st.nextToken();
             String cuilTitular = st.nextToken();
             st.nextToken(); // Tipo Parentesco, ignorado
@@ -60,8 +75,8 @@ public class ExcelBeneficiarioImporter {
             st.nextToken(); // Documento, ignorado
             String nombreCompleto = st.nextToken();
             String sexoStr = st.nextToken();
+            String estadoCivil = st.nextToken();
             String fechaNacimientoStr = st.nextToken();
-            String edadStr = st.nextToken();
             String nacionalidadNombre = st.nextToken();
             String calle = st.nextToken();
             String puerta = st.nextToken();
@@ -83,18 +98,21 @@ public class ExcelBeneficiarioImporter {
 
             // --- Empresa ---
             Empresa empresa = null;
-            if (cuitEmpleadorOS != null && !cuitEmpleadorOS.isBlank()) {
-                empresa = empresaRepository.findByCuit(cuitEmpleadorOS)
-                        .orElse(Empresa.builder()
-                                .cuit(cuitEmpleadorOS)
-                                .activo(true)
-                                .beneficiarios(new HashSet<>())
-                                .build());
-                empresaRepository.save(empresa);
+            if (cuitEmpresa != null && !cuitEmpresa.isBlank()) {
+               try{
+                   empresa = empresaService.buscarPorCuit2(cuitEmpresa) ;
+               }catch (Exception e){
+                   empresa = Empresa.builder()
+                           .cuit(cuitEmpresa)
+                           .activo(true)
+                           .beneficiarios(new HashSet<>())
+                           .build();
+                   empresaRepository.save(empresa);
+               }
             }
 
             // --- Beneficiario ---
-            Beneficiario titular = beneficiarioRepository.findByCuil(Long.parseLong(cuilTitular))
+            Beneficiario titular = beneficiarioService.ListarPorCuil(Long.parseLong(cuilTitular))
                     .orElse(Beneficiario.builder()
                             .cuil(Long.parseLong(cuilTitular))
                             .nombre(nombreCompleto.split(" ")[0])
@@ -109,11 +127,6 @@ public class ExcelBeneficiarioImporter {
 
             if (fechaNacimientoStr != null && !fechaNacimientoStr.isBlank()) {
                 titular.setFechaNacimiento(dateFormat.parse(fechaNacimientoStr));
-            }
-            if (edadStr != null && !edadStr.isBlank()) {
-                try {
-                    titular.setEdad(Integer.parseInt(edadStr));
-                } catch (NumberFormatException ignored) {}
             }
 
             // --- Incapacidad ---
@@ -133,7 +146,7 @@ public class ExcelBeneficiarioImporter {
                 fechaAltaOS = dateFormat.parse(fechaAltaOSStr);
             }
 
-            GrupoFamiliar grupo = grupoFamiliarRepository.findByTitularId(titular.getId())
+            GrupoFamiliar grupo = grupoFamiliarService.buscarPorTitularActivo(titular.getId())
                     .orElse(GrupoFamiliar.builder()
                             .titular(titular)
                             .tipoBeneficiarioTitular(tipoBeneficiarioTitular)
@@ -147,7 +160,7 @@ public class ExcelBeneficiarioImporter {
             // --- Nacionalidad ---
             Nacionalidad nacionalidad = null;
             if (nacionalidadNombre != null && !nacionalidadNombre.isBlank()) {
-                nacionalidad = nacionalidadRepository.findByNombre(nacionalidadNombre)
+                nacionalidad = nacionalidadService.ListarPorNombre(nacionalidadNombre)
                         .orElse(Nacionalidad.builder()
                                 .nombre(nacionalidadNombre)
                                 .activo(true)
@@ -160,15 +173,16 @@ public class ExcelBeneficiarioImporter {
             // --- Localidad ---
             Localidad localidad = null;
             if (localidadNombre != null && !localidadNombre.isBlank()) {
-                localidad = localidadRepository.findByNombre(localidadNombre)
+                localidad = localidadService.listarPorDepartamentoYNombre(localidadNombre, (departamentoService.ListarPorNombre(departamento).getId()))
                         .orElse(Localidad.builder()
                                 .nombre(localidadNombre)
                                 .codigoPostal(codigoPostal)
-                                .departamento(departamento)
+                                .departamento((departamentoService.ListarPorNombre(departamento)))
                                 .activo(true)
                                 .build());
                 localidadRepository.save(localidad);
             }
+
 
             // --- Domicilio ---
             Domicilio domicilio = Domicilio.builder()
@@ -176,7 +190,7 @@ public class ExcelBeneficiarioImporter {
                     .numeracion(puerta)
                     .casaDepartamento(departamento)
                     .localidad(localidad)
-                    .tipoDomicilio(tipoDomicilioStr != null && tipoDomicilioStr.equalsIgnoreCase("RURAL") ? TipoDeDomicilio.DOMICILIO_RURAL : TipoDeDomicilio.DOMICILIO_COMPLETO)
+                    .tipoDomicilio(tipoDomicilioStr != null && tipoDomicilioStr.equalsIgnoreCase("DOMICILIO_RURAL") ? TipoDeDomicilio.DOMICILIO_RURAL : TipoDeDomicilio.DOMICILIO_COMPLETO)
                     .activo(true)
                     .build();
 

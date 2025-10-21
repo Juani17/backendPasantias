@@ -31,7 +31,7 @@ public abstract class Pedido extends Base {
     @JoinColumn(name = "grupo_familiar_id")
     private GrupoFamiliar grupoFamiliar;
 
-    private Long dni;          // si querés, podés tomarlo de persona/paciente
+    private Long dni;
     private Long telefono;
     private String empresa;
     private String delegacion;

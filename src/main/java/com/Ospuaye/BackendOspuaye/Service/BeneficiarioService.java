@@ -134,6 +134,21 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
     }
 
     @Transactional(readOnly = true)
+    public Optional<Beneficiario> ListarPorCuil(Long cuil) throws Exception {
+        if (cuil == null) {
+            throw new IllegalArgumentException("El CUIL no puede ser nulo ni vacío");
+        }
+
+        Optional<Beneficiario> beneficiario = beneficiarioRepository.findByCuil(cuil);
+
+        if (beneficiario.isEmpty()) {
+            throw new IllegalArgumentException("No se encontró un Beneficiario con el CUIL especificado");
+        }
+
+        return beneficiario;
+    }
+
+    @Transactional(readOnly = true)
     public List<Beneficiario> listarAfiliadosSindicato() {
         return beneficiarioRepository.findByAfiliadoSindicalTrue();
     }

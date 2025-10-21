@@ -7,6 +7,7 @@ import java.util.Optional;
 
 @Repository
 public interface GrupoFamiliarRepository extends BaseRepository<GrupoFamiliar, Long> {
+    Optional<GrupoFamiliar> findByTitularId(Long titularId);
     Optional<GrupoFamiliar> findByTitularIdAndActivoTrue(Long titularId);
     boolean existsByNombreGrupoAndTitularId(String nombreGrupo, Long titularId);
 }

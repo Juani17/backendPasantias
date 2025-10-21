@@ -5,10 +5,12 @@ import com.Ospuaye.BackendOspuaye.Entity.Departamento;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LocalidadRepository extends BaseRepository<Localidad, Long> {
     List<Localidad> findByDepartamento(Departamento departamento);
     List<Localidad> findByActivoTrue();
+    Optional<Localidad> findByDepartamento_IdAndNombre(Long departamentoId, String nombre);
     boolean existsByNombreAndDepartamento_Id(String nombre, Long departamentoId);
 }

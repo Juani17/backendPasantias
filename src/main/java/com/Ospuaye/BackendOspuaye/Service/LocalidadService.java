@@ -56,4 +56,23 @@ public class LocalidadService extends BaseService<Localidad, Long> {
                 .orElseThrow(() -> new IllegalArgumentException("Departamento no encontrado"));
         return localidadRepository.findByDepartamento(dep);
     }
+
+    @Transactional(readOnly = true)
+    public Optional<Localidad> listarPorDepartamentoYNombre(String nombre, Long departamentoId) throws Exception {
+        if (nombre == null || nombre.trim().isEmpty())
+            throw new IllegalArgumentException("El nombre no puede ser nulo o vacío");
+        if (departamentoId == null)
+            throw new IllegalArgumentException("El ID del departamento no puede ser nulo");
+
+        Departamento dep = departamentoRepository.findById(departamentoId)
+                .orElseThrow(() -> new IllegalArgumentException("Departamento no encontrado"));
+
+        Optional<Localidad> localidades = localidadRepository.findByDepartamento_IdAndNombre(departamentoId, nombre);
+
+        if (localidades.isEmpty())
+            throw new IllegalArgumentException("No se encontraron localidades con ese nombre en el departamento");
+
+        return localidades;
+    }
+
 }

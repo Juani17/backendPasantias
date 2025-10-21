@@ -7,6 +7,7 @@ import com.Ospuaye.BackendOspuaye.Repository.GrupoFamiliarRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class GrupoFamiliarService extends BaseService<GrupoFamiliar, Long> {
@@ -51,7 +52,7 @@ public class GrupoFamiliarService extends BaseService<GrupoFamiliar, Long> {
         }
 
         // Un titular no debería tener dos grupos activos
-        var existente = grupoFamiliarRepository.findByTitularIdAndActivoTrue(titular.getId());
+        var existente = grupoFamiliarRepository.findByTitularId(titular.getId());
         if (existente.isPresent() && (idActual == null || !existente.get().getId().equals(idActual))) {
             throw new Exception("El titular ya posee un grupo familiar activo");
         }
@@ -60,5 +61,19 @@ public class GrupoFamiliarService extends BaseService<GrupoFamiliar, Long> {
         if (grupoFamiliarRepository.existsByNombreGrupoAndTitularId(gf.getNombreGrupo(), titular.getId())) {
             throw new Exception("El titular ya tiene un grupo con ese nombre");
         }
+    }
+
+    public Optional<GrupoFamiliar> buscarPorTitularActivo(Long titularId) throws Exception {
+        if (titularId == null) {
+            throw new IllegalArgumentException("El Id no puede ser nulo");
+        }
+
+        Optional<GrupoFamiliar> grupoFamiliar = grupoFamiliarRepository.findByTitularIdAndActivoTrue(titularId);
+
+        if (grupoFamiliar.isEmpty()) {
+            throw new IllegalArgumentException("No se encontró un Titular con el id especificado");
+        }
+
+        return grupoFamiliar;
     }
 }
