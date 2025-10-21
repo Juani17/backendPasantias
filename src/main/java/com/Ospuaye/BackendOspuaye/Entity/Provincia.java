@@ -13,7 +13,6 @@ import lombok.experimental.SuperBuilder;
 public class Provincia extends Base {
 
     private String nombre;
-    private Boolean activo;
 
     @ManyToOne
     @JoinColumn(name = "pais_id")

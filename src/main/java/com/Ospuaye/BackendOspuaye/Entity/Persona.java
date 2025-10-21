@@ -2,6 +2,7 @@ package com.Ospuaye.BackendOspuaye.Entity;
 
 import com.Ospuaye.BackendOspuaye.Entity.Enum.EstadoPersona;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Sexo;
+import com.Ospuaye.BackendOspuaye.Entity.Enum.TipoDocumento;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -17,6 +18,10 @@ public abstract class Persona extends Base {
 
     private String nombre;
     private String apellido;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_documento")
+    private TipoDocumento tipoDocumento;
 
     @Column(unique = true)
     private Long dni;

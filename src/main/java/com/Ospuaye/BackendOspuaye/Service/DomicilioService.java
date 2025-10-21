@@ -27,6 +27,9 @@ public class DomicilioService extends BaseService<Domicilio, Long> {
     public Domicilio crear(Domicilio entity) throws Exception {
         if (entity == null) throw new IllegalArgumentException("El domicilio no puede ser nulo");
 
+        if (entity.getCalle() == null || entity.getCalle().isBlank())
+            throw new IllegalArgumentException("La calle es obligatoria");
+
         if (entity.getLocalidad() != null) {
             Long locId = entity.getLocalidad().getId();
             if (locId == null) throw new IllegalArgumentException("La localidad debe tener ID");
@@ -47,7 +50,8 @@ public class DomicilioService extends BaseService<Domicilio, Long> {
         Domicilio existente = domicilioRepository.findById(entity.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Domicilio no encontrado"));
 
-        existente.setCalle(entity.getCalle());
+        if (entity.getCalle() != null && !entity.getCalle().isBlank())
+            existente.setCalle(entity.getCalle());
         existente.setNumeracion(entity.getNumeracion());
         existente.setBarrio(entity.getBarrio());
         existente.setManzanaPiso(entity.getManzanaPiso());
@@ -77,5 +81,13 @@ public class DomicilioService extends BaseService<Domicilio, Long> {
     @Transactional(readOnly = true)
     public List<Domicilio> listarActivos() {
         return domicilioRepository.findByActivoTrue();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Domicilio> listarActivosPorLocalidad(Long localidadId) throws Exception {
+        if (localidadId == null) throw new IllegalArgumentException("El ID de localidad es obligatorio");
+        if (!localidadRepository.existsById(localidadId))
+            throw new IllegalArgumentException("Localidad no encontrada");
+        return domicilioRepository.findByLocalidadIdAndActivoTrue(localidadId);
     }
 }

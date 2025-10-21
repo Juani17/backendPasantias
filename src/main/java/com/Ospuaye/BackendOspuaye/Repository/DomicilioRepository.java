@@ -10,4 +10,5 @@ import java.util.List;
 public interface DomicilioRepository extends BaseRepository<Domicilio, Long> {
     List<Domicilio> findByLocalidad(Localidad localidad);
     List<Domicilio> findByActivoTrue();
+    List<Domicilio> findByLocalidadIdAndActivoTrue(Long localidadId);
 }

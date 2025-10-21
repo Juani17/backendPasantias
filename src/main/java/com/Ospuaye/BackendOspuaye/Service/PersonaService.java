@@ -2,6 +2,7 @@ package com.Ospuaye.BackendOspuaye.Service;
 
 import com.Ospuaye.BackendOspuaye.Entity.*;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.EstadoPersona;
+import com.Ospuaye.BackendOspuaye.Entity.Enum.TipoDocumento;
 import com.Ospuaye.BackendOspuaye.Repository.PersonaRepository;
 import com.Ospuaye.BackendOspuaye.Repository.NacionalidadRepository;
 import com.Ospuaye.BackendOspuaye.Repository.DomicilioRepository;
@@ -35,12 +36,19 @@ public abstract class PersonaService extends BaseService<Persona, Long> {
         if (persona.getApellido() == null || persona.getApellido().isBlank())
             throw new Exception("El apellido es obligatorio");
 
-        if (persona.getDni() == null) throw new Exception("El DNI es obligatorio");
-        if (personaRepository.findByDni(persona.getDni()).isPresent())
-            throw new Exception("Ya existe una persona con ese DNI");
+        if (persona.getTipoDocumento() == null)
+            throw new Exception("El tipo de documento es obligatorio");
+
+        if (persona.getDni() == null)
+            throw new Exception("El número de documento es obligatorio");
+
+        // Validar combinación tipoDocumento + dni
+        if (personaRepository.findByTipoDocumentoAndDni(persona.getTipoDocumento(), persona.getDni()).isPresent())
+            throw new Exception("Ya existe una persona con ese tipo y número de documento");
 
         if (persona.getCuil() == null || persona.getCuil().describeConstable().isEmpty())
             throw new Exception("El CUIL es obligatorio");
+
         if (personaRepository.findByCuil(persona.getCuil()).isPresent())
             throw new Exception("Ya existe una persona con ese CUIL");
 
@@ -64,9 +72,13 @@ public abstract class PersonaService extends BaseService<Persona, Long> {
         if (persona.getNombre() != null) existente.setNombre(persona.getNombre());
         if (persona.getApellido() != null) existente.setApellido(persona.getApellido());
 
+        if (persona.getTipoDocumento() != null) existente.setTipoDocumento(persona.getTipoDocumento());
+
         if (persona.getDni() != null && !persona.getDni().equals(existente.getDni())) {
-            if (personaRepository.findByDni(persona.getDni()).isPresent())
-                throw new Exception("DNI ya en uso");
+            // Verifica si ya existe la combinación tipoDocumento + dni
+            TipoDocumento tipo = persona.getTipoDocumento() != null ? persona.getTipoDocumento() : existente.getTipoDocumento();
+            if (personaRepository.findByTipoDocumentoAndDni(tipo, persona.getDni()).isPresent())
+                throw new Exception("Ya existe una persona con ese tipo y número de documento");
             existente.setDni(persona.getDni());
         }
 
@@ -104,6 +116,8 @@ public abstract class PersonaService extends BaseService<Persona, Long> {
 
     @Transactional(readOnly = true)
     public List<Persona> listarActivos() {
-        return personaRepository.findAll().stream().filter(p -> Boolean.TRUE.equals(p.getActivo())).toList();
+        return personaRepository.findAll().stream()
+                .filter(p -> Boolean.TRUE.equals(p.getActivo()))
+                .toList();
     }
 }

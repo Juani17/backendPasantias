@@ -1,10 +1,9 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
+import com.Ospuaye.BackendOspuaye.Entity.Enum.TipoDeBeneficiarioTitular;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -26,11 +25,14 @@ public class GrupoFamiliar extends Base {
     @JoinColumn(name = "titular_id")
     private Beneficiario titular;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_beneficiario_titular")
+    private TipoDeBeneficiarioTitular tipoBeneficiarioTitular;
+
     private Date fechaAlta;
     private Boolean activo;
 
     @OneToMany(mappedBy = "grupoFamiliar", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Familiar> familiares = new ArrayList<>();
-
 }

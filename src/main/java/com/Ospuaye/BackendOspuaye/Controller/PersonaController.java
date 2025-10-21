@@ -24,10 +24,8 @@ public abstract class PersonaController extends BaseController<Persona, Long> {
         try {
             Persona creado = personaService.crear(entity);
             return ResponseEntity.status(HttpStatus.CREATED).body(creado);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al crear persona: " + e.getMessage());
         }
     }
 
@@ -37,10 +35,8 @@ public abstract class PersonaController extends BaseController<Persona, Long> {
             entity.setId(id);
             Persona actualizado = personaService.actualizar(entity);
             return ResponseEntity.ok(actualizado);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al actualizar persona: " + e.getMessage());
         }
     }
 
