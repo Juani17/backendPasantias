@@ -1,10 +1,9 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
-import com.Ospuaye.BackendOspuaye.Entity.Enum.EstadoPersona;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Sexo;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.TipoParentesco;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

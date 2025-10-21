@@ -1,8 +1,10 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
 import com.Ospuaye.BackendOspuaye.Entity.Enum.EstadoCivil;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import com.Ospuaye.BackendOspuaye.Entity.Enum.Incapacidad;
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -33,4 +35,9 @@ public class Beneficiario extends Persona {
     @JoinColumn(name = "empresa_id")
     @JsonBackReference(value = "empresa-beneficiarios")
     private Empresa empresa;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "incapacidad")
+    private Incapacidad incapacidad;
+
 }
