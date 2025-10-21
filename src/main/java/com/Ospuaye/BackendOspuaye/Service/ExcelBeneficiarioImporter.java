@@ -1,9 +1,9 @@
-package com.Ospuaye.BackendOspuaye.Service;
+package com.Ospuaye.BackendOspuaye.Util;
 
 import com.Ospuaye.BackendOspuaye.Entity.*;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.*;
 import com.Ospuaye.BackendOspuaye.Repository.*;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -11,148 +11,181 @@ import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@Service
-public class ImportacionService {
+@Component
+public class ExcelBeneficiarioImporter {
 
     private final BeneficiarioRepository beneficiarioRepository;
     private final GrupoFamiliarRepository grupoFamiliarRepository;
-    private final FamiliarRepository familiarRepository;
     private final EmpresaRepository empresaRepository;
     private final DomicilioRepository domicilioRepository;
     private final NacionalidadRepository nacionalidadRepository;
+    private final LocalidadRepository localidadRepository;
 
-    public ImportacionService(BeneficiarioRepository beneficiarioRepository,
-                              GrupoFamiliarRepository grupoFamiliarRepository,
-                              FamiliarRepository familiarRepository,
-                              EmpresaRepository empresaRepository,
-                              DomicilioRepository domicilioRepository,
-                              NacionalidadRepository nacionalidadRepository) {
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+    public ExcelBeneficiarioImporter(BeneficiarioRepository beneficiarioRepository,
+                                     GrupoFamiliarRepository grupoFamiliarRepository,
+                                     EmpresaRepository empresaRepository,
+                                     DomicilioRepository domicilioRepository,
+                                     NacionalidadRepository nacionalidadRepository,
+                                     LocalidadRepository localidadRepository) {
         this.beneficiarioRepository = beneficiarioRepository;
         this.grupoFamiliarRepository = grupoFamiliarRepository;
-        this.familiarRepository = familiarRepository;
         this.empresaRepository = empresaRepository;
         this.domicilioRepository = domicilioRepository;
         this.nacionalidadRepository = nacionalidadRepository;
+        this.localidadRepository = localidadRepository;
     }
 
     @Transactional
-    public void importarDesdeArchivo(String pathArchivo) throws Exception {
-        Scanner sc;
+    public void importar(String path) throws Exception {
+        File file = new File(path);
+        Scanner scanner;
         try {
-            sc = new Scanner(new File(pathArchivo));
+            scanner = new Scanner(file);
         } catch (FileNotFoundException e) {
-            throw new Exception("Archivo no encontrado: " + pathArchivo);
+            throw new Exception("Archivo no encontrado: " + path);
         }
 
-        // Omitimos encabezado
-        if (sc.hasNextLine()) sc.nextLine();
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            StringTokenizer st = new StringTokenizer(line, "\t");
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-        while (sc.hasNextLine()) {
-            String linea = sc.nextLine();
-            StringTokenizer st = new StringTokenizer(linea, "\t");
-
+            // --- Leer campos del Excel ---
             String cuitEmpresa = st.nextToken();
             String cuilTitular = st.nextToken();
-            String tipoParentescoStr = st.nextToken(); // solo para familiares
-            String cuilFamiliar = st.nextToken();
+            st.nextToken(); // Tipo Parentesco, ignorado
+            st.nextToken(); // Cuil Familiar, ignorado
             String tipoDocumentoStr = st.nextToken();
-            String documento = st.nextToken();
-            String nombreApellido = st.nextToken();
+            st.nextToken(); // Documento, ignorado
+            String nombreCompleto = st.nextToken();
             String sexoStr = st.nextToken();
             String fechaNacimientoStr = st.nextToken();
-            String edad = st.nextToken(); // podemos ignorar
-            String nacionalidadStr = st.nextToken();
+            String edadStr = st.nextToken();
+            String nacionalidadNombre = st.nextToken();
             String calle = st.nextToken();
             String puerta = st.nextToken();
             String piso = st.nextToken();
             String departamento = st.nextToken();
             String localidadNombre = st.nextToken();
-            String codigoPostal = st.nextToken(); // podemos ignorar
-            String provincia = st.nextToken(); // podemos ignorar
+            String codigoPostal = st.nextToken();
+            String provincia = st.nextToken();
             String tipoDomicilioStr = st.nextToken();
             String telefonoStr = st.nextToken();
             String situacionRevista = st.nextToken(); // opcional
-            String incapacidad = st.nextToken(); // opcional
+            String incapacidadStr = st.nextToken();   // opcional
             String tipoBeneficiarioStr = st.nextToken();
-            String fechaAltaOS = st.nextToken(); // opcional
-            String validaCuil = st.hasMoreTokens() ? st.nextToken() : null;
-            String cuilObraSocial = st.hasMoreTokens() ? st.nextToken() : null;
-            String tipoBeneficiarioInfOS = st.hasMoreTokens() ? st.nextToken() : null;
+            String fechaAltaOSStr = st.nextToken();   // opcional
+            st.hasMoreTokens(); st.nextToken(); // validaCuil, ignorado
+            st.hasMoreTokens(); st.nextToken(); // cuilObraSocial, ignorado
+            st.hasMoreTokens(); st.nextToken(); // tipoBeneficiarioInfOS, ignorado
             String cuitEmpleadorOS = st.hasMoreTokens() ? st.nextToken() : null;
 
-            // Empresa
-            Empresa empresa = empresaRepository.findByCuit(cuitEmpresa)
-                    .orElseGet(() -> {
-                        Empresa e = new Empresa();
-                        e.setCuit(cuitEmpresa);
-                        e.setRazonSocial("Empresa " + cuitEmpresa);
-                        e.setActivo(true);
-                        return empresaRepository.save(e);
-                    });
+            // --- Empresa ---
+            Empresa empresa = null;
+            if (cuitEmpleadorOS != null && !cuitEmpleadorOS.isBlank()) {
+                empresa = empresaRepository.findByCuit(cuitEmpleadorOS)
+                        .orElse(Empresa.builder()
+                                .cuit(cuitEmpleadorOS)
+                                .activo(true)
+                                .beneficiarios(new HashSet<>())
+                                .build());
+                empresaRepository.save(empresa);
+            }
 
-            // Nacionalidad
-            Nacionalidad nacionalidad = nacionalidadRepository.findByNombre(nacionalidadStr)
-                    .orElseGet(() -> {
-                        Nacionalidad n = new Nacionalidad();
-                        n.setNombre(nacionalidadStr);
-                        n.setActivo(true);
-                        return nacionalidadRepository.save(n);
-                    });
+            // --- Beneficiario ---
+            Beneficiario titular = beneficiarioRepository.findByCuil(Long.parseLong(cuilTitular))
+                    .orElse(Beneficiario.builder()
+                            .cuil(Long.parseLong(cuilTitular))
+                            .nombre(nombreCompleto.split(" ")[0])
+                            .apellido(nombreCompleto.contains(" ") ? nombreCompleto.substring(nombreCompleto.indexOf(" ") + 1) : "")
+                            .sexo(sexoStr.equalsIgnoreCase("MASCULINO") ? Sexo.MASCULINO :
+                                    sexoStr.equalsIgnoreCase("FEMENINO") ? Sexo.FEMENINO : Sexo.SIN_INFORMACION)
+                            .telefono(telefonoStr != null && !telefonoStr.isBlank() ? Long.parseLong(telefonoStr) : null)
+                            .empresa(empresa)
+                            .afiliadoSindical(false)
+                            .esJubilado(false)
+                            .build());
 
-            // Domicilio
-            Domicilio domicilio = new Domicilio();
-            domicilio.setCalle(calle);
-            domicilio.setNumeracion(puerta);
-            domicilio.setManzanaPiso(piso);
-            domicilio.setCasaDepartamento(departamento);
-            domicilio.setActivo(true);
-            domicilio.setTipoDomicilio(TipoDeDomicilio.valueOf(tipoDomicilioStr.toUpperCase()));
+            if (fechaNacimientoStr != null && !fechaNacimientoStr.isBlank()) {
+                titular.setFechaNacimiento(dateFormat.parse(fechaNacimientoStr));
+            }
+            if (edadStr != null && !edadStr.isBlank()) {
+                try {
+                    titular.setEdad(Integer.parseInt(edadStr));
+                } catch (NumberFormatException ignored) {}
+            }
+
+            // --- Incapacidad ---
+            if (incapacidadStr != null && !incapacidadStr.isBlank()) {
+                titular.setIncapacidad(incapacidadStr.equalsIgnoreCase("INCAPACITADO") ? Incapacidad.INCAPACITADO : Incapacidad.NO_INCAPACITADO);
+            }
+
+            beneficiarioRepository.save(titular);
+
+            // --- Grupo Familiar ---
+            TipoDeBeneficiarioTitular tipoBeneficiarioTitular = tipoBeneficiarioStr != null ?
+                    TipoDeBeneficiarioTitular.valueOf(tipoBeneficiarioStr) :
+                    TipoDeBeneficiarioTitular.SIN_INFORMACION;
+
+            Date fechaAltaOS = null;
+            if (fechaAltaOSStr != null && !fechaAltaOSStr.isBlank()) {
+                fechaAltaOS = dateFormat.parse(fechaAltaOSStr);
+            }
+
+            GrupoFamiliar grupo = grupoFamiliarRepository.findByTitularId(titular.getId())
+                    .orElse(GrupoFamiliar.builder()
+                            .titular(titular)
+                            .tipoBeneficiarioTitular(tipoBeneficiarioTitular)
+                            .nombreGrupo(titular.getNombre() + " " + titular.getApellido())
+                            .activo(true)
+                            .fechaAlta(fechaAltaOS != null ? fechaAltaOS : new Date())
+                            .familiares(new ArrayList<>())
+                            .build());
+            grupoFamiliarRepository.save(grupo);
+
+            // --- Nacionalidad ---
+            Nacionalidad nacionalidad = null;
+            if (nacionalidadNombre != null && !nacionalidadNombre.isBlank()) {
+                nacionalidad = nacionalidadRepository.findByNombre(nacionalidadNombre)
+                        .orElse(Nacionalidad.builder()
+                                .nombre(nacionalidadNombre)
+                                .activo(true)
+                                .build());
+                nacionalidadRepository.save(nacionalidad);
+            }
+
+            titular.setNacionalidad(nacionalidad);
+
+            // --- Localidad ---
+            Localidad localidad = null;
+            if (localidadNombre != null && !localidadNombre.isBlank()) {
+                localidad = localidadRepository.findByNombre(localidadNombre)
+                        .orElse(Localidad.builder()
+                                .nombre(localidadNombre)
+                                .codigoPostal(codigoPostal)
+                                .departamento(departamento)
+                                .activo(true)
+                                .build());
+                localidadRepository.save(localidad);
+            }
+
+            // --- Domicilio ---
+            Domicilio domicilio = Domicilio.builder()
+                    .calle(calle)
+                    .numeracion(puerta)
+                    .casaDepartamento(departamento)
+                    .localidad(localidad)
+                    .tipoDomicilio(tipoDomicilioStr != null && tipoDomicilioStr.equalsIgnoreCase("RURAL") ? TipoDeDomicilio.DOMICILIO_RURAL : TipoDeDomicilio.DOMICILIO_COMPLETO)
+                    .activo(true)
+                    .build();
+
             domicilioRepository.save(domicilio);
 
-            // Beneficiario titular
-            Beneficiario titular = beneficiarioRepository.findByCuil(Long.parseLong(cuilTitular))
-                    .orElseGet(() -> {
-                        Beneficiario b = new Beneficiario();
-                        String[] partes = nombreApellido.split(" ", 2);
-                        b.setNombre(partes[0]);
-                        b.setApellido(partes.length > 1 ? partes[1] : "");
-                        b.setCuil(Long.parseLong(cuilTitular));
-                        b.setDni(Long.parseLong(documento));
-                        b.setSexo(sexoStr.equalsIgnoreCase("M") ? Sexo.M : Sexo.F);
-                        b.setTipoDocumento(TipoDocumento.valueOf(tipoDocumentoStr.toUpperCase()));
-                        b.setNacionalidad(nacionalidad);
-                        b.setDomicilio(domicilio);
-                        b.setEmpresa(empresa);
-                        return beneficiarioRepository.save(b);
-                    });
-
-            // Grupo familiar
-            GrupoFamiliar grupo = grupoFamiliarRepository.findByTitularId(titular.getId())
-                    .orElseGet(() -> {
-                        GrupoFamiliar g = new GrupoFamiliar();
-                        g.setTitular(titular);
-                        g.setTipoBeneficiarioTitular(TipoDeBeneficiarioTitular.valueOf(tipoBeneficiarioStr.replaceAll("\\s+", "_").toUpperCase()));
-                        g.setActivo(true);
-                        g.setNombreGrupo("Grupo de " + titular.getNombre());
-                        return grupoFamiliarRepository.save(g);
-                    });
-
-            // Familiar
-            if (cuilFamiliar != null && !cuilFamiliar.isEmpty()) {
-                Familiar familiar = new Familiar();
-                String[] partesFam = nombreApellido.split(" ", 2);
-                familiar.setNombre(partesFam[0]);
-                familiar.setApellido(partesFam.length > 1 ? partesFam[1] : "");
-                familiar.setCuil(Long.parseLong(cuilFamiliar));
-                familiar.setTipoParentesco(TipoParentesco.valueOf(tipoParentescoStr.replaceAll("\\s+", "_").toUpperCase()));
-                familiar.setGrupoFamiliar(grupo);
-                familiar.setBeneficiario(titular);
-                familiarRepository.save(familiar);
-            }
+            titular.setDomicilio(domicilio);
+            beneficiarioRepository.save(titular);
         }
 
-        sc.close();
+        scanner.close();
     }
 }
