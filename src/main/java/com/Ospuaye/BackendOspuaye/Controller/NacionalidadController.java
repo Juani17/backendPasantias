@@ -53,4 +53,16 @@ public class NacionalidadController extends BaseController<Nacionalidad, Long> {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @GetMapping("/nombre/{nombre}")
+    public ResponseEntity<?> listarPorNombre(@PathVariable String nombre) {
+        try {
+            var nacionalidad = nacionalidadService.ListarPorNombre(nombre);
+            return ResponseEntity.ok(nacionalidad);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al buscar la nacionalidad: " + e.getMessage());
+        }
+    }
+
 }
