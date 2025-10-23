@@ -1,11 +1,14 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
+import com.Ospuaye.BackendOspuaye.Entity.Nacionalidad;
 import com.Ospuaye.BackendOspuaye.Entity.Pais;
 import com.Ospuaye.BackendOspuaye.Entity.Provincia;
 import com.Ospuaye.BackendOspuaye.Repository.ProvinciaRepository;
 import com.Ospuaye.BackendOspuaye.Repository.PaisRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class ProvinciaService extends BaseService<Provincia, Long> {
@@ -68,6 +71,19 @@ public class ProvinciaService extends BaseService<Provincia, Long> {
         if (entity.getActivo() != null) existente.setActivo(entity.getActivo());
 
         return provinciaRepository.save(existente);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Provincia> ListarPorId(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("El id de la provincia no puede ser nulo o vacio");
+        }
+        Optional<Provincia> provincia = provinciaRepository.findById(id);
+
+        if (provincia.isEmpty()) {
+            throw new IllegalArgumentException("No se encontro una provincia con ese id");
+        }
+        return provincia;
     }
 }
 

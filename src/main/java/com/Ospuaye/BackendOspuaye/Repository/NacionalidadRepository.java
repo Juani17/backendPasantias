@@ -6,5 +6,6 @@ import java.util.Optional;
 
 @Repository
 public interface NacionalidadRepository extends BaseRepository<Nacionalidad, Long> {
+    Optional<Nacionalidad> findById(Long id);
     Optional<Nacionalidad> findByNombre(String nombre);
 }

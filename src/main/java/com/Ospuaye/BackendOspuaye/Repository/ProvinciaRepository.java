@@ -8,5 +8,6 @@ import java.util.Optional;
 public interface ProvinciaRepository extends BaseRepository<Provincia, Long> {
 
     Optional<Provincia> findByNombre(String nombre);
+    Optional<Provincia> findById(Long id);
 
 }

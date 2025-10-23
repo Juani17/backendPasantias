@@ -25,15 +25,10 @@ public class Domicilio extends Base {
     private String casaDepartamento;
 
     private String referencia;
-    private Boolean activo;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_domicilio")
     private TipoDeDomicilio tipoDomicilio;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo")
-    private TipoDeDomicilio tipo;
 
 
     @ManyToOne

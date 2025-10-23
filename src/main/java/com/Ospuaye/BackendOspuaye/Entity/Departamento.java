@@ -13,7 +13,6 @@ import lombok.experimental.SuperBuilder;
 public class Departamento extends Base {
 
     private String nombre;
-    private Boolean activo;
 
     @ManyToOne
     @JoinColumn(name = "provincia_id")

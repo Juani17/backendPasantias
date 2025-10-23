@@ -12,5 +12,4 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Nacionalidad extends Base {
     private String nombre;
-    private Boolean activo;
 }

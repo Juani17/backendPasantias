@@ -76,4 +76,17 @@ public class NacionalidadService extends BaseService<Nacionalidad, Long> {
         }
         return nacionalidad;
     }
+
+    @Transactional(readOnly = true)
+    public Optional<Nacionalidad> ListarPorId(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("El id de la Nacionalidad no puede ser nulo o vacio");
+        }
+        Optional<Nacionalidad> nacionalidad = nacionalidadRepository.findById(id);
+
+        if (nacionalidad.isEmpty()) {
+            throw new IllegalArgumentException("No se encontro una nacionalidad con ese id");
+        }
+        return nacionalidad;
+    }
 }
