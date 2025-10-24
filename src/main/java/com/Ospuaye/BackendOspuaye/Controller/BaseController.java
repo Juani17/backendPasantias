@@ -38,6 +38,18 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
         }
     }
 
+    @PostMapping("/{id}")
+    public ResponseEntity<?> buscarPorIdPost(@PathVariable ID id) {
+        try {
+            if (id == null) {
+                return ResponseEntity.badRequest().body("El ID no puede ser nulo");
+            }
+            return ResponseEntity.ok(baseService.buscarPorId(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody E entity) {
         try {

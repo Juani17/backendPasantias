@@ -31,11 +31,6 @@ public class Domicilio extends Base {
     @Column(name = "tipo_domicilio")
     private TipoDeDomicilio tipoDomicilio;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo")
-    private TipoDeDomicilio tipo;
-
-
     @ManyToOne
     @JoinColumn(name = "localidad_id")
     private Localidad localidad;

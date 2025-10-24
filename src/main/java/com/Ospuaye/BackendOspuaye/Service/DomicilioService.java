@@ -57,7 +57,7 @@ public class DomicilioService extends BaseService<Domicilio, Long> {
         existente.setManzanaPiso(entity.getManzanaPiso());
         existente.setCasaDepartamento(entity.getCasaDepartamento());
         existente.setReferencia(entity.getReferencia());
-        existente.setTipo(entity.getTipo());
+        existente.setTipoDomicilio(entity.getTipoDomicilio());
         if (entity.getActivo() != null) existente.setActivo(entity.getActivo());
 
         if (entity.getLocalidad() != null) {
