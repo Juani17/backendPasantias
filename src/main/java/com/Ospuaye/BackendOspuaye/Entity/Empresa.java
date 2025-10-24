@@ -22,8 +22,6 @@ public class Empresa extends Base {
     @Column(name = "razon_social", nullable = false)
     private String razonSocial;
 
-    private Boolean activo;
-
     @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = false)
     @JsonManagedReference(value = "empresa-beneficiarios")
     private Set<Beneficiario> beneficiarios = new HashSet<>();

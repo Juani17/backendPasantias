@@ -81,6 +81,7 @@ public class ProvinciaService extends BaseService<Provincia, Long> {
         Optional<Provincia> provincia = provinciaRepository.findById(id);
 
         if (provincia.isEmpty()) {
+            System.out.println("s" + id);
             throw new IllegalArgumentException("No se encontro una provincia con ese id");
         }
         return provincia;

@@ -13,7 +13,7 @@ import java.io.Serializable;
 public abstract class Base implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     protected Long id;
 
     @Column(nullable = false)
