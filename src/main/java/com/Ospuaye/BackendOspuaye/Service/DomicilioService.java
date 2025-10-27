@@ -36,8 +36,16 @@ public class DomicilioService extends BaseService<Domicilio, Long> {
             if (!localidadRepository.existsById(locId))
                 throw new IllegalArgumentException("La localidad indicada no existe");
         }
+        // 🔹 Si piso o departamento vienen vacíos o nulos → poner "Indefinido"
+        if (entity.getManzanaPiso() == null || entity.getManzanaPiso().isBlank()) {
+            entity.setManzanaPiso("Indefinido");
+        }
+        if (entity.getCasaDepartamento() == null || entity.getCasaDepartamento().isBlank()) {
+            entity.setCasaDepartamento("Indefinido");
+        }
 
         if (entity.getActivo() == null) entity.setActivo(true);
+
         return domicilioRepository.save(entity);
     }
 

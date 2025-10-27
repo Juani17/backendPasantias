@@ -31,6 +31,7 @@ public class ExcelBeneficiarioImporter {
     private final DepartamentoRepository departamentoRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
+    private final PaisRepository paisRepository;
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -48,7 +49,7 @@ public class ExcelBeneficiarioImporter {
                                      NacionalidadService nacionalidadService,
                                      ProvinciaService provinciaService,
                                      ProvinciaRepository provinciaRepository,
-                                     DepartamentoRepository departamentoRepository, RolRepository rolRepository, UsuarioRepository usuarioRepository) {
+                                     DepartamentoRepository departamentoRepository, RolRepository rolRepository, UsuarioRepository usuarioRepository, PaisRepository paisRepository) {
         this.beneficiarioRepository = beneficiarioRepository;
         this.grupoFamiliarRepository = grupoFamiliarRepository;
         this.empresaRepository = empresaRepository;
@@ -66,49 +67,74 @@ public class ExcelBeneficiarioImporter {
         this.departamentoRepository = departamentoRepository;
         this.rolRepository = rolRepository;
         this.usuarioRepository = usuarioRepository;
+        this.paisRepository = paisRepository;
     }
 
     @Transactional
     public void importar(String path) throws Exception {
-        File file = new File(path);
-        Scanner scanner;
         try {
-            scanner = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            throw new Exception("Archivo no encontrado: " + path);
-        }
-
-        List<String> lineasTitulares = new ArrayList<>();
-        List<String> lineasFamiliares = new ArrayList<>();
-
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine().trim();
-            if (line.isEmpty()) continue;
-
-            StringTokenizer stTemp = new StringTokenizer(line, "|");
-            if (stTemp.countTokens() < 4) continue;
-
-            stTemp.nextToken(); // rnos
-            stTemp.nextToken(); // cuit empresa
-            stTemp.nextToken(); // cuil titular
-            String tipoParentescoStr = stTemp.nextToken().trim();
-
-            int codigoParentesco = -1;
+            File file = new File(path);
+            Scanner scanner;
             try {
-                codigoParentesco = Integer.parseInt(tipoParentescoStr);
-            } catch (NumberFormatException ignored) {}
+                scanner = new Scanner(file);
+            } catch (FileNotFoundException e) {
+                throw new Exception("Archivo no encontrado: " + path, e);
+            }
 
-            if (codigoParentesco == 0) lineasTitulares.add(line);
-            else lineasFamiliares.add(line);
+            List<String> lineasTitulares = new ArrayList<>();
+            List<String> lineasFamiliares = new ArrayList<>();
+
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.isEmpty()) continue;
+
+                StringTokenizer stTemp = new StringTokenizer(line, "|");
+                if (stTemp.countTokens() < 4) continue;
+
+                stTemp.nextToken(); // rnos
+                stTemp.nextToken(); // cuit empresa
+                stTemp.nextToken(); // cuil titular
+                String tipoParentescoStr = stTemp.nextToken().trim();
+
+                int codigoParentesco = -1;
+                try {
+                    codigoParentesco = Integer.parseInt(tipoParentescoStr);
+                } catch (NumberFormatException ignored) {}
+
+                if (codigoParentesco == 0) lineasTitulares.add(line);
+                else lineasFamiliares.add(line);
+            }
+
+            scanner.close();
+
+            Map<Long, GrupoFamiliar> grupoPorTitular = new HashMap<>();
+
+            for (String line : lineasTitulares) {
+                try {
+                    procesarLinea(line, grupoPorTitular, true);
+                } catch (Exception e) {
+                    System.err.println("Error procesando titular: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+
+            for (String line : lineasFamiliares) {
+                try {
+                    procesarLinea(line, grupoPorTitular, false);
+                } catch (Exception e) {
+                    System.err.println("Error procesando familiar: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+
+        } catch (Exception e) {
+            // Manejo global de errores
+            System.err.println("Error global al importar Excel: " + e.getMessage());
+            e.printStackTrace();
+            throw new Exception("Falló la importación de beneficiarios", e);
         }
-
-        scanner.close();
-
-        Map<Long, GrupoFamiliar> grupoPorTitular = new HashMap<>();
-
-        for (String line : lineasTitulares) procesarLinea(line, grupoPorTitular, true);
-        for (String line : lineasFamiliares) procesarLinea(line, grupoPorTitular, false);
     }
+
 
     private void procesarLinea(String line, Map<Long, GrupoFamiliar> grupoPorTitular, boolean esTitular) throws Exception {
         StringTokenizer st = new StringTokenizer(line, "|");
@@ -117,7 +143,7 @@ public class ExcelBeneficiarioImporter {
         String cuitEmpresa = st.nextToken();
         String cuilTitular = st.nextToken();
         String tipoParentescoStr = st.nextToken();
-        st.nextToken(); // cuil familiar
+        String cuilFamiliarStr = st.nextToken(); // Cuil Familiar
         st.nextToken();
         String dni = st.nextToken(); // documento
         String nombreCompleto = st.nextToken();
@@ -154,75 +180,12 @@ public class ExcelBeneficiarioImporter {
             case "09" -> tipoParentesco = TipoParentesco.Mayor_de_25_Discapacitado;
         }
 
-        // --- Empresa ---
-        Empresa empresa = null;
-        if (cuitEmpresa != null && !cuitEmpresa.isBlank()) {
-            try {
-                empresa = empresaService.buscarPorCuit2(cuitEmpresa);
-            } catch (Exception e) {
-                empresa = Empresa.builder()
-                        .cuit(cuitEmpresa)
-                        .activo(true)
-                        .beneficiarios(new HashSet<>())
-                        .razonSocial("Indefinida")
-                        .build();
-                empresaRepository.save(empresa);
-            }
-        }
 
-        // --- Nombre y Apellido ---
-        String apellido = nombreCompleto.split(" ")[0];
-        String nombre = nombreCompleto.contains(" ") ? nombreCompleto.substring(nombreCompleto.indexOf(" ") + 1) : "";
-
-        // --- Telefono ---
-        Long telefono = null;
-        if (telefonoStr != null && !telefonoStr.isBlank()) {
-            telefonoStr = telefonoStr.replaceAll("\\s+", "");
-            try {
-                telefono = Long.parseLong(telefonoStr);
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        // --- Fecha de Nacimiento ---
-        Date fechaNacimiento = null;
-        if (fechaNacimientoStr != null && !fechaNacimientoStr.isBlank()) {
-            try {
-                fechaNacimientoStr = fechaNacimientoStr.trim().replaceAll("[^0-9]", "");
-                if (fechaNacimientoStr.matches("\\d{8}")) {
-                    fechaNacimientoStr = fechaNacimientoStr.substring(0, 2) + "/" +
-                            fechaNacimientoStr.substring(2, 4) + "/" +
-                            fechaNacimientoStr.substring(4);
-                }
-                fechaNacimiento = dateFormat.parse(fechaNacimientoStr);
-            } catch (Exception ignored) {
-            }
-        }
-
-        // --- Sexo ---
-        Sexo sexo = Sexo.SIN_INFORMACION;
-        if (sexoStr != null && !sexoStr.isBlank()) {
-            sexoStr = sexoStr.trim().toUpperCase();
-            if (sexoStr.equals("M")) sexo = Sexo.MASCULINO;
-            else if (sexoStr.equals("F")) sexo = Sexo.FEMENINO;
-            else if (sexoStr.equalsIgnoreCase("MASCULINO")) sexo = Sexo.MASCULINO;
-            else if (sexoStr.equalsIgnoreCase("FEMENINO")) sexo = Sexo.FEMENINO;
-        }
-
-        // --- Nacionalidad ---
-        Nacionalidad nacionalidad = null;
-        if (nacionalidadNombre != null && !nacionalidadNombre.isBlank()) {
-            nacionalidad = nacionalidadService.ListarPorId(Long.parseLong(nacionalidadNombre.trim()))
-                    .orElse(Nacionalidad.builder()
-                            .nombre(nacionalidadNombre)
-                            .activo(true)
-                            .build());
-            nacionalidadRepository.save(nacionalidad);
-        }
 
         // --- Provincia ---
         Provincia provincia = null;
         System.out.println(nombreCompleto);
+
         if (provincia1 != null && !provincia1.isBlank()) {
             try {
                 Long provinciaId = Long.parseLong(provincia1.trim());
@@ -232,22 +195,46 @@ public class ExcelBeneficiarioImporter {
                     provinciaId += 1;
                 }
 
+                // Buscamos o creamos el país Argentina
+                Pais paisArgentina = paisRepository.findByNombre("ARGENTINA")
+                        .orElseGet(() -> paisRepository.save(
+                                Pais.builder()
+                                        .nombre("ARGENTINA")
+                                        .activo(true)
+                                        .build()
+                        ));
+
                 provincia = provinciaService.ListarPorId(provinciaId)
                         .orElse(Provincia.builder()
                                 .nombre("Provincia Desconocida") // nombre por defecto si no existe
-                                .pais()
+                                .pais(paisArgentina)
+                                .activo(true)
                                 .build());
 
                 provinciaRepository.save(provincia);
+
             } catch (NumberFormatException e) {
                 // Manejo de error si provincia1 no es un número válido
+                Pais paisArgentina = paisRepository.findByNombre("Argentina")
+                        .orElseGet(() -> paisRepository.save(
+                                Pais.builder()
+                                        .nombre("Argentina")
+                                        .activo(true)
+                                        .build()
+                        ));
+
                 provincia = Provincia.builder()
                         .nombre("Provincia Desconocida")
+                        .pais(paisArgentina)
+                        .activo(true)
                         .build();
+
                 provinciaRepository.save(provincia);
             }
-
         }
+
+
+
 
         // --- Departamento ---
         Departamento departamento = null;
@@ -299,6 +286,8 @@ public class ExcelBeneficiarioImporter {
                         .manzanaPiso(piso)
                         .casaDepartamento(departamento1)
                         .localidad(localidad)
+                        .barrio("Indefinido")
+                        .referencia("Indefinido")
                         .tipoDomicilio(tipoDomicilioStr != null && tipoDomicilioStr.equalsIgnoreCase("DOMICILIO_RURAL")
                                 ? TipoDeDomicilio.DOMICILIO_RURAL
                                 : TipoDeDomicilio.DOMICILIO_COMPLETO)
@@ -307,6 +296,87 @@ public class ExcelBeneficiarioImporter {
                 domicilioRepository.save(domicilio);
             }
         }
+
+
+        // --- Empresa ---
+        Empresa empresa = null;
+        if (cuitEmpresa != null && !cuitEmpresa.isBlank()) {
+            try {
+                empresa = empresaService.buscarPorCuit2(cuitEmpresa);
+            } catch (Exception e) {
+                // Si no existe, crearla y setearle domicilio
+                empresa = Empresa.builder()
+                        .cuit(cuitEmpresa.trim())
+                        .razonSocial("Indefinida")
+                        .activo(true)
+                        .beneficiarios(new HashSet<>())
+                        .domicilio(domicilio) // se asegura que tenga uno siempre
+                        .build();
+                empresaRepository.save(empresa);
+            }
+        } else {
+            // Si no viene cuit, igualmente crear empresa genérica
+            empresa = Empresa.builder()
+                    .cuit("00000000000")
+                    .razonSocial("Indefinida")
+                    .activo(true)
+                    .beneficiarios(new HashSet<>())
+                    .domicilio(domicilio)
+                    .build();
+            empresaRepository.save(empresa);
+        }
+
+
+        // --- Nombre y Apellido ---
+        String apellido = nombreCompleto.split(" ")[0];
+        String nombre = nombreCompleto.contains(" ") ? nombreCompleto.substring(nombreCompleto.indexOf(" ") + 1) : "";
+
+        // --- Telefono ---
+        Long telefono = null;
+        if (telefonoStr != null && !telefonoStr.isBlank()) {
+            telefonoStr = telefonoStr.replaceAll("\\s+", "");
+            try {
+                telefono = Long.parseLong(telefonoStr);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        // --- Fecha de Nacimiento ---
+        Date fechaNacimiento = null;
+        if (fechaNacimientoStr != null && !fechaNacimientoStr.isBlank()) {
+            try {
+                fechaNacimientoStr = fechaNacimientoStr.trim().replaceAll("[^0-9]", "");
+                if (fechaNacimientoStr.matches("\\d{8}")) {
+                    fechaNacimientoStr = fechaNacimientoStr.substring(0, 2) + "/" +
+                            fechaNacimientoStr.substring(2, 4) + "/" +
+                            fechaNacimientoStr.substring(4);
+                }
+                fechaNacimiento = dateFormat.parse(fechaNacimientoStr);
+            } catch (Exception ignored) {
+            }
+        }
+
+        // --- Sexo ---
+        Sexo sexo = Sexo.SIN_INFORMACION;
+        if (sexoStr != null && !sexoStr.isBlank()) {
+            sexoStr = sexoStr.trim().toUpperCase();
+            if (sexoStr.equals("M")) sexo = Sexo.MASCULINO;
+            else if (sexoStr.equals("F")) sexo = Sexo.FEMENINO;
+            else if (sexoStr.equalsIgnoreCase("MASCULINO")) sexo = Sexo.MASCULINO;
+            else if (sexoStr.equalsIgnoreCase("FEMENINO")) sexo = Sexo.FEMENINO;
+        }
+
+        // --- Nacionalidad ---
+        Nacionalidad nacionalidad = null;
+        if (nacionalidadNombre != null && !nacionalidadNombre.isBlank()) {
+            nacionalidad = nacionalidadService.ListarPorId(Long.parseLong(nacionalidadNombre.trim()))
+                    .orElse(Nacionalidad.builder()
+                            .nombre(nacionalidadNombre)
+                            .activo(true)
+                            .build());
+            nacionalidadRepository.save(nacionalidad);
+        }
+
 
 
         if (tipoParentesco == TipoParentesco.Titular) {
@@ -332,7 +402,7 @@ public class ExcelBeneficiarioImporter {
 
             // --- Crear usuario asociado ---
             Usuario user = Usuario.builder()
-                    .email(dni) // el email será el cuil del titular
+                    .email(dni+ "@mail.com") // el email será el cuil del titular
                     .contrasena(cuilTitular)    // contraseña temporal = dni
                     .rol(rolUser)
                     .activo(true)
@@ -387,7 +457,7 @@ public class ExcelBeneficiarioImporter {
             Familiar familiar = Familiar.builder()
                     .nombre(nombre)
                     .apellido(apellido)
-                    .cuil(Long.parseLong(cuilTitular))
+                    .cuil(Long.parseLong(cuilFamiliarStr))
                     .telefono(telefono)
                     .sexo(sexo)
                     .nacionalidad(nacionalidad)

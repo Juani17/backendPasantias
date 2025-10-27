@@ -38,8 +38,11 @@ public class ExcelBeneficiarioImporterController {
             return ResponseEntity.ok("Importación completada correctamente ✅");
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Error durante la importación: " + e.getMessage());
+            e.printStackTrace(); // sigue mostrando en consola
+
+            // Devuelve información más útil al frontend
+            String errorMsg = "Error durante la importación: " + e.getClass().getSimpleName() + " - " + e.getMessage();
+            return ResponseEntity.badRequest().body(errorMsg);
         }
     }
 
