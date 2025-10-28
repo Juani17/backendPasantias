@@ -13,28 +13,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Familiar extends Base {
-
-    private String nombre;
-    private String apellido;
-
-    @Column(unique = true)
-    private Long dni;
-
-    @Column(unique = true)
-    private Long cuil;
-
-    private Long telefono;
-
-    @Column(name = "correo_electronico")
-    private String correoElectronico;
-
-    @Enumerated(EnumType.STRING)
-    private Sexo sexo;
-
-    @ManyToOne
-    @JoinColumn(name = "nacionalidad_id")
-    private Nacionalidad nacionalidad;
+public class Familiar extends Persona {
 
     @ManyToOne
     @JsonBackReference

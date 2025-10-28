@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DomicilioService extends BaseService<Domicilio, Long> {
@@ -83,6 +84,19 @@ public class DomicilioService extends BaseService<Domicilio, Long> {
         Localidad loc = localidadRepository.findById(localidadId)
                 .orElseThrow(() -> new IllegalArgumentException("Localidad no encontrada"));
         return domicilioRepository.findByLocalidad(loc);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Domicilio> listarPorCalleYNumeracionYLocalidad(String calle, String numeracion, Long localidadId){
+        if (calle == null || calle.isBlank()) throw new IllegalArgumentException("La calle no puede ser vacía");
+        if (numeracion == null || numeracion.isBlank()) throw new IllegalArgumentException("La numeración no puede ser vacía");
+
+        // Si localidadId es null, buscar sin filtro de localidad
+        if (localidadId == null) {
+            return domicilioRepository.findByCalleAndNumeracion(calle, numeracion);
+        }
+
+        return domicilioRepository.findByCalleAndNumeracionAndLocalidad_Id(calle, numeracion, localidadId);
     }
 
     @Transactional(readOnly = true)

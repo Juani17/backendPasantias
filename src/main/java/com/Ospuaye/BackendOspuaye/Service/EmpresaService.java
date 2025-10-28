@@ -125,18 +125,11 @@ public class EmpresaService extends BaseService<Empresa, Long> {
     }
 
     @Transactional(readOnly = true)
-    public Empresa buscarPorCuit2(String cuit) throws Exception {
+    public Optional<Empresa> buscarPorCuit2(String cuit) {
         if (cuit == null || cuit.trim().isEmpty()) {
-            throw new IllegalArgumentException("El CUIT no puede ser nulo ni vacío");
+            return Optional.empty();
         }
-
-        Optional<Empresa> empresa = empresaRepository.findByCuit(cuit);
-
-        if (empresa.isEmpty() || empresa.get()==null) {
-            throw new IllegalArgumentException("No se encontró una empresa con el CUIT especificado");
-        }
-
-        return empresa.get();
+        return empresaRepository.findByCuit(cuit.trim());
     }
 
 

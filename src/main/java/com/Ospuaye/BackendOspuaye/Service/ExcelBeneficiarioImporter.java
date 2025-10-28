@@ -4,6 +4,7 @@ import com.Ospuaye.BackendOspuaye.Entity.*;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.*;
 import com.Ospuaye.BackendOspuaye.Repository.*;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -32,6 +33,8 @@ public class ExcelBeneficiarioImporter {
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
     private final PaisRepository paisRepository;
+    private final FamiliarRepository familiarRepository;
+    private final DomicilioService domicilioService;
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -49,7 +52,7 @@ public class ExcelBeneficiarioImporter {
                                      NacionalidadService nacionalidadService,
                                      ProvinciaService provinciaService,
                                      ProvinciaRepository provinciaRepository,
-                                     DepartamentoRepository departamentoRepository, RolRepository rolRepository, UsuarioRepository usuarioRepository, PaisRepository paisRepository) {
+                                     DepartamentoRepository departamentoRepository, RolRepository rolRepository, UsuarioRepository usuarioRepository, PaisRepository paisRepository, FamiliarRepository familiarRepository, DomicilioService domicilioService) {
         this.beneficiarioRepository = beneficiarioRepository;
         this.grupoFamiliarRepository = grupoFamiliarRepository;
         this.empresaRepository = empresaRepository;
@@ -68,9 +71,11 @@ public class ExcelBeneficiarioImporter {
         this.rolRepository = rolRepository;
         this.usuarioRepository = usuarioRepository;
         this.paisRepository = paisRepository;
+        this.familiarRepository = familiarRepository;
+        this.domicilioService = domicilioService;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void importar(String path) throws Exception {
         try {
             File file = new File(path);
@@ -128,11 +133,11 @@ public class ExcelBeneficiarioImporter {
             }
 
         } catch (Exception e) {
-            // Manejo global de errores
-            System.err.println("Error global al importar Excel: " + e.getMessage());
+            System.err.println("Error global al importar Excel: " + e.getClass().getName() + " - " + e.getMessage());
             e.printStackTrace();
-            throw new Exception("Falló la importación de beneficiarios", e);
+            throw e;
         }
+
     }
 
 
@@ -234,34 +239,18 @@ public class ExcelBeneficiarioImporter {
         }
 
 
-
-
-        // --- Departamento ---
-        Departamento departamento = null;
-        if (departamento1 != null && !departamento1.isBlank()) {
-            try {
-                departamento = departamentoService.ListarPorNombre(departamento1);
-            } catch (Exception e) {
-                departamento = Departamento.builder()
-                        .nombre(departamento1)
-                        .activo(true)
-                        .provincia(provincia)
-                        .build();
-                departamentoRepository.save(departamento);
-            }
-        }
-
 // --- Localidad ---
         Localidad localidad = null;
-        if (localidadNombre != null && !localidadNombre.isBlank() && departamento != null) {
+        System.out.println("Ejecuntando Localidades");
+        if (localidadNombre != null && !localidadNombre.isBlank()) {
             try {
-                localidad = localidadService.listarPorDepartamentoYNombre(localidadNombre, departamento.getId())
+                localidad = localidadService.listarPorNombre(localidadNombre)
                         .orElseThrow(() -> new Exception("No se encontró la localidad"));
             } catch (Exception e) {
                 localidad = Localidad.builder()
                         .nombre(localidadNombre)
                         .codigoPostal(codigoPostal)
-                        .departamento(departamento)
+                        .departamento(null)
                         .activo(true)
                         .build();
                 localidadRepository.save(localidad);
@@ -271,14 +260,14 @@ public class ExcelBeneficiarioImporter {
 
         // --- Domicilio ---
         Domicilio domicilio = null;
+        System.out.println("Ejecuntando Domicilios");
         if (calle != null && !calle.isBlank()) {
-            try {
-                // Intentamos buscar el domicilio por calle, numeración y departamento/localidad
-                Optional<Domicilio> optionalDomicilio = domicilioRepository
-                        .findByCalleAndNumeracionAndLocalidad_Id(calle, puerta, (localidad != null ? localidad.getId() : null));
+            // Intentamos buscar el domicilio por calle, numeración y departamento/localidad
+            Optional<Domicilio> optionalDomicilio = domicilioService.listarPorCalleYNumeracionYLocalidad(calle, puerta, localidad.getId());
 
-                domicilio = optionalDomicilio.orElseThrow(() -> new Exception("No se encontró el domicilio"));
-            } catch (Exception e) {
+            if (optionalDomicilio.isPresent()) {
+                domicilio = optionalDomicilio.get();
+            } else {
                 // Si no existe, lo creamos
                 domicilio = Domicilio.builder()
                         .calle(calle)
@@ -293,29 +282,32 @@ public class ExcelBeneficiarioImporter {
                                 : TipoDeDomicilio.DOMICILIO_COMPLETO)
                         .activo(true)
                         .build();
-                domicilioRepository.save(domicilio);
+                domicilio = domicilioRepository.save(domicilio);
             }
         }
 
 
         // --- Empresa ---
         Empresa empresa = null;
+        System.out.println("Ejecuntando Empresas");
         if (cuitEmpresa != null && !cuitEmpresa.isBlank()) {
-            try {
-                empresa = empresaService.buscarPorCuit2(cuitEmpresa);
-            } catch (Exception e) {
-                // Si no existe, crearla y setearle domicilio
+            Optional<Empresa> optionalEmpresa = empresaService.buscarPorCuit2(cuitEmpresa);
+
+            if (optionalEmpresa.isPresent()) {
+                empresa = optionalEmpresa.get();
+            } else {
+                // Si no existe, crearla
                 empresa = Empresa.builder()
                         .cuit(cuitEmpresa.trim())
                         .razonSocial("Indefinida")
                         .activo(true)
                         .beneficiarios(new HashSet<>())
-                        .domicilio(domicilio) // se asegura que tenga uno siempre
+                        .domicilio(domicilio)
                         .build();
-                empresaRepository.save(empresa);
+                empresa = empresaRepository.save(empresa);
             }
         } else {
-            // Si no viene cuit, igualmente crear empresa genérica
+            // Si no viene cuit, crear empresa genérica
             empresa = Empresa.builder()
                     .cuit("00000000000")
                     .razonSocial("Indefinida")
@@ -323,7 +315,7 @@ public class ExcelBeneficiarioImporter {
                     .beneficiarios(new HashSet<>())
                     .domicilio(domicilio)
                     .build();
-            empresaRepository.save(empresa);
+            empresa = empresaRepository.save(empresa);
         }
 
 
@@ -368,6 +360,7 @@ public class ExcelBeneficiarioImporter {
 
         // --- Nacionalidad ---
         Nacionalidad nacionalidad = null;
+        System.out.println("Ejecuntando Nacionalidad");
         if (nacionalidadNombre != null && !nacionalidadNombre.isBlank()) {
             nacionalidad = nacionalidadService.ListarPorId(Long.parseLong(nacionalidadNombre.trim()))
                     .orElse(Nacionalidad.builder()
@@ -401,6 +394,7 @@ public class ExcelBeneficiarioImporter {
                     .orElseThrow(() -> new RuntimeException("No se encontró el rol USER en la base de datos"));
 
             // --- Crear usuario asociado ---
+            System.out.println("Ejecuntando Usuario");
             Usuario user = Usuario.builder()
                     .email(dni+ "@mail.com") // el email será el cuil del titular
                     .contrasena(cuilTitular)    // contraseña temporal = dni
@@ -411,6 +405,7 @@ public class ExcelBeneficiarioImporter {
 
 
             Beneficiario titular;
+            System.out.println("Ejecuntando Beneficiario");
             titular = Beneficiario.builder()
                     .nombre(nombre)
                     .apellido(apellido)
@@ -418,7 +413,7 @@ public class ExcelBeneficiarioImporter {
                     .telefono(telefono)
                     .sexo(sexo)
                     .empresa(empresa)
-                    .afiliadoSindical(false)
+                    .afiliadoSindical(true)
                     .esJubilado(tipoBeneficiarioStr != null && tipoBeneficiarioStr.trim().equals("02"))
                     .estadoCivil(estadoCivil)
                     .fechaNacimiento(fechaNacimiento)
@@ -437,16 +432,35 @@ public class ExcelBeneficiarioImporter {
                 } catch (Exception ignored) {}
             }
 
+            System.out.println("Titular ID: " + titular.getId());
+            if (!beneficiarioRepository.existsById(titular.getId())) {
+                throw new RuntimeException("Titular no existe en DB");
+            }
+
             GrupoFamiliar grupo;
-                    grupo = GrupoFamiliar.builder()
-                            .titular(titular)
-                            .tipoBeneficiarioTitular(TipoDeBeneficiarioTitular.SIN_INFORMACION)
-                            .nombreGrupo(titular.getNombre() + " " + titular.getApellido())
-                            .activo(true)
-                            .fechaAlta(fechaAlta)
-                            .familiares(new ArrayList<>())
-                            .build();
-            grupoFamiliarRepository.save(grupo);
+
+           // Revisamos si ya existe un grupo familiar para este titular
+            Optional<GrupoFamiliar> grupoExistente = grupoFamiliarRepository.findByTitularId(titular.getId());
+
+            if (grupoExistente.isPresent()) {
+                // Si existe, usamos el grupo existente
+                grupo = grupoExistente.get();
+                System.out.println("Grupo familiar ya existente para el titular: " + titular.getNombre() + " " + titular.getApellido());
+            } else {
+                // Si no existe, lo creamos
+                grupo = GrupoFamiliar.builder()
+                        .titular(titular)
+                        .tipoBeneficiarioTitular(TipoDeBeneficiarioTitular.SIN_INFORMACION)
+                        .nombreGrupo(titular.getNombre() + " " + titular.getApellido())
+                        .activo(true)
+                        .fechaAlta(fechaAlta)
+                        .familiares(new ArrayList<>())
+                        .build();
+                grupoFamiliarRepository.save(grupo);
+                System.out.println("Creado nuevo grupo familiar para el titular: " + titular.getNombre() + " " + titular.getApellido());
+            }
+
+            // Guardamos en el mapa para asociar familiares más adelante
             grupoPorTitular.put(titular.getCuil(), grupo);
 
         } else {
@@ -454,19 +468,29 @@ public class ExcelBeneficiarioImporter {
             GrupoFamiliar grupo = grupoPorTitular.get(Long.parseLong(cuilTitular));
             if (grupo == null) throw new Exception("No se encontró grupo familiar para CUIL titular: " + cuilTitular);
 
-            Familiar familiar = Familiar.builder()
-                    .nombre(nombre)
-                    .apellido(apellido)
-                    .cuil(Long.parseLong(cuilFamiliarStr))
-                    .telefono(telefono)
-                    .sexo(sexo)
-                    .nacionalidad(nacionalidad)
-                    .grupoFamiliar(grupo)
-                    .tipoParentesco(tipoParentesco)
-                    .build();
+            try {
+                System.out.println("Ejecuntando Familiar");
+                Familiar familiar = Familiar.builder()
+                        .nombre(nombre)
+                        .apellido(apellido)
+                        .dni(Long.parseLong(dni))
+                        .correoElectronico("Sin Definir")
+                        .beneficiario(grupo.getTitular())
+                        .cuil(Long.parseLong(cuilFamiliarStr))
+                        .telefono(telefono)
+                        .sexo(sexo)
+                        .nacionalidad(nacionalidad)
+                        .grupoFamiliar(grupo)
+                        .tipoParentesco(tipoParentesco)
+                        .build();
+                familiarRepository.save(familiar);
 
-            grupo.getFamiliares().add(familiar);
-            grupoFamiliarRepository.save(grupo);
+                grupo.getFamiliares().add(familiar);
+                grupoFamiliarRepository.save(grupo);
+            } catch (Exception e) {
+                System.err.println("⚠️ Error guardando familiar (" + nombre + " " + apellido + "): " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 }

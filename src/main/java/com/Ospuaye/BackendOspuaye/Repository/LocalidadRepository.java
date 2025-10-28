@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface LocalidadRepository extends BaseRepository<Localidad, Long> {
     List<Localidad> findByDepartamento(Departamento departamento);
     List<Localidad> findByActivoTrue();
-    Optional<Localidad> findByDepartamento_IdAndNombre(Long departamentoId, String nombre);
+    Optional<Localidad> findByNombre(String nombre);
     boolean existsByNombreAndDepartamento_Id(String nombre, Long departamentoId);
 }
