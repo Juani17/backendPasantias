@@ -35,7 +35,7 @@ public class Domicilio extends Base {
     @JoinColumn(name = "localidad_id")
     private Localidad localidad;
 
-    @OneToOne(mappedBy = "domicilio")
+    @ManyToOne
     @JsonBackReference(value = "empresa-domicilio")
     private Empresa empresa;
 }

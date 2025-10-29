@@ -5,6 +5,7 @@ import com.Ospuaye.BackendOspuaye.Entity.Departamento;
 import com.Ospuaye.BackendOspuaye.Repository.LocalidadRepository;
 import com.Ospuaye.BackendOspuaye.Repository.DepartamentoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -57,7 +58,7 @@ public class LocalidadService extends BaseService<Localidad, Long> {
         return localidadRepository.findByDepartamento(dep);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
     public Optional<Localidad> listarPorNombre(String nombre) throws Exception {
         if (nombre == null || nombre.trim().isEmpty())
             throw new IllegalArgumentException("El nombre no puede ser nulo o vacío");

@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface FamiliarRepository extends BaseRepository<Familiar, Long> {
     List<Familiar> findByGrupoFamiliar(GrupoFamiliar grupoFamiliar);
     List<Familiar> findByBeneficiario(Beneficiario beneficiario);
+    Optional<Familiar> findByCuil(Long cuil);
     boolean existsByDni(Long dni);
     boolean existsByCuil(Long cuil);
 

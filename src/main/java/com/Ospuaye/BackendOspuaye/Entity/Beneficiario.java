@@ -27,10 +27,12 @@ public class Beneficiario extends Persona {
     @Column(name = "estado_civil")
     private EstadoCivil estadoCivil;
 
+    @EqualsAndHashCode.Exclude
     @OneToOne(mappedBy = "titular")
     @JsonBackReference
     private GrupoFamiliar grupoFamiliar;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "empresa_id")
     @JsonBackReference(value = "empresa-beneficiarios")

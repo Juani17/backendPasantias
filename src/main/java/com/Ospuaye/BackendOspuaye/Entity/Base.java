@@ -16,6 +16,7 @@ public abstract class Base implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     protected Long id;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean activo = true;
 

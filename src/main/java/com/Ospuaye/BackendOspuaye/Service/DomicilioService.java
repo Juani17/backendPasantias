@@ -5,6 +5,7 @@ import com.Ospuaye.BackendOspuaye.Entity.Localidad;
 import com.Ospuaye.BackendOspuaye.Repository.DomicilioRepository;
 import com.Ospuaye.BackendOspuaye.Repository.LocalidadRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -86,18 +87,27 @@ public class DomicilioService extends BaseService<Domicilio, Long> {
         return domicilioRepository.findByLocalidad(loc);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<Domicilio> listarPorCalleYNumeracionYLocalidad(String calle, String numeracion, Long localidadId){
-        if (calle == null || calle.isBlank()) throw new IllegalArgumentException("La calle no puede ser vacía");
-        if (numeracion == null || numeracion.isBlank()) throw new IllegalArgumentException("La numeración no puede ser vacía");
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+    public Optional<Domicilio> listarPorCalleYNumeracionYLocalidad(String calle, String numeracion, Long localidadId) {
+        try {
+            // Validar parámetros básicos
+            if (calle == null || calle.isBlank() || numeracion == null || numeracion.isBlank()) {
+                return Optional.empty(); // No buscamos si faltan datos esenciales
+            }
 
-        // Si localidadId es null, buscar sin filtro de localidad
-        if (localidadId == null) {
-            return domicilioRepository.findByCalleAndNumeracion(calle, numeracion);
+            // Buscar según disponibilidad de localidad
+            if (localidadId == null) {
+                return domicilioRepository.findByCalleAndNumeracion(calle, numeracion);
+            }
+
+            return domicilioRepository.findByCalleAndNumeracionAndLocalidad_Id(calle, numeracion, localidadId);
+
+        } catch (Exception e) {
+            // Cualquier error inesperado devuelve vacío, sin romper el flujo del importador
+            return Optional.empty();
         }
-
-        return domicilioRepository.findByCalleAndNumeracionAndLocalidad_Id(calle, numeracion, localidadId);
     }
+
 
     @Transactional(readOnly = true)
     public List<Domicilio> listarActivos() {

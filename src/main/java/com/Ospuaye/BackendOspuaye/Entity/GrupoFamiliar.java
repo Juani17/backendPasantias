@@ -21,6 +21,7 @@ public class GrupoFamiliar extends Base {
     @Column(nullable = false)
     private String nombreGrupo;
 
+    @EqualsAndHashCode.Exclude
     @OneToOne
     @JoinColumn(name = "titular_id")
     private Beneficiario titular;

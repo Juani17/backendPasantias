@@ -50,7 +50,7 @@ public abstract class Persona extends Base {
     @JoinColumn(name = "nacionalidad_id")
     private Nacionalidad nacionalidad;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "domicilio_id")
     private Domicilio domicilio;
 }

@@ -5,15 +5,33 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9e82dc1f-9b89-4eec-a91e-a75d0b85ffc0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Familiar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Familiar.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/DomicilioRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/DomicilioRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/LocalidadRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/LocalidadRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Base$BaseBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Base$BaseBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Base.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Base.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Enum/Incapacidad.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Enum/Incapacidad.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/DomicilioService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/DomicilioService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/ExcelBeneficiarioImporter.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/ExcelBeneficiarioImporter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/LocalidadService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/LocalidadService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/NacionalidadService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/NacionalidadService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/ExcelBeneficiarioImporter.class.uniqueId1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Base.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Base.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Domicilio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Domicilio.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Enum/Incapacidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Enum/Incapacidad.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Persona.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Persona.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/FamiliarRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/FamiliarRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/DomicilioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/DomicilioService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/EmpresaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/EmpresaService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/ExcelBeneficiarioImporter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/ExcelBeneficiarioImporter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/LocalidadService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/LocalidadService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/NacionalidadService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/NacionalidadService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,8 +137,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/ExcelBeneficiarioImporter.java</url>
-          <line>439</line>
-          <option name="timeStamp" value="52" />
+          <line>261</line>
+          <option name="timeStamp" value="46" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/ExcelBeneficiarioImporter.java</url>
+          <line>395</line>
+          <option name="timeStamp" value="49" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

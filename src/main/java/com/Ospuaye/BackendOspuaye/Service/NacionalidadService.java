@@ -3,6 +3,7 @@ package com.Ospuaye.BackendOspuaye.Service;
 import com.Ospuaye.BackendOspuaye.Entity.Nacionalidad;
 import com.Ospuaye.BackendOspuaye.Repository.NacionalidadRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -77,7 +78,7 @@ public class NacionalidadService extends BaseService<Nacionalidad, Long> {
         return nacionalidad;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
     public Optional<Nacionalidad> ListarPorId(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("El id de la Nacionalidad no puede ser nulo o vacio");
