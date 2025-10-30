@@ -25,10 +25,10 @@ public abstract class Persona extends Base {
     @Column(name = "tipo_documento")
     private TipoDocumento tipoDocumento;
 
-    @Column(unique = true)
+    @Column
     private Long dni;
 
-    @Column(unique = true)
+    @Column
     private Long cuil;
 
     private Long telefono;

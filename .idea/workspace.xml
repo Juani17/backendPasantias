@@ -13,25 +13,20 @@
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Base$BaseBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Base$BaseBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Base.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Base.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Enum/Incapacidad.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Enum/Incapacidad.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/DomicilioService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/DomicilioService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Controller/BeneficiarioController.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Controller/BeneficiarioController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Persona.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Persona.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Repository/BeneficiarioRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Repository/BeneficiarioRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/BeneficiarioService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/BeneficiarioService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/ExcelBeneficiarioImporter.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/ExcelBeneficiarioImporter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/LocalidadService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/LocalidadService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/NacionalidadService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/NacionalidadService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/ExcelBeneficiarioImporter.class.uniqueId1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/Beneficiario.class.uniqueId11" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/Beneficiario.class.uniqueId11" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BeneficiarioController.class.uniqueId61" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BeneficiarioController.class.uniqueId61" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BeneficiarioRepository.class.uniqueId24" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BeneficiarioRepository.class.uniqueId24" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BeneficiarioService.class.uniqueId40" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BeneficiarioService.class.uniqueId40" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/ExcelBeneficiarioImporter.class.uniqueId55" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/ExcelBeneficiarioImporter.class.uniqueId55" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/GrupoFamiliar.class.uniqueId14" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/GrupoFamiliar.class.uniqueId14" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Base.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Base.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Domicilio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Domicilio.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Enum/Incapacidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Enum/Incapacidad.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Persona.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Persona.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/FamiliarRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/FamiliarRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/DomicilioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/DomicilioService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/ExcelBeneficiarioImporter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/ExcelBeneficiarioImporter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/LocalidadService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/LocalidadService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/NacionalidadService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/NacionalidadService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,19 +66,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.BackendOspuaye [:com.Ospuaye.BackendOspuaye.BackendOspuayeApplication.main()].executor": "Run",
-    "Gradle.Download Sources.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "developer",
-    "kotlin-language-version-configured": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.BackendOspuaye [:com.Ospuaye.BackendOspuaye.BackendOspuayeApplication.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;developer&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
-    <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
+    <configuration name="BackendOspuayeApplication" type="Application" factoryName="Application" nameIsGenerated="true">
       <envs>
         <env name="DB_PASSWORD" value="" />
         <env name="DB_PLATFORM" value="org.hibernate.dialect.MySQLDialect" />
