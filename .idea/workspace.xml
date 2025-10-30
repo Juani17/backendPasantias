@@ -4,30 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9e82dc1f-9b89-4eec-a91e-a75d0b85ffc0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Controller/BeneficiarioController.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Controller/BeneficiarioController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Persona.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Entity/Persona.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Repository/BeneficiarioRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Repository/BeneficiarioRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/BeneficiarioService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/BeneficiarioService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/ExcelBeneficiarioImporter.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/ExcelBeneficiarioImporter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/Beneficiario.class.uniqueId11" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/Beneficiario.class.uniqueId11" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BeneficiarioController.class.uniqueId61" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BeneficiarioController.class.uniqueId61" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BeneficiarioRepository.class.uniqueId24" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BeneficiarioRepository.class.uniqueId24" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BeneficiarioService.class.uniqueId40" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/BeneficiarioService.class.uniqueId40" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/ExcelBeneficiarioImporter.class.uniqueId55" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/ExcelBeneficiarioImporter.class.uniqueId55" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/GrupoFamiliar.class.uniqueId14" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/GrupoFamiliar.class.uniqueId14" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Persona.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Persona.java" afterDir="false" />
-    </list>
+    <list default="true" id="9e82dc1f-9b89-4eec-a91e-a75d0b85ffc0" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -66,17 +43,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.BackendOspuaye [:com.Ospuaye.BackendOspuaye.BackendOspuayeApplication.main()].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;developer&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.BackendOspuaye [:com.Ospuaye.BackendOspuaye.BackendOspuayeApplication.main()].executor": "Run",
+    "Gradle.Download Sources.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "developer",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/panch/OneDrive/Escritorio/backendPasantias/BackendOspuaye/src/main/resources/static"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\panch\OneDrive\Escritorio\backendPasantias\BackendOspuaye\src\main\resources\static" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="BackendOspuayeApplication" type="Application" factoryName="Application" nameIsGenerated="true">
       <envs>
