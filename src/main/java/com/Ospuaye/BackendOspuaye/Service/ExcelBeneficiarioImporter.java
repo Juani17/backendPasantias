@@ -376,9 +376,8 @@ public class ExcelBeneficiarioImporter {
 
 
         if (tipoParentesco == TipoParentesco.Titular) {
-            // Buscar beneficiario existente por CUIL
-            //Optional<Beneficiario> optionalTitular = beneficiarioService.ListarPorCuil(Long.parseLong(cuilTitular));
 
+            // --- ESTADO CIVIL ---
             EstadoCivil estadoCivil = EstadoCivil.Sin_Informacion;
             if (estadoCivilStr != null && !estadoCivilStr.isBlank()) {
                 switch (estadoCivilStr.trim()) {
@@ -393,50 +392,50 @@ public class ExcelBeneficiarioImporter {
                 }
             }
 
+            // --- INCAPACIDAD ---
             Incapacidad incapacidad = Incapacidad.SIN_INFORMACION;
-            if (incapacidadStr != null && !incapacidadStr.isBlank()){
+            if (incapacidadStr != null && !incapacidadStr.isBlank()) {
                 switch (incapacidadStr.trim()) {
                     case "00" -> incapacidad = Incapacidad.NO_INCAPACITADO;
                     case "01" -> incapacidad = Incapacidad.INCAPACITADO;
                     default -> incapacidad = Incapacidad.SIN_INFORMACION;
                 }
             }
-            // --- Buscar el rol USER ya existente ---
-            Rol rolUser = rolRepository.findByNombre("USER")
-                    .orElseThrow(() -> new RuntimeException("No se encontró el rol USER en la base de datos"));
 
-            // --- Crear usuario asociado ---
-            // Validaciones previas
+            // --- ROL USER ---
+            Rol rolUser = rolRepository.findByNombre("USER").orElse(null);
+            if (rolUser == null) {
+                throw new RuntimeException("No se encontró el rol USER en la base de datos");
+            }
+
+            // --- VALIDACIONES PREVIAS ---
             if (dni == null || dni.isBlank()) {
                 throw new IllegalArgumentException("El DNI no puede ser nulo o vacío");
             }
             if (cuilTitular == null || cuilTitular.isBlank()) {
                 throw new IllegalArgumentException("El CUIL no puede ser nulo o vacío");
             }
-            if (rolUser == null) {
-                throw new IllegalArgumentException("El rol del usuario no puede ser nulo");
-            }
 
             String emailGenerado = dni + "@mail.com";
 
+            // --- USUARIO ---
             System.out.println("Ejecuntando Usuario");
-            Usuario user = usuarioRepository.findByEmail(emailGenerado)
-                    .orElseGet(() -> {
-                        Usuario nuevoUser = Usuario.builder()
-                                .email(emailGenerado)
-                                .contrasena(cuilTitular)
-                                .rol(rolUser)
-                                .activo(true)
-                                .build();
-                        return usuarioRepository.save(nuevoUser);
-                    });
-
-
-            System.out.println("Ejecuntando Beneficiario");
-            if (cuilTitular == null || cuilTitular.isBlank()) {
-                throw new IllegalArgumentException("El CUIL del beneficiario no puede ser nulo o vacío");
+            Usuario userExistente = usuarioRepository.findByEmail(emailGenerado).orElse(null);
+            Usuario user;
+            if (userExistente != null) {
+                user = userExistente;
+            } else {
+                user = Usuario.builder()
+                        .email(emailGenerado)
+                        .contrasena(cuilTitular)
+                        .rol(rolUser)
+                        .activo(true)
+                        .build();
+                user = usuarioRepository.save(user);
             }
 
+            // --- BENEFICIARIO ---
+            System.out.println("Ejecuntando Beneficiario");
             Long cuilLong;
             try {
                 cuilLong = Long.parseLong(cuilTitular);
@@ -444,34 +443,42 @@ public class ExcelBeneficiarioImporter {
                 throw new IllegalArgumentException("El CUIL del beneficiario debe ser numérico: " + cuilTitular);
             }
 
-            // Buscar beneficiario existente por CUIL
-            Optional<Beneficiario> optionalTitular = beneficiarioRepository.findByCuil(cuilLong);
             Beneficiario titular;
-
-            if (optionalTitular.isPresent()) {
-                titular = optionalTitular.get();
+            Beneficiario titularExistente = beneficiarioRepository.findByCuil(cuilLong).orElse(null);
+            if (titularExistente != null) {
+                titular = titularExistente;
+                System.out.println("✅ Titular ya existente con CUIL: " + cuilLong + ", no se vuelve a guardar."); // ✅ NUEVO
             } else {
-                titular = Beneficiario.builder()
-                        .nombre(nombre)
-                        .apellido(apellido)
-                        .cuil(Long.parseLong(cuilTitular))
-                        .dni(Long.parseLong(dni))
-                        .telefono(telefono)
-                        .sexo(sexo)
-                        .empresa(empresa)
-                        .afiliadoSindical(true)
-                        .esJubilado(tipoBeneficiarioStr != null && tipoBeneficiarioStr.trim().equals("02"))
-                        .estadoCivil(estadoCivil)
-                        .fechaNacimiento(fechaNacimiento)
-                        .nacionalidad(nacionalidad)
-                        .domicilio(domicilio)
-                        .activo(true)
-                        .incapacidad(incapacidad)
-                        .usuario(user)
-                        .build();
-                titular = beneficiarioRepository.save(titular);
+                // ✅ NUEVO: verifico también por DNI por si no tiene CUIL cargado pero sí DNI
+                Beneficiario titularPorDni = beneficiarioRepository.findByDni(Long.parseLong(dni)).orElse(null);
+                if (titularPorDni != null) {
+                    titular = titularPorDni;
+                    System.out.println("✅ Titular ya existente con DNI: " + dni + ", no se vuelve a guardar."); // ✅ NUEVO
+                } else {
+                    titular = Beneficiario.builder()
+                            .nombre(nombre)
+                            .apellido(apellido)
+                            .cuil(cuilLong)
+                            .dni(Long.parseLong(dni))
+                            .telefono(telefono)
+                            .sexo(sexo)
+                            .empresa(empresa)
+                            .afiliadoSindical(true)
+                            .esJubilado(tipoBeneficiarioStr != null && tipoBeneficiarioStr.trim().equals("02"))
+                            .estadoCivil(estadoCivil)
+                            .fechaNacimiento(fechaNacimiento)
+                            .nacionalidad(nacionalidad)
+                            .domicilio(domicilio)
+                            .activo(true)
+                            .incapacidad(incapacidad)
+                            .usuario(user)
+                            .build();
+                    titular = beneficiarioRepository.save(titular);
+                    System.out.println("🆕 Titular nuevo guardado con CUIL: " + cuilLong);
+                }
             }
 
+            // --- FECHA DE ALTA ---
             Date fechaAlta = new Date();
             if (fechaAltaOSStr != null && !fechaAltaOSStr.isBlank()) {
                 try {
@@ -484,17 +491,13 @@ public class ExcelBeneficiarioImporter {
                 throw new RuntimeException("Titular no existe en DB");
             }
 
-            GrupoFamiliar grupo;
-
-           // Revisamos si ya existe un grupo familiar para este titular
-            Optional<GrupoFamiliar> grupoExistente = grupoFamiliarRepository.findByTitularId(titular.getId());
-
-            if (grupoExistente.isPresent()) {
-                // Si existe, usamos el grupo existente
-                grupo = grupoExistente.get();
+            // --- GRUPO FAMILIAR ---
+            GrupoFamiliar grupo = null;
+            Optional<GrupoFamiliar> grupoExistenteOpt = grupoFamiliarRepository.findByTitularId(titular.getId());
+            if (grupoExistenteOpt.isPresent()) {
+                grupo = grupoExistenteOpt.get();
                 System.out.println("Grupo familiar ya existente para el titular: " + titular.getNombre() + " " + titular.getApellido());
             } else {
-                // Si no existe, lo creamos
                 grupo = GrupoFamiliar.builder()
                         .titular(titular)
                         .tipoBeneficiarioTitular(TipoDeBeneficiarioTitular.SIN_INFORMACION)
@@ -507,23 +510,25 @@ public class ExcelBeneficiarioImporter {
                 System.out.println("Creado nuevo grupo familiar para el titular: " + titular.getNombre() + " " + titular.getApellido());
             }
 
-            // Guardamos en el mapa para asociar familiares más adelante
             grupoPorTitular.put(titular.getCuil(), grupo);
 
         } else {
-            // --- Familiar ---
+            // --- FAMILIAR ---
             GrupoFamiliar grupo = grupoPorTitular.get(Long.parseLong(cuilTitular));
-            if (grupo == null) throw new Exception("No se encontró grupo familiar para CUIL titular: " + cuilTitular);
+            if (grupo == null) {
+                throw new Exception("No se encontró grupo familiar para CUIL titular: " + cuilTitular);
+            }
 
             try {
-                Long cuilLong;
-                cuilLong = Long.parseLong(cuilFamiliarStr);
+                Long cuilLong = Long.parseLong(cuilFamiliarStr);
                 System.out.println("Ejecuntando Familiar");
-                Optional<Familiar> Optionalfamiliar = familiarRepository.findByCuil(cuilLong);
+
+                Familiar familiarExistente = familiarRepository.findByCuil(cuilLong).orElse(null);
                 Familiar familiar;
 
-                if (Optionalfamiliar.isPresent()) {
-                    familiar = Optionalfamiliar.get();
+                if (familiarExistente != null) {
+                    familiar = familiarExistente;
+                    System.out.println("✅ Familiar ya existente con CUIL: " + cuilLong + ", no se vuelve a guardar."); // ✅ NUEVO
                 } else {
                     familiar = Familiar.builder()
                             .nombre(nombre)
@@ -541,15 +546,19 @@ public class ExcelBeneficiarioImporter {
                             .tipoParentesco(tipoParentesco)
                             .activo(true)
                             .build();
-                    familiarRepository.save(familiar);
+                    familiar = familiarRepository.save(familiar);
+                    System.out.println("🆕 Familiar nuevo guardado con CUIL: " + cuilLong);
                 }
 
                 grupo.getFamiliares().add(familiar);
                 grupoFamiliarRepository.save(grupo);
+
             } catch (Exception e) {
                 System.err.println("⚠️ Error guardando familiar (" + nombre + " " + apellido + "): " + e.getMessage());
                 e.printStackTrace();
             }
         }
+
+
     }
 }

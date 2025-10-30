@@ -12,7 +12,7 @@ public interface BeneficiarioRepository extends BaseRepository<Beneficiario, Lon
 
     List<Beneficiario> findByEmpresa(Empresa empresa);
 
-    Optional<Beneficiario> findByDni(Integer dni);
+    Optional<Beneficiario> findByDni(Long dni);
 
     List<Beneficiario> findByAfiliadoSindicalTrue();
 

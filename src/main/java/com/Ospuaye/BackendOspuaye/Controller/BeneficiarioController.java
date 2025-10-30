@@ -62,7 +62,7 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
     }
 
     @GetMapping("/dni/{dni}")
-    public ResponseEntity<?> buscarPorDni(@PathVariable Integer dni) {
+    public ResponseEntity<?> buscarPorDni(@PathVariable Long dni) {
         try {
             Optional<Beneficiario> opt = beneficiarioService.buscarPorDni(dni);
 

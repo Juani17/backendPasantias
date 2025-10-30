@@ -128,7 +128,7 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Beneficiario> buscarPorDni(Integer dni) {
+    public Optional<Beneficiario> buscarPorDni(Long dni) {
         if (dni == null) return Optional.empty();
         return beneficiarioRepository.findByDni(dni); // Ahora directo, ya que DNI está en Persona
     }
