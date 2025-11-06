@@ -4,78 +4,68 @@ import com.Ospuaye.BackendOspuaye.Entity.*;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
 import com.Ospuaye.BackendOspuaye.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-public abstract class PedidoService<E extends Pedido> extends BaseService<E, Long> {
+@Service
+public class PedidoService extends BaseService<Pedido, Long> {
+
+    @Autowired private PedidoRepository pedidoRepository;
+    @Autowired private PedidoOftalmologiaRepository pedidoOftalmologiaRepository;
+    @Autowired private PedidoOrtopediaRepository pedidoOrtopediaRepository;
 
     @Autowired protected DocumentoRepository documentoRepository;
     @Autowired protected HistorialMovimientoRepository historialRepository;
-
     @Autowired protected BeneficiarioRepository beneficiarioRepository;
     @Autowired protected GrupoFamiliarRepository grupoFamiliarRepository;
     @Autowired protected UsuarioRepository usuarioRepository;
     @Autowired protected MedicoRepository medicoRepository;
     @Autowired protected FamiliarRepository familiarRepository;
 
-    public PedidoService(BaseRepository<E, Long> baseRepository) {
-        super(baseRepository);
+    public PedidoService(PedidoRepository pedidoRepository) {
+        super(pedidoRepository);
+        this.pedidoRepository = pedidoRepository;
     }
-
+    // 🔍 VALIDACIONES COMUNES
     protected void validarPedidoComun(Pedido p) throws Exception {
         if (p == null) throw new Exception("El pedido no puede ser nulo");
-
         if (p.getNombre() == null || p.getNombre().isBlank())
             throw new Exception("El nombre del pedido es obligatorio");
 
-        // ✅ Validar beneficiario y obtener usuario desde ahí
-        if (p.getBeneficiario() != null) {
-            if (p.getBeneficiario().getId() == null)
-                throw new Exception("El beneficiario tiene ID inválido");
-
-            Beneficiario b = beneficiarioRepository.findById(p.getBeneficiario().getId())
-                    .orElseThrow(() -> new Exception("El beneficiario no existe"));
-            p.setBeneficiario(b);
-
-            if (b.getUsuario() != null) {
-                p.setUsuario(b.getUsuario()); // usuario viene del beneficiario
-            } else {
-                throw new Exception("El beneficiario no tiene usuario asociado");
-            }
-        } else {
+        if (p.getBeneficiario() == null)
             throw new Exception("El pedido debe tener un beneficiario");
-        }
+
+        Beneficiario b = beneficiarioRepository.findById(p.getBeneficiario().getId())
+                .orElseThrow(() -> new Exception("El beneficiario no existe"));
+        p.setBeneficiario(b);
+
+        if (b.getUsuario() == null)
+            throw new Exception("El beneficiario no tiene usuario asociado");
+        p.setUsuario(b.getUsuario());
 
         if (p.getGrupoFamiliar() != null) {
-            if (p.getGrupoFamiliar().getId() == null)
-                throw new Exception("El grupo familiar tiene ID inválido");
             GrupoFamiliar gf = grupoFamiliarRepository.findById(p.getGrupoFamiliar().getId())
                     .orElseThrow(() -> new Exception("El grupo familiar no existe"));
             p.setGrupoFamiliar(gf);
         }
 
         if (p.getMedico() != null) {
-            if (p.getMedico().getId() == null)
-                throw new Exception("El médico tiene ID inválido");
             Medico m = medicoRepository.findById(p.getMedico().getId())
                     .orElseThrow(() -> new Exception("El médico no existe"));
             p.setMedico(m);
         }
 
         if (p.getDni() != null && (p.getDni() < 1_000_000 || p.getDni() > 99_999_999))
-            throw new Exception("El DNI del pedido debe tener entre 7 y 8 dígitos");
+            throw new Exception("El DNI debe tener entre 7 y 8 dígitos");
 
         if (p.getPaciente() != null) {
-            if (p.getPaciente().getId() == null)
-                throw new Exception("El paciente tiene ID inválido");
             Familiar f = familiarRepository.findById(p.getPaciente().getId())
                     .orElseThrow(() -> new Exception("El paciente no existe"));
             p.setPaciente(f);
         }
 
-        // Validación de documentos
         if (p.getDocumentos() != null) {
             for (Documento doc : p.getDocumentos()) {
                 if (doc.getNombreArchivo() == null || doc.getNombreArchivo().isBlank())
@@ -84,17 +74,32 @@ public abstract class PedidoService<E extends Pedido> extends BaseService<E, Lon
         }
     }
 
-
+    // 🧾 CREAR PEDIDO GENÉRICO
     @Transactional
-    public void agregarDocumentos(E pedido, List<Documento> documentos, Usuario usuario) throws Exception {
+    public Pedido crearPedido(Pedido pedido, List<Documento> documentos) throws Exception {
+        validarPedidoComun(pedido);
+        pedido.setEstado(Estado.Pendiente);
+        pedido.setFechaIngreso(new Date());
+
+        Pedido guardado = pedidoRepository.save(pedido);
+        Usuario usuario = guardado.getBeneficiario().getUsuario();
+
+        if (documentos != null && !documentos.isEmpty())
+            agregarDocumentos(guardado, documentos, usuario);
+
+        registrarMovimiento(guardado, Estado.Pendiente, usuario, "Pedido genérico creado");
+        return guardado;
+    }
+
+    // 📎 AGREGAR DOCUMENTOS
+    @Transactional
+    public void agregarDocumentos(Pedido pedido, List<Documento> documentos, Usuario usuario) throws Exception {
         if (pedido == null) throw new Exception("Pedido es obligatorio");
         if (usuario == null || usuario.getId() == null)
             throw new Exception("Usuario que sube los documentos es obligatorio");
+
         Usuario u = usuarioRepository.findById(usuario.getId())
                 .orElseThrow(() -> new Exception("Usuario no encontrado"));
-
-        if (documentos == null || documentos.isEmpty())
-            throw new Exception("Debe proporcionar al menos un documento");
 
         for (Documento doc : documentos) {
             if (doc.getNombreArchivo() == null || doc.getNombreArchivo().isBlank())
@@ -106,12 +111,13 @@ public abstract class PedidoService<E extends Pedido> extends BaseService<E, Lon
         }
     }
 
+    // 🕐 REGISTRAR MOVIMIENTO
     @Transactional
-    public void registrarMovimiento(E pedido, Estado estado, Usuario usuario, String comentario) throws Exception {
-        if (pedido == null) throw new Exception("Pedido es obligatorio para registrar movimiento");
-        if (estado == null) throw new Exception("Estado es obligatorio para registrar movimiento");
+    public void registrarMovimiento(Pedido pedido, Estado estado, Usuario usuario, String comentario) throws Exception {
+        if (pedido == null) throw new Exception("Pedido es obligatorio");
+        if (estado == null) throw new Exception("Estado es obligatorio");
         if (usuario == null || usuario.getId() == null)
-            throw new Exception("Usuario es obligatorio para registrar movimiento");
+            throw new Exception("Usuario es obligatorio");
 
         Usuario u = usuarioRepository.findById(usuario.getId())
                 .orElseThrow(() -> new Exception("Usuario no encontrado"));
@@ -123,11 +129,37 @@ public abstract class PedidoService<E extends Pedido> extends BaseService<E, Lon
                 .usuario(u)
                 .comentario(comentario)
                 .build();
+
         historialRepository.save(historial);
     }
 
+    // 📋 LISTADOS
     @Transactional(readOnly = true)
-    public List<E> findAll() {
-        return baseRepository.findAll();
+    public List<Pedido> listarTodosLosPedidos() {
+        List<Pedido> pedidos = new ArrayList<>();
+        pedidos.addAll(pedidoRepository.findAll());
+        pedidos.addAll(pedidoOftalmologiaRepository.findAll());
+        pedidos.addAll(pedidoOrtopediaRepository.findAll());
+        return pedidos;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Pedido> listarPedidosGenericos() {
+        return pedidoRepository.findAll();
+    }
+
+    // 🔍 FILTROS COMUNES
+    @Transactional(readOnly = true)
+    public List<Pedido> findByBeneficiarioId(Long idBeneficiario) throws Exception {
+        Beneficiario b = beneficiarioRepository.findById(idBeneficiario)
+                .orElseThrow(() -> new Exception("No se encontró beneficiario con ID: " + idBeneficiario));
+        return pedidoRepository.findByBeneficiario(b);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Pedido> findByMedicoId(Long idMedico) throws Exception {
+        Medico m = medicoRepository.findById(idMedico)
+                .orElseThrow(() -> new Exception("No se encontró médico con ID: " + idMedico));
+        return pedidoRepository.findByMedico(m);
     }
 }

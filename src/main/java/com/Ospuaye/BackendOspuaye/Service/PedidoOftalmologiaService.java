@@ -1,50 +1,56 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
-import com.Ospuaye.BackendOspuaye.Entity.*;
+import com.Ospuaye.BackendOspuaye.Entity.PedidoOftalmologia;
+import com.Ospuaye.BackendOspuaye.Entity.Documento;
+import com.Ospuaye.BackendOspuaye.Entity.Usuario;
+import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
+import com.Ospuaye.BackendOspuaye.Entity.Medico;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
 import com.Ospuaye.BackendOspuaye.Repository.PedidoOftalmologiaRepository;
-import org.springframework.transaction.annotation.Transactional;
+import com.Ospuaye.BackendOspuaye.Repository.PedidoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 
 @Service
-public class PedidoOftalmologiaService extends PedidoService<PedidoOftalmologia> {
+public class PedidoOftalmologiaService extends PedidoService {
 
-    private final PedidoOftalmologiaRepository repo;
+    @Autowired
+    private PedidoOftalmologiaRepository pedidoOftalmologiaRepository;
 
-    public PedidoOftalmologiaService(PedidoOftalmologiaRepository pedidoOftalmologiaRepository) {
-        super(pedidoOftalmologiaRepository);
-        this.repo = pedidoOftalmologiaRepository;
+    public PedidoOftalmologiaService(PedidoRepository pedidoRepository) {
+        super(pedidoRepository);
     }
 
-    @Transactional
-    public PedidoOftalmologia crearPedido(PedidoOftalmologia pedido,
-                                          List<Documento> documentos) throws Exception {
+    // NOTE: NO definir constructor que haga super(pedidoOftalmologiaRepository)
 
-        // Validaciones generales
+    @Transactional
+    public PedidoOftalmologia crearPedidoOftalmologia(PedidoOftalmologia pedido, List<Documento> documentos) throws Exception {
+        // validaciones comunes
         validarPedidoComun(pedido);
 
-        // Validaciones específicas
+        // validaciones específicas
         if (pedido.getMotivoConsulta() == null || pedido.getMotivoConsulta().isBlank())
             throw new Exception("El motivo de consulta es obligatorio");
         if (pedido.getUsaLentes() == null)
             throw new Exception("Debe indicar si usa lentes");
         if (pedido.getRecetaMedica() == null)
-            throw new Exception("Debe indicar si adjunta receta");
+            throw new Exception("Debe indicar si adjunta receta médica");
 
-        // Estado y fecha
+        if (pedido.getMotivoConsulta().length() < 5)
+            throw new Exception("El motivo de consulta es demasiado corto (mínimo 5 caracteres)");
+
+        // set iniciales
         pedido.setEstado(Estado.Pendiente);
         pedido.setFechaIngreso(new Date());
 
-        // Guardar pedido
-        PedidoOftalmologia guardado = baseRepository.save(pedido);
-
-        // Tomamos el usuario del beneficiario
+        PedidoOftalmologia guardado = pedidoOftalmologiaRepository.save(pedido);
         Usuario usuario = guardado.getBeneficiario().getUsuario();
 
-        // Validar y agregar documentos
+        // documentos
         if (documentos != null && !documentos.isEmpty()) {
             for (Documento doc : documentos) {
                 if (doc.getNombreArchivo() == null || doc.getNombreArchivo().isBlank())
@@ -53,54 +59,44 @@ public class PedidoOftalmologiaService extends PedidoService<PedidoOftalmologia>
             agregarDocumentos(guardado, documentos, usuario);
         }
 
-        // Registrar movimiento
-        registrarMovimiento(guardado, Estado.Pendiente, usuario, "Pedido creado");
-
+        registrarMovimiento(guardado, Estado.Pendiente, usuario, "Pedido de oftalmología creado");
         return guardado;
     }
 
     @Transactional(readOnly = true)
-    public List<PedidoOftalmologia> findByBeneficiarioId(Long idBeneficiario) throws Exception {
+    public List<PedidoOftalmologia> listarPorBeneficiario(Long idBeneficiario) throws Exception {
         if (idBeneficiario == null) throw new Exception("El ID del beneficiario no puede ser nulo");
-        return repo.findByBeneficiario_Id(idBeneficiario);
+        Beneficiario b = beneficiarioRepository.findById(idBeneficiario)
+                .orElseThrow(() -> new Exception("No se encontró beneficiario con ID: " + idBeneficiario));
+        return pedidoOftalmologiaRepository.findByBeneficiario(b);
     }
 
     @Transactional(readOnly = true)
-    public List<PedidoOftalmologia> findByMedicoId(Long idMedico) throws Exception {
+    public List<PedidoOftalmologia> listarPorMedico(Long idMedico) throws Exception {
         if (idMedico == null) throw new Exception("El ID del médico no puede ser nulo");
-        return repo.findByMedico_Id(idMedico);
+        Medico m = medicoRepository.findById(idMedico)
+                .orElseThrow(() -> new Exception("No se encontró médico con ID: " + idMedico));
+        return pedidoOftalmologiaRepository.findByMedico(m);
     }
 
     @Transactional
-    public PedidoOftalmologia actualizarEstado(Long id, Estado nuevoEstado) throws Exception {
-        if (id == null) {
-            throw new Exception("El ID del pedido no puede ser nulo");
-        }
-        if (nuevoEstado == null) {
-            throw new Exception("El nuevo estado no puede ser nulo");
-        }
+    public PedidoOftalmologia actualizarEstadoOftalmologia(Long id, Estado nuevoEstado) throws Exception {
+        if (id == null) throw new Exception("El ID del pedido no puede ser nulo");
+        if (nuevoEstado == null) throw new Exception("El nuevo estado no puede ser nulo");
 
-        PedidoOftalmologia pedido = repo.findById(id)
+        PedidoOftalmologia pedido = pedidoOftalmologiaRepository.findById(id)
                 .orElseThrow(() -> new Exception("No se encontró el pedido con ID: " + id));
 
-        // Validar transición lógica de estados
-        if (pedido.getEstado() == Estado.Aceptado || pedido.getEstado() == Estado.Rechazado) {
-            throw new Exception("No se puede cambiar el estado de un pedido ya finalizado");
-        }
+        if (pedido.getEstado() == Estado.Aceptado || pedido.getEstado() == Estado.Rechazado)
+            throw new Exception("No se puede cambiar el estado de un pedido finalizado");
 
-        if (pedido.getEstado() == nuevoEstado) {
+        if (pedido.getEstado() == nuevoEstado)
             throw new Exception("El pedido ya tiene el estado " + nuevoEstado);
-        }
 
-        // Actualizar estado
         pedido.setEstado(nuevoEstado);
-
-        // Registrar movimiento
         registrarMovimiento(pedido, nuevoEstado, pedido.getBeneficiario().getUsuario(),
                 "Cambio de estado a " + nuevoEstado);
 
-        return repo.save(pedido);
+        return pedidoOftalmologiaRepository.save(pedido);
     }
-
-
 }

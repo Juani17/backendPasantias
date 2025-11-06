@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public abstract class Pedido extends Base {
+public class Pedido extends Base {  // 🔹 ya no es abstracta
 
     private String nombre;
 

@@ -12,6 +12,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 public class PedidoOftalmologia extends Pedido {
+
     private String motivoConsulta;
     private Boolean usaLentes;
     private Boolean recetaMedica;
