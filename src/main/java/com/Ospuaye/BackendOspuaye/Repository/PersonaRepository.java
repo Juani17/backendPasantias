@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface PersonaRepository extends BaseRepository<Persona, Long> {
+public interface PersonaRepository extends BaseNombrableRepository<Persona, Long> {
     Optional<Persona> findByDni(Long dni);
     Optional<Persona> findByCuil(Long cuil);
     Optional<Persona> findByTipoDocumentoAndDni(TipoDocumento tipoDocumento, Long dni);

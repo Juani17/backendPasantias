@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Pais extends Base {
+public class Pais extends BaseNombrable {
 
     private String nombre;
 }

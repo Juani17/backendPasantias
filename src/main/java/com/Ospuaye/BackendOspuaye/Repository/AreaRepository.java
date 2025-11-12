@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface AreaRepository extends BaseRepository<Area, Long> {
+public interface AreaRepository extends BaseNombrableRepository<Area, Long> {
     Optional<Area> findByNombre(String nombre);
     boolean existsByNombreIgnoreCase(String nombre);
 }

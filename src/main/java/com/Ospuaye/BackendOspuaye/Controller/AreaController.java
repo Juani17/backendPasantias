@@ -10,7 +10,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/areas")
-public class AreaController extends BaseController<Area, Long> {
+public class AreaController extends BaseNombrableController<Area, Long> {
 
     private final AreaService areaService;
 

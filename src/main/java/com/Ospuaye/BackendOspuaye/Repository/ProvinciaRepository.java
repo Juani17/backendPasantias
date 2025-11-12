@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ProvinciaRepository extends BaseRepository<Provincia, Long> {
+public interface ProvinciaRepository extends BaseNombrableRepository<Provincia, Long> {
 
     Optional<Provincia> findByNombre(String nombre);
     Optional<Provincia> findById(Long id);

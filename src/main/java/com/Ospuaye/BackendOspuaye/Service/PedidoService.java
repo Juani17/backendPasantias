@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
-public class PedidoService extends BaseService<Pedido, Long> {
+public class PedidoService extends BaseNombrableService<Pedido, Long> {
 
     @Autowired private PedidoRepository pedidoRepository;
     @Autowired private PedidoOftalmologiaRepository pedidoOftalmologiaRepository;
@@ -254,6 +254,92 @@ public class PedidoService extends BaseService<Pedido, Long> {
                 "Pedido actualizado");
 
         return actualizado;
+    }
+
+    @Transactional
+    public Pedido tomarPedidoGlobal(Long idPedido, Long medicoId) throws Exception {
+        if (idPedido == null) throw new Exception("El ID del pedido es obligatorio.");
+        if (medicoId == null) throw new Exception("El ID del médico es obligatorio.");
+
+        // Buscar pedido base
+        Pedido pedidoBase = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new Exception("No se encontró el pedido con ID: " + idPedido));
+
+        // Verificar que no esté ya tomado
+        if (pedidoBase.getMedico() != null && pedidoBase.getMedico().getId() != null) {
+            throw new Exception("El pedido ya fue tomado por otro médico.");
+        }
+
+        // Buscar médico
+        Medico medico = medicoRepository.findById(medicoId)
+                .orElseThrow(() -> new Exception("No se encontró el médico con ID: " + medicoId));
+
+        // Asignar datos base
+        pedidoBase.setMedico(medico);
+        pedidoBase.setEstado(Estado.Pendiente);
+        pedidoBase.setFechaRevision(new Date());
+
+        // Usuario asociado al beneficiario (para registrar movimiento)
+        Usuario usuarioRegistro = null;
+        if (pedidoBase.getBeneficiario() != null) {
+            usuarioRegistro = pedidoBase.getBeneficiario().getUsuario();
+        }
+
+        // Guardar según tipo de pedido
+        switch (pedidoBase.getPedidoTipo()) {
+            case Oftalmologia -> {
+                PedidoOftalmologia oft = pedidoOftalmologiaRepository.findById(idPedido)
+                        .orElseThrow(() -> new Exception("No se encontró el pedido oftalmológico con ID: " + idPedido));
+
+                oft.setMedico(medico);
+                oft.setEstado(Estado.Pendiente);
+                oft.setFechaRevision(new Date());
+                PedidoOftalmologia guardado = pedidoOftalmologiaRepository.save(oft);
+
+                if (usuarioRegistro != null) {
+                    registrarMovimiento(guardado, Estado.Pendiente, usuarioRegistro,
+                            "Pedido tomado por el médico (Oftalmología), ID médico=" + medico.getId());
+                }
+
+                return guardado;
+            }
+            case Ortopedia -> {
+                PedidoOrtopedia ort = pedidoOrtopediaRepository.findById(idPedido)
+                        .orElseThrow(() -> new Exception("No se encontró el pedido ortopédico con ID: " + idPedido));
+
+                ort.setMedico(medico);
+                ort.setEstado(Estado.Pendiente);
+                ort.setFechaRevision(new Date());
+                PedidoOrtopedia guardado = pedidoOrtopediaRepository.save(ort);
+
+                if (usuarioRegistro != null) {
+                    registrarMovimiento(guardado, Estado.Pendiente, usuarioRegistro,
+                            "Pedido tomado por el médico (Ortopedia), ID médico=" + medico.getId());
+                }
+
+                return guardado;
+            }
+            case Genérico, Sin_Información-> {
+                Pedido guardado = pedidoRepository.save(pedidoBase);
+
+                if (usuarioRegistro != null) {
+                    registrarMovimiento(guardado, Estado.Pendiente, usuarioRegistro,
+                            "Pedido tomado por el médico (General), ID médico=" + medico.getId());
+                }
+
+                return guardado;
+            }
+            default -> {
+                Pedido guardado = pedidoRepository.save(pedidoBase);
+
+                if (usuarioRegistro != null) {
+                    registrarMovimiento(guardado, Estado.Pendiente, usuarioRegistro,
+                            "Pedido tomado por el médico (Tipo desconocido), ID médico=" + medico.getId());
+                }
+
+                return guardado;
+            }
+        }
     }
 
 }

@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class PaisService extends BaseService<Pais, Long> {
+public class PaisService extends BaseNombrableService<Pais, Long> {
 
     private final PaisRepository paisRepository;
 

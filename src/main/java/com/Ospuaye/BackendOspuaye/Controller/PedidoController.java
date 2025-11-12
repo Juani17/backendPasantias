@@ -19,12 +19,23 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pedidos")
-@RequiredArgsConstructor
-public class PedidoController {
+public class PedidoController extends BaseNombrableController<Pedido, Long> {
 
     private final PedidoService pedidoService;
     private final DocumentoService documentoService;
     private final ObjectMapper objectMapper;
+
+    // Constructor que pasa el service al BaseNombrableController
+    public PedidoController(PedidoService pedidoService, DocumentoService documentoService, ObjectMapper objectMapper) {
+        super(pedidoService); // 👈 importante
+        this.pedidoService = pedidoService;
+        this.documentoService = documentoService;
+        this.objectMapper = objectMapper;
+    }
+
+    // =========================================================
+    // ============= ENDPOINTS PERSONALIZADOS ==================
+    // =========================================================
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> crearPedido(
@@ -44,7 +55,7 @@ public class PedidoController {
                     Documento doc = Documento.builder()
                             .nombreArchivo(file.getOriginalFilename())
                             .path("C://Ospuaye/documentos/" + file.getOriginalFilename())
-                            .observacion("Documento adjunto") // ✅ Genérico ahora
+                            .observacion("Documento adjunto")
                             .build();
                     documentos.add(doc);
                 }
@@ -79,7 +90,7 @@ public class PedidoController {
     }
 
     @GetMapping("/genericos")
-    public ResponseEntity<?> PedidosGenericos(){
+    public ResponseEntity<?> PedidosGenericos() {
         try {
             List<Pedido> lista = pedidoService.listarPedidosGenericos();
             return ResponseEntity.ok(lista);
@@ -108,7 +119,7 @@ public class PedidoController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/editar/{id}")
     public ResponseEntity<?> actualizarPedido(
             @PathVariable Long id,
             @RequestBody Pedido pedidoActualizado
@@ -120,7 +131,6 @@ public class PedidoController {
             return ResponseEntity.badRequest().body("Error al actualizar el pedido: " + e.getMessage());
         }
     }
-
 
     @PutMapping("/actualizar/{id}")
     public ResponseEntity<?> actualizarEstado(
@@ -149,4 +159,29 @@ public class PedidoController {
         }
     }
 
+    @PutMapping("/tomar/{id}")
+    public ResponseEntity<?> tomarPedido(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> body
+    ) {
+        try {
+            Long medicoId = null;
+
+            if (body.get("medico_id") != null) {
+                medicoId = Long.valueOf(body.get("medico_id").toString());
+            } else if (body.get("medico") instanceof Map<?,?> medMap && medMap.get("id") != null) {
+                medicoId = Long.valueOf(medMap.get("id").toString());
+            }
+
+            if (medicoId == null) {
+                return ResponseEntity.badRequest().body("Debe indicar el ID del médico.");
+            }
+
+            Pedido actualizado = pedidoService.tomarPedidoGlobal(id, medicoId);
+            return ResponseEntity.ok(actualizado);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al tomar pedido: " + e.getMessage());
+        }
+    }
 }

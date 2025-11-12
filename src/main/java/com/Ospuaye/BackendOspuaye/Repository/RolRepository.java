@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface RolRepository extends BaseRepository<Rol, Long> {
+public interface RolRepository extends BaseNombrableRepository<Rol, Long> {
     Optional<Rol> findByNombre(String nombre);
 
 }

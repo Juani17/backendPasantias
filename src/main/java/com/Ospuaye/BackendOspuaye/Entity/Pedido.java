@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Pedido extends Base {
+public class Pedido extends BaseNombrable {
 
     private String nombre;
 

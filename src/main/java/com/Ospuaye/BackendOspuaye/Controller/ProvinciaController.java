@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/provincias")
-public class ProvinciaController extends BaseController<Provincia, Long> {
+public class ProvinciaController extends BaseNombrableController<Provincia, Long> {
 
     private final ProvinciaService provinciaService;
 

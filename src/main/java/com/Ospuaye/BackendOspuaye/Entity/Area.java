@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Area extends Base {
+public class Area extends BaseNombrable {
     @Column(nullable = false)
     private String nombre;
 }

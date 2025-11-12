@@ -93,5 +93,16 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
         }catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());}
     }
+
+    @GetMapping("/filtrar")
+    public ResponseEntity<?> buscar(@RequestParam("filtro") String filtro) {
+        try {
+            List<E> lista = baseService.buscar(filtro);
+            return ResponseEntity.ok(lista);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
 

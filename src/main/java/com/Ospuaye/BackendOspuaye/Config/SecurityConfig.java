@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints públicos
                         .requestMatchers("/api/auth/**").permitAll()
+
                         // Permitir todos los GET sin autenticación
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         // Solo ADMIN puede crear Áreas, Roles y Médicos
@@ -57,10 +58,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/usuarios/cambiarContrasena").hasAnyRole("USER", "ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO")
                         .requestMatchers("/api/pedidos/**").hasAnyRole( "ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO")
                         .requestMatchers("/api/pedidos").hasAnyRole( "ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO")
-                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/oftalmologia/actualizar/**")
-                        .hasAnyRole("MEDICO OFTALMOLOGO", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/ortopedia/actualizar/**")
-                        .hasAnyRole("MEDICO ORTOPEDIA", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/pedidos/ortopedia/**")
                         .hasAnyRole("MEDICO ORTOPEDIA", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/pedidos/oftalmologia/**")

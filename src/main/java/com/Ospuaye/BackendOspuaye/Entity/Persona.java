@@ -16,7 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public abstract class Persona extends Base {
+public abstract class Persona extends BaseNombrable {
 
     private String nombre;
     private String apellido;

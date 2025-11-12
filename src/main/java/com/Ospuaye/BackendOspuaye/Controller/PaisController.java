@@ -1,6 +1,7 @@
 package com.Ospuaye.BackendOspuaye.Controller;
 
 import com.Ospuaye.BackendOspuaye.Entity.Pais;
+import com.Ospuaye.BackendOspuaye.Repository.PaisRepository;
 import com.Ospuaye.BackendOspuaye.Service.PaisService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,13 +11,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/paises")
-public class PaisController extends BaseController<Pais, Long> {
+public class PaisController extends BaseNombrableController<Pais, Long> {
 
     private final PaisService paisService;
+    private final PaisRepository paisRepository;
 
-    public PaisController(PaisService paisService) {
+
+    public PaisController(PaisService paisService, PaisRepository paisRepository) {
         super(paisService);
         this.paisService = paisService;
+        this.paisRepository = paisRepository;
     }
 
     @GetMapping("/activos")

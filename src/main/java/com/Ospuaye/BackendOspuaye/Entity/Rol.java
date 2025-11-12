@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Rol extends Base {
+public class Rol extends BaseNombrable {
 
     @Column(nullable = false)
     private String nombre;
