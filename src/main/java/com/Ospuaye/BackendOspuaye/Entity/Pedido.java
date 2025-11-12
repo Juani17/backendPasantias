@@ -1,6 +1,7 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
+import com.Ospuaye.BackendOspuaye.Entity.Enum.PedidoTipo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -20,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Pedido extends Base {  // 🔹 ya no es abstracta
+public class Pedido extends Base {
 
     private String nombre;
 
@@ -55,12 +56,17 @@ public class Pedido extends Base {  // 🔹 ya no es abstracta
     @JoinColumn(name = "paciente_id")
     private Familiar paciente;
 
-    @ManyToOne
-    @JoinColumn(name = "medico_id")
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "medico_id", nullable = true)
     private Medico medico;
 
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date fechaRevision;
 
+
     private String observacionMedico;
+
+    @Enumerated(EnumType.STRING)
+    private PedidoTipo pedidoTipo;
+
 }

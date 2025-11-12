@@ -1,11 +1,8 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
-import com.Ospuaye.BackendOspuaye.Entity.PedidoOrtopedia;
-import com.Ospuaye.BackendOspuaye.Entity.Documento;
-import com.Ospuaye.BackendOspuaye.Entity.Usuario;
-import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
-import com.Ospuaye.BackendOspuaye.Entity.Medico;
+import com.Ospuaye.BackendOspuaye.Entity.*;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
+import com.Ospuaye.BackendOspuaye.Entity.Enum.PedidoTipo;
 import com.Ospuaye.BackendOspuaye.Repository.PedidoOrtopediaRepository;
 import com.Ospuaye.BackendOspuaye.Repository.PedidoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +21,6 @@ public class PedidoOrtopediaService extends PedidoService {
     public PedidoOrtopediaService(PedidoRepository pedidoRepository) {
         super(pedidoRepository);
     }
-
-    // NOTE: NO definir constructor que haga super(pedidoOrtopediaRepository)
 
     // 🧾 CREAR PEDIDO ORTOPEDIA (con validaciones completas)
     @Transactional
@@ -46,6 +41,7 @@ public class PedidoOrtopediaService extends PedidoService {
         // set iniciales
         pedido.setEstado(Estado.Pendiente);
         pedido.setFechaIngreso(new Date());
+        pedido.setPedidoTipo(PedidoTipo.Ortopedia);
 
         // guardado
         PedidoOrtopedia guardado = pedidoOrtopediaRepository.save(pedido);
@@ -66,6 +62,40 @@ public class PedidoOrtopediaService extends PedidoService {
         registrarMovimiento(guardado, Estado.Pendiente, usuario, "Pedido de ortopedia creado");
 
         return guardado;
+    }
+
+    @Transactional
+    public PedidoOrtopedia actualizarPedidoOrtopedia(Long id, PedidoOrtopedia datosActualizados) throws Exception {
+        // ✅ Reutiliza la lógica de actualización general del padre
+        Pedido pedidoActualizado = super.actualizarPedido(id, datosActualizados);
+
+        // 🔍 Validaciones y actualizaciones específicas de ortopedia
+        PedidoOrtopedia existente = pedidoOrtopediaRepository.findById(id)
+                .orElseThrow(() -> new Exception("No se encontró el pedido de ortopedia con ID: " + id));
+
+        if (datosActualizados.getMotivoConsulta() != null && !datosActualizados.getMotivoConsulta().isBlank()) {
+            existente.setMotivoConsulta(datosActualizados.getMotivoConsulta());
+        }
+
+        if (datosActualizados.getRecetaMedica() != null) {
+            existente.setRecetaMedica(datosActualizados.getRecetaMedica());
+        }
+
+        // 💾 Guardar cambios finales
+        PedidoOrtopedia actualizado = pedidoOrtopediaRepository.save(existente);
+
+        // 🕐 Registrar movimiento (opcional si querés registrar distinto al genérico)
+        registrarMovimiento(actualizado, actualizado.getEstado(),
+                actualizado.getBeneficiario().getUsuario(), "Pedido de ortopedia actualizado");
+
+        return actualizado;
+    }
+
+
+
+    @Transactional(readOnly = true)
+    public List<PedidoOrtopedia> listarTodos() throws Exception {
+        return pedidoOrtopediaRepository.findAll();
     }
 
     // Métodos específicos del hijo — NOMBRES distintos para evitar choque con padre

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import java.io.Serializable;
+import java.util.UUID;
 
 @MappedSuperclass
 @Data
@@ -19,6 +20,7 @@ public abstract class Base implements Serializable {
     @Builder.Default
     @Column(nullable = false)
     private Boolean activo = true;
+
 
     @PrePersist
     public void prePersist() {

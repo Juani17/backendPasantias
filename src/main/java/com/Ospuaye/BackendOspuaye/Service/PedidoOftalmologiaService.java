@@ -1,5 +1,6 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
+import com.Ospuaye.BackendOspuaye.Entity.Enum.PedidoTipo;
 import com.Ospuaye.BackendOspuaye.Entity.PedidoOftalmologia;
 import com.Ospuaye.BackendOspuaye.Entity.Documento;
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
@@ -46,6 +47,7 @@ public class PedidoOftalmologiaService extends PedidoService {
         // set iniciales
         pedido.setEstado(Estado.Pendiente);
         pedido.setFechaIngreso(new Date());
+        pedido.setPedidoTipo(PedidoTipo.Oftalmologia);
 
         PedidoOftalmologia guardado = pedidoOftalmologiaRepository.save(pedido);
         Usuario usuario = guardado.getBeneficiario().getUsuario();
@@ -61,6 +63,11 @@ public class PedidoOftalmologiaService extends PedidoService {
 
         registrarMovimiento(guardado, Estado.Pendiente, usuario, "Pedido de oftalmología creado");
         return guardado;
+    }
+
+    @Transactional(readOnly = true)
+    public List<PedidoOftalmologia> listarTodos() throws Exception {
+        return pedidoOftalmologiaRepository.findAll();
     }
 
     @Transactional(readOnly = true)
@@ -98,5 +105,37 @@ public class PedidoOftalmologiaService extends PedidoService {
                 "Cambio de estado a " + nuevoEstado);
 
         return pedidoOftalmologiaRepository.save(pedido);
+    }
+
+    @Transactional
+    public PedidoOftalmologia actualizarPedidoOftalmologia(Long id, PedidoOftalmologia datosActualizados) throws Exception {
+        // ✅ Reutiliza la lógica común de PedidoService
+        super.actualizarPedido(id, datosActualizados);
+
+        // 🔍 Recupera el pedido específico de oftalmología
+        PedidoOftalmologia existente = pedidoOftalmologiaRepository.findById(id)
+                .orElseThrow(() -> new Exception("No se encontró el pedido de oftalmología con ID: " + id));
+
+        // ⚙️ Actualiza campos específicos del tipo Oftalmología
+        if (datosActualizados.getMotivoConsulta() != null && !datosActualizados.getMotivoConsulta().isBlank()) {
+            existente.setMotivoConsulta(datosActualizados.getMotivoConsulta());
+        }
+
+        if (datosActualizados.getUsaLentes() != null) {
+            existente.setUsaLentes(datosActualizados.getUsaLentes());
+        }
+
+        if (datosActualizados.getRecetaMedica() != null) {
+            existente.setRecetaMedica(datosActualizados.getRecetaMedica());
+        }
+
+        // 💾 Guardar cambios finales
+        PedidoOftalmologia actualizado = pedidoOftalmologiaRepository.save(existente);
+
+        // 🕐 Registrar movimiento (puede ser distinto del genérico)
+        registrarMovimiento(actualizado, actualizado.getEstado(),
+                actualizado.getBeneficiario().getUsuario(), "Pedido de oftalmología actualizado");
+
+        return actualizado;
     }
 }

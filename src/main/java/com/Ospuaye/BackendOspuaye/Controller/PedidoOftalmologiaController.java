@@ -3,7 +3,6 @@ package com.Ospuaye.BackendOspuaye.Controller;
 import com.Ospuaye.BackendOspuaye.Entity.Documento;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
 import com.Ospuaye.BackendOspuaye.Entity.PedidoOftalmologia;
-import com.Ospuaye.BackendOspuaye.Entity.Usuario;
 import com.Ospuaye.BackendOspuaye.Service.DocumentoService;
 import com.Ospuaye.BackendOspuaye.Service.PedidoOftalmologiaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PedidoOftalmologiaController {
 
-    private final PedidoOftalmologiaService service;
+    private final PedidoOftalmologiaService pedidoOftalmologiaService;
     private final DocumentoService documentoService;
     private final ObjectMapper objectMapper;
 
@@ -33,10 +32,8 @@ public class PedidoOftalmologiaController {
             @RequestPart(value = "documentos", required = false) List<MultipartFile> files
     ) {
         try {
-            // Deserializar el pedido desde el JSON recibido
             PedidoOftalmologia pedido = objectMapper.readValue(pedidoJson, PedidoOftalmologia.class);
 
-            // Procesar documentos subidos
             List<Documento> documentos = new ArrayList<>();
             if (files != null) {
                 for (MultipartFile file : files) {
@@ -53,8 +50,8 @@ public class PedidoOftalmologiaController {
                 }
             }
 
-            // Ahora el service ya no recibe Usuario
-            var creado = service.crearPedido(pedido, documentos);
+            // ✅ CORRECTO - llamar al método específico
+            var creado = pedidoOftalmologiaService.crearPedidoOftalmologia(pedido, documentos);
             return ResponseEntity.status(HttpStatus.CREATED).body(creado);
 
         } catch (Exception e) {
@@ -62,15 +59,19 @@ public class PedidoOftalmologiaController {
         }
     }
 
-
     @GetMapping
-    public ResponseEntity<List<PedidoOftalmologia>> listarTodos() {
-        return ResponseEntity.ok(service.findAll());
+    public ResponseEntity<?> listarTodos() {
+        try {
+            return ResponseEntity.ok(pedidoOftalmologiaService.listarTodos());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al listar pedidos: " + e.getMessage());
+        }
     }
+
     @GetMapping("/beneficiario/{id}")
     public ResponseEntity<?> listarPorBeneficiario(@PathVariable Long id) {
         try {
-            List<PedidoOftalmologia> pedidos = service.findByBeneficiarioId(id);
+            List<PedidoOftalmologia> pedidos = pedidoOftalmologiaService.listarPorBeneficiario(id);
             return ResponseEntity.ok(pedidos);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al obtener pedidos: " + e.getMessage());
@@ -80,10 +81,22 @@ public class PedidoOftalmologiaController {
     @GetMapping("/medico/{id}")
     public ResponseEntity<?> listarPorMedico(@PathVariable Long id) {
         try {
-            List<PedidoOftalmologia> pedidos = service.findByMedicoId(id);
+            List<PedidoOftalmologia> pedidos = pedidoOftalmologiaService.listarPorMedico(id);
             return ResponseEntity.ok(pedidos);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al obtener pedidos: " + e.getMessage());
+        }
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarPedido(
+            @PathVariable Long id,
+            @RequestBody PedidoOftalmologia pedidoActualizado
+    ) {
+        try {
+            PedidoOftalmologia actualizado = pedidoOftalmologiaService.actualizarPedidoOftalmologia(id, pedidoActualizado);
+            return ResponseEntity.ok(actualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al actualizar el pedido: " + e.getMessage());
         }
     }
 
@@ -98,7 +111,6 @@ public class PedidoOftalmologiaController {
                 return ResponseEntity.badRequest().body("Debe enviar un estado válido");
             }
 
-            // Validar que el estado exista en el enum
             Estado nuevoEstado;
             try {
                 nuevoEstado = Estado.valueOf(estadoStr);
@@ -107,14 +119,11 @@ public class PedidoOftalmologiaController {
                         "Debe ser uno de: Pendiente, Aceptado, Rechazado, Leido");
             }
 
-            PedidoOftalmologia actualizado = service.actualizarEstado(id, nuevoEstado);
+            PedidoOftalmologia actualizado = pedidoOftalmologiaService.actualizarEstadoOftalmologia(id, nuevoEstado);
             return ResponseEntity.ok(actualizado);
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al actualizar el estado: " + e.getMessage());
         }
     }
-
-
-
 }

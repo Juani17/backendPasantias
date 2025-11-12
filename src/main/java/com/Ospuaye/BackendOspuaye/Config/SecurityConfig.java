@@ -52,9 +52,21 @@ public class SecurityConfig {
                         // Users y Medicos
                         .requestMatchers(HttpMethod.PUT, "/api/pedidos/oftalmologia/actualizar/**").hasAnyRole("MEDICO OFTALMOLOGO", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/pedidos/ortopedia/actualizar/**").hasAnyRole("MEDICO ORTOPEDIA", "ADMIN")
-                        .requestMatchers("/api/pedidos/ortopedia/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/pedidos/oftalmologia/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/pedidos/ortopedia/**").hasAnyRole("USER", "ADMIN","MEDICO ORTOPEDIA")
+                        .requestMatchers("/api/pedidos/oftalmologia/**").hasAnyRole("USER", "ADMIN","MEDICO OFTALMOLOGO")
                         .requestMatchers("/api/usuarios/cambiarContrasena").hasAnyRole("USER", "ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO")
+                        .requestMatchers("/api/pedidos/**").hasAnyRole( "ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO")
+                        .requestMatchers("/api/pedidos").hasAnyRole( "ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO")
+                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/oftalmologia/actualizar/**")
+                        .hasAnyRole("MEDICO OFTALMOLOGO", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/ortopedia/actualizar/**")
+                        .hasAnyRole("MEDICO ORTOPEDIA", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/ortopedia/**")
+                        .hasAnyRole("MEDICO ORTOPEDIA", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/oftalmologia/**")
+                        .hasAnyRole("MEDICO OFTALMOLOGO", "ADMIN")
+
+
 
 
                         // Todo lo demás requiere autenticación

@@ -8,6 +8,7 @@ import com.Ospuaye.BackendOspuaye.Service.DocumentoService;
 import com.Ospuaye.BackendOspuaye.Service.PedidoOrtopediaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -23,18 +24,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PedidoOrtopediaController {
 
-    private final PedidoOrtopediaService service;
+    private final PedidoOrtopediaService pedidoOrtopediaService;
     private final DocumentoService documentoService;
     private final ObjectMapper objectMapper;
 
-    @GetMapping
-    public ResponseEntity<?> listarPedidos() {
-        try {
-            return ResponseEntity.ok(service.findAll());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> crearPedido(
@@ -44,7 +37,6 @@ public class PedidoOrtopediaController {
         try {
             PedidoOrtopedia pedido = objectMapper.readValue(pedidoJson, PedidoOrtopedia.class);
 
-            // Procesar documentos (opcional)
             List<Documento> documentos = new ArrayList<>();
             if (files != null) {
                 for (MultipartFile file : files) {
@@ -55,23 +47,33 @@ public class PedidoOrtopediaController {
                     Documento doc = Documento.builder()
                             .nombreArchivo(file.getOriginalFilename())
                             .path("C://Ospuaye/documentos/" + file.getOriginalFilename())
-                            .observacion("Estudio previo adjunto")
+                            .observacion("Estudio de ortopedia adjunto")
                             .build();
                     documentos.add(doc);
                 }
             }
 
-            var creado = service.crearPedido(pedido, documentos);
+            // ✅ CORRECTO - llamar al método específico
+            var creado = pedidoOrtopediaService.crearPedidoOrtopedia(pedido, documentos);
             return ResponseEntity.status(HttpStatus.CREATED).body(creado);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al crear el pedido: " + e.getMessage());
         }
     }
 
+    @GetMapping("/listar")
+    public ResponseEntity<?> listarTodos() {
+        try {
+            return ResponseEntity.ok(pedidoOrtopediaService.listarTodos());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al listar pedidos: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/beneficiario/{id}")
     public ResponseEntity<?> listarPorBeneficiario(@PathVariable Long id) {
         try {
-            List<PedidoOrtopedia> pedidos = service.findByBeneficiarioId(id);
+            List<PedidoOrtopedia> pedidos = pedidoOrtopediaService.listarPorBeneficiario(id);
             return ResponseEntity.ok(pedidos);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al obtener pedidos: " + e.getMessage());
@@ -81,10 +83,23 @@ public class PedidoOrtopediaController {
     @GetMapping("/medico/{id}")
     public ResponseEntity<?> listarPorMedico(@PathVariable Long id) {
         try {
-            List<PedidoOrtopedia> pedidos = service.findByMedicoId(id);
+            List<PedidoOrtopedia> pedidos = pedidoOrtopediaService.listarPorMedico(id);
             return ResponseEntity.ok(pedidos);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al obtener pedidos: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarPedido(
+            @PathVariable Long id,
+            @RequestBody PedidoOrtopedia pedidoActualizado
+    ) {
+        try {
+            PedidoOrtopedia actualizado = pedidoOrtopediaService.actualizarPedidoOrtopedia(id, pedidoActualizado);
+            return ResponseEntity.ok(actualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al actualizar el pedido: " + e.getMessage());
         }
     }
 
@@ -99,7 +114,6 @@ public class PedidoOrtopediaController {
                 return ResponseEntity.badRequest().body("Debe enviar un estado válido");
             }
 
-            // Validar que el estado exista en el enum
             Estado nuevoEstado;
             try {
                 nuevoEstado = Estado.valueOf(estadoStr);
@@ -108,13 +122,11 @@ public class PedidoOrtopediaController {
                         "Debe ser uno de: Pendiente, Aceptado, Rechazado, Leido");
             }
 
-            PedidoOrtopedia actualizado = service.actualizarEstado(id, nuevoEstado);
+            PedidoOrtopedia actualizado = pedidoOrtopediaService.actualizarEstadoOrtopedia(id, nuevoEstado);
             return ResponseEntity.ok(actualizado);
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al actualizar el estado: " + e.getMessage());
         }
     }
-
-
 }

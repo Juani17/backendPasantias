@@ -17,6 +17,9 @@ public interface PedidoRepository extends BaseRepository<Pedido, Long> {
     List<Pedido> findByUsuario(Usuario usuario);
     List<Pedido> findByMedico(Medico medico);
     List<Pedido> findByDni(Integer dni);
+    List<Pedido> findByMedicoIsNull();
+
+
 
     // 🔍 Métodos adicionales solicitados
     List<Pedido> findByEstado(Estado estado);
