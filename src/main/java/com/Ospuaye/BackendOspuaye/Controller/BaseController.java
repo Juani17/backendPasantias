@@ -2,11 +2,13 @@ package com.Ospuaye.BackendOspuaye.Controller;
 
 import com.Ospuaye.BackendOspuaye.Entity.Base;
 import com.Ospuaye.BackendOspuaye.Service.BaseService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public abstract class BaseController<E extends Base, ID extends Serializable> {
 
@@ -104,5 +106,21 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
         }
     }
 
+    @GetMapping("/paginado")
+    public ResponseEntity<?> listarConPaginado(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String search) {
+        try {
+            Page<E> pagina = baseService.buscarConPaginado(search, page, size);
+            return ResponseEntity.ok().body(Map.of(
+                    "content", pagina.getContent(),
+                    "totalPages", pagina.getTotalPages(),
+                    "totalElements", pagina.getTotalElements(),
+                    "pageNumber", pagina.getNumber()
+            ));        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
 
