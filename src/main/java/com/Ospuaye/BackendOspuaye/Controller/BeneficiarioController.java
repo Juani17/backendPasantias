@@ -4,6 +4,7 @@ import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
 import com.Ospuaye.BackendOspuaye.Service.BeneficiarioService;
 import com.Ospuaye.BackendOspuaye.Service.EmpresaService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -77,7 +78,6 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
         }
     }
 
-
     @GetMapping("/empresa/{empresaId}")
     public ResponseEntity<?> listarPorEmpresa(@PathVariable Long empresaId) {
         try {
@@ -108,7 +108,6 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
                     .orElseThrow(() -> new IllegalArgumentException("Beneficiario no encontrado"));
             var empresa = empresaService.buscarPorId(empresaId)
                     .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada"));
-            // create a temporary entity to update only company
             b.setEmpresa(empresa);
             Beneficiario actualizado = beneficiarioService.actualizar(b);
             return ResponseEntity.ok(actualizado);
@@ -132,6 +131,37 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    // -------------------------------------------------------
+    // PAGINACIÓN
+    // -------------------------------------------------------
+    @GetMapping("/paginar")
+    public ResponseEntity<Page<Beneficiario>> paginar(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        try {
+            return ResponseEntity.ok(beneficiarioService.paginar(page, size));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // -------------------------------------------------------
+    // BUSCAR + PAGINACIÓN
+    // -------------------------------------------------------
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<Beneficiario>> buscar(
+            @RequestParam(defaultValue = "") String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        try {
+            return ResponseEntity.ok(beneficiarioService.buscar(query, page, size));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

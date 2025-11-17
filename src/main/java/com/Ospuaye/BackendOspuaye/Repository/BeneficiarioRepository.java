@@ -2,6 +2,9 @@ package com.Ospuaye.BackendOspuaye.Repository;
 
 import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
 import com.Ospuaye.BackendOspuaye.Entity.Empresa;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,4 +24,14 @@ public interface BeneficiarioRepository extends BaseRepository<Beneficiario, Lon
     Optional<Beneficiario> findByUsuario_Id(Long usuarioId);
 
     Optional<Beneficiario> findByCuil(Long cuil);
+    // 🔍 Buscar por nombre o apellido
+    Page<Beneficiario> findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(
+            String nombre,
+            String apellido,
+            Pageable pageable
+    );
+
+    // 🔍 Buscar por DNI paginado
+    Page<Beneficiario> findByDni(Long dni, Pageable pageable);
 }
+

@@ -4,8 +4,9 @@ import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
 import com.Ospuaye.BackendOspuaye.Entity.Empresa;
 import com.Ospuaye.BackendOspuaye.Repository.BeneficiarioRepository;
 import com.Ospuaye.BackendOspuaye.Repository.EmpresaRepository;
-import com.Ospuaye.BackendOspuaye.Repository.PersonaRepository;
 import com.Ospuaye.BackendOspuaye.Repository.UsuarioRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,12 +29,56 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
         this.empresaRepository = empresaRepository;
     }
 
+    // ===============================================
+    // PAGINADO SIMPLE
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<Beneficiario> paginar(int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+        return beneficiarioRepository.findAll(PageRequest.of(page, size));
+    }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO
+    // - Si query es numérico -> buscá por DNI (exacto)
+    // - Si query vacío -> paginado
+    // - Si query texto -> buscá por nombre o apellido (contains, ignore case)
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<Beneficiario> buscar(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        if (query == null || query.trim().isEmpty()) {
+            return paginar(page, size);
+        }
+
+        String q = query.trim();
+
+        // Si el query es solo dígitos (dni)
+        if (q.matches("\\d+")) {
+            try {
+                Long dni = Long.parseLong(q);
+                return beneficiarioRepository.findByDni(dni, PageRequest.of(page, size));
+            } catch (NumberFormatException ignored) {
+                // si por alguna razón el número es demasiado grande, caemos a búsqueda por texto
+            }
+        }
+
+        // búsqueda por nombre o apellido
+        return beneficiarioRepository
+                .findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(q, q, PageRequest.of(page, size));
+    }
+
+    // ===============================================
+    // CREAR
+    // ===============================================
     @Override
     @Transactional
     public Beneficiario crear(Beneficiario entity) throws Exception {
         if (entity == null) throw new IllegalArgumentException("El beneficiario no puede ser nulo");
 
-        // Usuario obligatorio
         if (entity.getUsuario() == null || entity.getUsuario().getId() == null)
             throw new IllegalArgumentException("El usuario asociado es obligatorio");
 
@@ -43,10 +88,10 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
         if (beneficiarioRepository.existsByUsuario_Id(entity.getUsuario().getId()))
             throw new IllegalArgumentException("Ya existe un beneficiario asociado a ese usuario");
 
-        // Empresa (opcional)
         if (entity.getEmpresa() != null) {
             Long empresaId = entity.getEmpresa().getId();
             if (empresaId == null) throw new IllegalArgumentException("La empresa debe tener id");
+
             Empresa empresa = empresaRepository.findById(empresaId)
                     .orElseThrow(() -> new IllegalArgumentException("La empresa asociada no existe"));
 
@@ -56,13 +101,15 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
             entity.setEmpresa(empresa);
         }
 
-        // Defaults
         if (entity.getAfiliadoSindical() == null) entity.setAfiliadoSindical(false);
         if (entity.getEsJubilado() == null) entity.setEsJubilado(false);
 
         return beneficiarioRepository.save(entity);
     }
 
+    // ===============================================
+    // ACTUALIZAR
+    // ===============================================
     @Override
     @Transactional
     public Beneficiario actualizar(Beneficiario entity) throws Exception {
@@ -72,7 +119,6 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
         Beneficiario existente = beneficiarioRepository.findById(entity.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Beneficiario no encontrado"));
 
-        // Validar usuario
         if (entity.getUsuario() != null && entity.getUsuario().getId() != null) {
             Long nuevoUsuarioId = entity.getUsuario().getId();
             if (!usuarioRepository.existsById(nuevoUsuarioId))
@@ -85,12 +131,13 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
             existente.setUsuario(entity.getUsuario());
         }
 
-        // Empresa (puede ser null → se elimina la asociación)
         if (entity.getEmpresa() != null) {
             Long empresaId = entity.getEmpresa().getId();
             if (empresaId == null) throw new IllegalArgumentException("La empresa debe tener id");
+
             Empresa empresa = empresaRepository.findById(empresaId)
                     .orElseThrow(() -> new IllegalArgumentException("La empresa asociada no existe"));
+
             if (empresa.getActivo() != null && !empresa.getActivo())
                 throw new IllegalArgumentException("No se puede asociar a una empresa inactiva");
 
@@ -99,26 +146,33 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
             existente.setEmpresa(null);
         }
 
-        // Afiliado / jubilado
         if (entity.getAfiliadoSindical() != null) existente.setAfiliadoSindical(entity.getAfiliadoSindical());
         if (entity.getEsJubilado() != null) existente.setEsJubilado(entity.getEsJubilado());
 
         return beneficiarioRepository.save(existente);
     }
 
+    // ===============================================
+    // ELIMINAR
+    // ===============================================
     @Override
     @Transactional
     public void eliminar(Long id) throws Exception {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+
         Beneficiario b = beneficiarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Beneficiario no encontrado"));
 
         if (b.getGrupoFamiliar() != null) {
-            throw new IllegalArgumentException("No se puede eliminar el beneficiario porque es titular de un grupo familiar. Elimine o reasigne el grupo primero.");
+            throw new IllegalArgumentException("No se puede eliminar el beneficiario porque es titular de un grupo familiar.");
         }
+
         super.eliminar(id);
     }
 
+    // ===============================================
+    // OTROS LISTADOS
+    // ===============================================
     @Transactional(readOnly = true)
     public List<Beneficiario> listarPorEmpresaId(Long empresaId) throws Exception {
         if (empresaId == null) throw new IllegalArgumentException("El id de empresa no puede ser nulo");
@@ -130,21 +184,14 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
     @Transactional(readOnly = true)
     public Optional<Beneficiario> buscarPorDni(Long dni) {
         if (dni == null) return Optional.empty();
-        return beneficiarioRepository.findByDni(dni); // Ahora directo, ya que DNI está en Persona
+        return beneficiarioRepository.findByDni(dni);
     }
 
     @Transactional(readOnly = true)
     public Optional<Beneficiario> ListarPorCuil(Long cuil) throws Exception {
-        if (cuil == null) {
-            throw new IllegalArgumentException("El CUIL no puede ser nulo ni vacío");
-        }
-
+        if (cuil == null) throw new IllegalArgumentException("El CUIL no puede ser nulo");
         Optional<Beneficiario> beneficiario = beneficiarioRepository.findByCuil(cuil);
-
-        if (beneficiario.isEmpty()) {
-            throw new IllegalArgumentException("No se encontró un Beneficiario con el CUIL especificado");
-        }
-
+        if (beneficiario.isEmpty()) throw new IllegalArgumentException("No se encontró un Beneficiario con el CUIL especificado");
         return beneficiario;
     }
 
@@ -153,4 +200,3 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
         return beneficiarioRepository.findByAfiliadoSindicalTrue();
     }
 }
-
