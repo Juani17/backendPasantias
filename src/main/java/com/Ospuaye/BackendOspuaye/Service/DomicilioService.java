@@ -41,7 +41,7 @@ public class DomicilioService extends BaseService<Domicilio, Long> {
         String q = query.trim();
 
         return domicilioRepository
-                .findByCalleContainingAndNumeracionContainingAndBarrioContainingAndManzanaPisoContainingAndCasaDepartamentoContainingAndEmpresaNombreContaining(
+                .findByCalleContainingIgnoreCaseOrNumeracionContainingIgnoreCaseOrBarrioContainingIgnoreCaseOrManzanaPisoContainingIgnoreCaseOrCasaDepartamentoContainingIgnoreCaseOrEmpresa_NombreContainingIgnoreCase(
                         q, q, q, q, q, q, pageable
                 );
     }
