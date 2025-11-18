@@ -28,6 +28,14 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
     }
 
     @Transactional(readOnly = true)
+    public Page<E> paginar(int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+        Pageable pageable = PageRequest.of(page, size);
+        return baseRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
     public Optional<E> buscarPorId(ID id) throws Exception {
         if (id == null) {
             throw new IllegalArgumentException("El ID no puede ser nulo");

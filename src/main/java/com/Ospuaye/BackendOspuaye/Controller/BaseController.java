@@ -122,5 +122,23 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/paginar")
+    public ResponseEntity<?> paginar(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        try {
+            Page<E> pagina = baseService.paginar(page, size);
+            return ResponseEntity.ok().body(Map.of(
+                    "content", pagina.getContent(),
+                    "totalPages", pagina.getTotalPages(),
+                    "totalElements", pagina.getTotalElements(),
+                    "pageNumber", pagina.getNumber()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
 

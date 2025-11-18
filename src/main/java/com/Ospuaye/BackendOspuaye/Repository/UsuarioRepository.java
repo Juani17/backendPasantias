@@ -1,6 +1,9 @@
 package com.Ospuaye.BackendOspuaye.Repository;
 
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,4 +14,5 @@ public interface UsuarioRepository extends BaseRepository<Usuario, Long> {
     Optional<Usuario> findByEmail(String email);
     boolean existsByEmail(String email);
     List<Usuario> findByRol_NombreIgnoreCase(String nombreRol);
+    Page<Usuario> findByEmailContainingIgnoreCase(String email, Pageable pageable);
 }

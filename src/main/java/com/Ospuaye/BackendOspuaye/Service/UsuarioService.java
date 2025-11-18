@@ -2,6 +2,10 @@ package com.Ospuaye.BackendOspuaye.Service;
 
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
 import com.Ospuaye.BackendOspuaye.Repository.UsuarioRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,30 +26,68 @@ public class UsuarioService extends BaseService<Usuario, Long> {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<Usuario> buscar(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginar(page, size); // ✅ paginado genérico desde BaseService
+        }
+
+        String q = query.trim().toLowerCase();
+
+        // Si es un email exacto
+        if (q.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+            Optional<Usuario> usuario = usuarioRepository.findByEmail(q);
+            if (usuario.isPresent()) {
+                return new PageImpl<>(List.of(usuario.get()), pageable, 1);
+            } else {
+                return Page.empty(pageable);
+            }
+        }
+
+        // Si es texto parcial, buscar por email que contenga
+        return usuarioRepository.findByEmailContainingIgnoreCase(q, pageable);
+    }
+
+    // ===============================================
+    // CREAR
+    // ===============================================
     @Override
     @Transactional
     public Usuario crear(Usuario entity) throws Exception {
         if (entity == null) throw new IllegalArgumentException("El usuario no puede ser nulo");
         if (entity.getEmail() == null || entity.getEmail().isBlank())
             throw new IllegalArgumentException("El email es obligatorio");
+
         String email = entity.getEmail().trim().toLowerCase();
         if (!email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"))
             throw new IllegalArgumentException("El email no tiene un formato válido");
+
         if (usuarioRepository.existsByEmail(email))
             throw new IllegalArgumentException("El email ya está registrado");
 
         if (entity.getContrasena() == null || entity.getContrasena().isBlank())
             throw new IllegalArgumentException("La contraseña es obligatoria");
+
         if (entity.getContrasena().length() < 6)
             throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres");
 
         entity.setEmail(email);
         entity.setContrasena(passwordEncoder.encode(entity.getContrasena()));
 
-        // rol es opcional; si lo envías se guarda tal cual.
         return usuarioRepository.save(entity);
     }
 
+    // ===============================================
+    // ACTUALIZAR
+    // ===============================================
     @Override
     @Transactional
     public Usuario actualizar(Usuario entity) throws Exception {
@@ -55,20 +97,18 @@ public class UsuarioService extends BaseService<Usuario, Long> {
         Usuario existente = usuarioRepository.findById(entity.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-        // email
         if (entity.getEmail() != null && !entity.getEmail().isBlank()) {
             String nuevoEmail = entity.getEmail().trim().toLowerCase();
             if (!nuevoEmail.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"))
                 throw new IllegalArgumentException("El email no tiene un formato válido");
+
             if (!nuevoEmail.equalsIgnoreCase(existente.getEmail())
                     && usuarioRepository.existsByEmail(nuevoEmail)) {
                 throw new IllegalArgumentException("El email ya está registrado por otro usuario");
             }
+
             existente.setEmail(nuevoEmail);
         }
-
-        // NO cambiamos contraseña aquí para evitar riesgos.
-        // Usar el método cambiarContrasena(...) de abajo.
 
         if (entity.getRol() != null) {
             existente.setRol(entity.getRol());
@@ -77,20 +117,9 @@ public class UsuarioService extends BaseService<Usuario, Long> {
         return usuarioRepository.save(existente);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<Usuario> buscarPorEmail(String email) {
-        if (email == null || email.isBlank()) return Optional.empty();
-        return usuarioRepository.findByEmail(email.trim().toLowerCase());
-    }
-
-    @Transactional(readOnly = true)
-    public List<Usuario> listarPorRol(String nombreRol) {
-        if (nombreRol == null || nombreRol.isBlank())
-            throw new IllegalArgumentException("El nombre del rol es obligatorio");
-        return usuarioRepository.findByRol_NombreIgnoreCase(nombreRol.trim());
-    }
-
-    /** Cambio de contraseña seguro (valida contraseña actual y confirmación). */
+    // ===============================================
+    // CAMBIO DE CONTRASEÑA
+    // ===============================================
     @Transactional
     public void cambiarContrasena(Long usuarioId,
                                   String contrasenaActual,
@@ -117,5 +146,21 @@ public class UsuarioService extends BaseService<Usuario, Long> {
 
         usuario.setContrasena(passwordEncoder.encode(nuevaContrasena));
         usuarioRepository.save(usuario);
+    }
+
+    // ===============================================
+    // CONSULTAS ADICIONALES
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Optional<Usuario> buscarPorEmail(String email) {
+        if (email == null || email.isBlank()) return Optional.empty();
+        return usuarioRepository.findByEmail(email.trim().toLowerCase());
+    }
+
+    @Transactional(readOnly = true)
+    public List<Usuario> listarPorRol(String nombreRol) {
+        if (nombreRol == null || nombreRol.isBlank())
+            throw new IllegalArgumentException("El nombre del rol es obligatorio");
+        return usuarioRepository.findByRol_NombreIgnoreCase(nombreRol.trim());
     }
 }

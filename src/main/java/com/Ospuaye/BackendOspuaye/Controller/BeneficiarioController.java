@@ -135,21 +135,6 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
     }
 
     // -------------------------------------------------------
-    // PAGINACIÓN
-    // -------------------------------------------------------
-    @GetMapping("/paginar")
-    public ResponseEntity<Page<Beneficiario>> paginar(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        try {
-            return ResponseEntity.ok(beneficiarioService.paginar(page, size));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    // -------------------------------------------------------
     // BUSCAR + PAGINACIÓN
     // -------------------------------------------------------
     @GetMapping("/buscar")

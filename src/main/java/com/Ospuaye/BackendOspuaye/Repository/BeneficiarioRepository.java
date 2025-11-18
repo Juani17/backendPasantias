@@ -25,6 +25,7 @@ public interface BeneficiarioRepository extends BaseRepository<Beneficiario, Lon
 
     Optional<Beneficiario> findByCuil(Long cuil);
     // 🔍 Buscar por nombre o apellido
+
     Page<Beneficiario> findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(
             String nombre,
             String apellido,

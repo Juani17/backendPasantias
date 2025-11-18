@@ -30,20 +30,7 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
     }
 
     // ===============================================
-    // PAGINADO SIMPLE
-    // ===============================================
-    @Transactional(readOnly = true)
-    public Page<Beneficiario> paginar(int page, int size) {
-        if (page < 0) page = 0;
-        if (size <= 0) size = 5;
-        return beneficiarioRepository.findAll(PageRequest.of(page, size));
-    }
-
-    // ===============================================
     // BUSQUEDA GLOBAL + PAGINADO
-    // - Si query es numérico -> buscá por DNI (exacto)
-    // - Si query vacío -> paginado
-    // - Si query texto -> buscá por nombre o apellido (contains, ignore case)
     // ===============================================
     @Transactional(readOnly = true)
     public Page<Beneficiario> buscar(String query, int page, int size) {
@@ -51,22 +38,18 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
         if (size <= 0) size = 5;
 
         if (query == null || query.trim().isEmpty()) {
-            return paginar(page, size);
+            return super.paginar(page, size); // ✅ paginado genérico
         }
 
         String q = query.trim();
 
-        // Si el query es solo dígitos (dni)
         if (q.matches("\\d+")) {
             try {
                 Long dni = Long.parseLong(q);
                 return beneficiarioRepository.findByDni(dni, PageRequest.of(page, size));
-            } catch (NumberFormatException ignored) {
-                // si por alguna razón el número es demasiado grande, caemos a búsqueda por texto
-            }
+            } catch (NumberFormatException ignored) {}
         }
 
-        // búsqueda por nombre o apellido
         return beneficiarioRepository
                 .findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(q, q, PageRequest.of(page, size));
     }
@@ -188,7 +171,7 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Beneficiario> ListarPorCuil(Long cuil) throws Exception {
+    public Optional<Beneficiario> listarPorCuil(Long cuil) throws Exception {
         if (cuil == null) throw new IllegalArgumentException("El CUIL no puede ser nulo");
         Optional<Beneficiario> beneficiario = beneficiarioRepository.findByCuil(cuil);
         if (beneficiario.isEmpty()) throw new IllegalArgumentException("No se encontró un Beneficiario con el CUIL especificado");
