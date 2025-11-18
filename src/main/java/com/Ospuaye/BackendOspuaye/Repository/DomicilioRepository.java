@@ -22,7 +22,7 @@ public interface DomicilioRepository extends BaseRepository<Domicilio, Long> {
             String barrio,
             String manzanaPiso,
             String casaDepartamento,
-            String nombreEmpresa,
+            String empresa,
             Pageable pageable
     );
 }
