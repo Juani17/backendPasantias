@@ -16,13 +16,14 @@ public interface DomicilioRepository extends BaseRepository<Domicilio, Long> {
     List<Domicilio> findByLocalidadIdAndActivoTrue(Long localidadId);
     Optional<Domicilio> findByCalleAndNumeracion(String calle, String numeracion);
     Optional<Domicilio> findByCalleAndNumeracionAndLocalidad_Id(String calle, String numeracion, Long localidad );
-    Page<Domicilio> findByCalleContainingIgnoreCaseOrNumeracionContainingIgnoreCaseOrBarrioContainingIgnoreCaseOrManzanaPisoContainingIgnoreCaseOrCasaDepartamentoContainingIgnoreCaseOrEmpresa_NombreContainingIgnoreCase(
+    Page<Domicilio> findByCalleContainingIgnoreCaseOrNumeracionContainingIgnoreCaseOrBarrioContainingIgnoreCaseOrManzanaPisoContainingIgnoreCaseOrCasaDepartamentoContainingIgnoreCaseOrEmpresa_RazonSocialContainingIgnoreCase(
             String calle,
             String numeracion,
             String barrio,
             String manzanaPiso,
             String casaDepartamento,
-            String empresa,
+            String razonSocial,
             Pageable pageable
     );
+
 }
