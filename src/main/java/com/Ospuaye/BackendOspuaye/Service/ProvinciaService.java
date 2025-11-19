@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
-public class ProvinciaService extends BaseNombrableService<Provincia, Long> {
+public class ProvinciaService extends BaseService<Provincia, Long> {
 
     private final ProvinciaRepository provinciaRepository;
     private final PaisRepository paisRepository;

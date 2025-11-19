@@ -10,7 +10,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/departamentos")
-public class DepartamentoController extends BaseNombrableController<Departamento, Long> {
+public class DepartamentoController extends BaseController<Departamento, Long> {
 
     private final DepartamentoService departamentoService;
 

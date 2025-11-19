@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public abstract class PersonaService extends BaseNombrableService<Persona, Long> {
+public abstract class PersonaService extends BaseService<Persona, Long> {
 
     private final PersonaRepository personaRepository;
     private final NacionalidadRepository nacionalidadRepository;

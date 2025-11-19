@@ -5,7 +5,7 @@ import com.Ospuaye.BackendOspuaye.Repository.AreaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AreaService extends BaseNombrableService<Area, Long> {
+public class AreaService extends BaseService<Area, Long> {
 
     private final AreaRepository areaRepository;
 

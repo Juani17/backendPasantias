@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/nacionalidades")
-public class NacionalidadController extends BaseNombrableController<Nacionalidad, Long> {
+public class NacionalidadController extends BaseController<Nacionalidad, Long> {
 
     private final NacionalidadService nacionalidadService;
 

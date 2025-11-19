@@ -10,7 +10,7 @@
     @NoArgsConstructor
     @AllArgsConstructor
     @SuperBuilder
-    public class Provincia extends BaseNombrable {
+    public class Provincia extends Base {
 
         private String nombre;
 

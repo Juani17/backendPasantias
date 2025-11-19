@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface NacionalidadRepository extends BaseNombrableRepository<Nacionalidad, Long> {
+public interface NacionalidadRepository extends BaseRepository<Nacionalidad, Long> {
     Optional<Nacionalidad> findById(Long id);
     Optional<Nacionalidad> findByNombre(String nombre);
 }

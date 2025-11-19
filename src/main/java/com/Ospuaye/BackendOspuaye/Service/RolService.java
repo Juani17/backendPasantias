@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
-public class RolService extends BaseNombrableService<Rol, Long> {
+public class RolService extends BaseService<Rol, Long> {
 
     private final RolRepository rolRepository;
     private final AreaRepository areaRepository;

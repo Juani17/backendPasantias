@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 @Repository
-public interface PedidoRepository extends BaseNombrableRepository<Pedido, Long> {
+public interface PedidoRepository extends BaseRepository<Pedido, Long> {
 
     List<Pedido> findByBeneficiario(Beneficiario beneficiario);
     List<Pedido> findByGrupoFamiliar(GrupoFamiliar grupoFamiliar);

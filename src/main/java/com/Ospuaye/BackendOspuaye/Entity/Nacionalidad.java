@@ -10,6 +10,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Nacionalidad extends BaseNombrable {
+public class Nacionalidad extends Base {
     private String nombre;
 }

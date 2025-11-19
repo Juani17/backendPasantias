@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface LocalidadRepository extends BaseNombrableRepository<Localidad, Long> {
+public interface LocalidadRepository extends BaseRepository<Localidad, Long> {
     List<Localidad> findByDepartamento(Departamento departamento);
     List<Localidad> findByActivoTrue();
     Optional<Localidad> findByNombre(String nombre);

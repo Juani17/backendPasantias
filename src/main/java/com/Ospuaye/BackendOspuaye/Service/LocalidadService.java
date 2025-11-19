@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class LocalidadService extends BaseNombrableService<Localidad, Long> {
+public class LocalidadService extends BaseService<Localidad, Long> {
 
     private final LocalidadRepository localidadRepository;
     private final DepartamentoRepository departamentoRepository;

@@ -10,7 +10,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/roles")
-public class RolController extends BaseNombrableController<Rol, Long> {
+public class RolController extends BaseController<Rol, Long> {
 
     private final RolService rolService;
 

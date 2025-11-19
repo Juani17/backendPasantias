@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/paises")
-public class PaisController extends BaseNombrableController<Pais, Long> {
+public class PaisController extends BaseController<Pais, Long> {
 
     private final PaisService paisService;
     private final PaisRepository paisRepository;

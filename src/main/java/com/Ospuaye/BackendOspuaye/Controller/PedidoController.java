@@ -19,7 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pedidos")
-public class PedidoController extends BaseNombrableController<Pedido, Long> {
+public class PedidoController extends BaseController<Pedido, Long> {
 
     private final PedidoService pedidoService;
     private final DocumentoService documentoService;

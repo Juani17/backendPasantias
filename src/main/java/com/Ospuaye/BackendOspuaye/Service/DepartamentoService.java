@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class DepartamentoService extends BaseNombrableService<Departamento, Long> {
+public class DepartamentoService extends BaseService<Departamento, Long> {
 
     private final DepartamentoRepository departamentoRepository;
     private final ProvinciaRepository provinciaRepository;

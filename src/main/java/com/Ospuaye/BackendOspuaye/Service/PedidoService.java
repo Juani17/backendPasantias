@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
-public class PedidoService extends BaseNombrableService<Pedido, Long> {
+public class PedidoService extends BaseService<Pedido, Long> {
 
     @Autowired private PedidoRepository pedidoRepository;
     @Autowired private PedidoOftalmologiaRepository pedidoOftalmologiaRepository;

@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Departamento extends BaseNombrable {
+public class Departamento extends Base {
 
     private String nombre;
 

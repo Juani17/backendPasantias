@@ -4,7 +4,48 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9e82dc1f-9b89-4eec-a91e-a75d0b85ffc0" name="Changes" comment="" />
+    <list default="true" id="9e82dc1f-9b89-4eec-a91e-a75d0b85ffc0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/AreaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/AreaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/BaseNombrableController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/DepartamentoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/DepartamentoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/LocalidadController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/LocalidadController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/NacionalidadController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/NacionalidadController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/PaisController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/PaisController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/PedidoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/PedidoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/PersonaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/PersonaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/ProvinciaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/ProvinciaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/RolController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/RolController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Area.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Area.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/BaseNombrable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Departamento.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Departamento.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Localidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Localidad.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Nacionalidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Nacionalidad.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Pais.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Pais.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Pedido.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Pedido.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Persona.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Persona.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Provincia.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Provincia.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Rol.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Entity/Rol.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/AreaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/AreaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/BaseNombrableRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/DepartamentoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/DepartamentoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/LocalidadRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/LocalidadRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/NacionalidadRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/NacionalidadRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/PaisRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/PaisRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/PedidoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/PedidoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/PersonaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/PersonaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/ProvinciaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/ProvinciaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/RolRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/RolRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/AreaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/AreaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/BaseNombrableService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/DepartamentoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/DepartamentoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/LocalidadService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/LocalidadService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/NacionalidadService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/NacionalidadService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/PaisService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/PaisService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/PedidoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/PedidoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/PersonaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/PersonaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/ProvinciaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/ProvinciaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/RolService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/RolService.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Localidad extends BaseNombrable {
+public class Localidad extends Base {
 
     private String nombre;
 

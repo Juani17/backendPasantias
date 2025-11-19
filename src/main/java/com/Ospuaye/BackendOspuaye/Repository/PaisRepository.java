@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.List;
 
 @Repository
-public interface PaisRepository extends BaseNombrableRepository<Pais, Long> {
+public interface PaisRepository extends BaseRepository<Pais, Long> {
 
     Optional<Pais> findByNombre(String nombre);
 }
