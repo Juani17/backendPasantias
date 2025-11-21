@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface PedidoRepository extends BaseRepository<Pedido, Long> {
@@ -29,4 +31,16 @@ public interface PedidoRepository extends BaseRepository<Pedido, Long> {
 
     @Query("SELECT p FROM Pedido p WHERE LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))")
     List<Pedido> searchByNombre(@Param("nombre") String nombre);
+
+    Page<Pedido> findByBeneficiario_NombreContainingIgnoreCaseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseOrEmpresaContainingIgnoreCaseOrDelegacionContainingIgnoreCaseOrPaciente_NombreContainingIgnoreCaseOrMedico_NombreContainingIgnoreCase(
+            String beneficiario,
+            String grupoFamiliar,
+            String empresa,
+            String delegacion,
+            String paciente,
+            String medico,
+            Pageable pageable
+    );
+
+
 }

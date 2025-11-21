@@ -4,6 +4,9 @@ import com.Ospuaye.BackendOspuaye.Entity.Area;
 import com.Ospuaye.BackendOspuaye.Entity.Rol;
 import com.Ospuaye.BackendOspuaye.Repository.AreaRepository;
 import com.Ospuaye.BackendOspuaye.Repository.RolRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +23,22 @@ public class RolService extends BaseService<Rol, Long> {
         this.rolRepository = rolRepository;
         this.areaRepository = areaRepository;
     }
+
+    @Transactional(readOnly = true)
+    public Page<Rol> buscar(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginar(page, size);
+        }
+
+        String q = query.trim();
+        return rolRepository.findByNombreContainingIgnoreCaseOrArea_NombreContainingIgnoreCase(q, q, pageable);
+    }
+
 
     @Override
     @Transactional

@@ -3,6 +3,7 @@ package com.Ospuaye.BackendOspuaye.Controller;
 import com.Ospuaye.BackendOspuaye.Entity.Pais;
 import com.Ospuaye.BackendOspuaye.Repository.PaisRepository;
 import com.Ospuaye.BackendOspuaye.Service.PaisService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,4 +59,19 @@ public class PaisController extends BaseController<Pais, Long> {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<?> buscar(
+            @RequestParam(defaultValue = "") String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        try {
+            Page<Pais> result = paisService.buscar(query, page, size);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 }

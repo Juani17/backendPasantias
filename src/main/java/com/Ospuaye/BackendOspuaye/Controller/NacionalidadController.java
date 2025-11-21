@@ -2,6 +2,7 @@ package com.Ospuaye.BackendOspuaye.Controller;
 
 import com.Ospuaye.BackendOspuaye.Entity.Nacionalidad;
 import com.Ospuaye.BackendOspuaye.Service.NacionalidadService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,5 +65,20 @@ public class NacionalidadController extends BaseController<Nacionalidad, Long> {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al buscar la nacionalidad: " + e.getMessage());
         }
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<?> buscar(
+            @RequestParam(defaultValue = "") String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        try {
+            Page<Nacionalidad> result = nacionalidadService.buscar(query, page, size);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 
 }

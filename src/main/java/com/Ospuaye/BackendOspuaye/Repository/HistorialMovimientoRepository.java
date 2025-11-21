@@ -7,6 +7,8 @@ import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
 import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface HistorialMovimientoRepository extends BaseRepository<HistorialMovimiento, Long> {

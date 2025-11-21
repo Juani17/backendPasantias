@@ -184,4 +184,19 @@ public class PedidoController extends BaseController<Pedido, Long> {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al tomar pedido: " + e.getMessage());
         }
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<?> buscar(
+            @RequestParam(defaultValue = "") String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        try {
+            // 🔹 Llama al método buscar de PedidoService
+            return ResponseEntity.ok(pedidoService.buscar(query, page, size));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 }

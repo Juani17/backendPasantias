@@ -2,6 +2,9 @@ package com.Ospuaye.BackendOspuaye.Service;
 
 import com.Ospuaye.BackendOspuaye.Entity.Nacionalidad;
 import com.Ospuaye.BackendOspuaye.Repository.NacionalidadRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +20,20 @@ public class NacionalidadService extends BaseService<Nacionalidad, Long> {
     public NacionalidadService(NacionalidadRepository nacionalidadRepository) {
         super(nacionalidadRepository);
         this.nacionalidadRepository = nacionalidadRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Nacionalidad> buscar(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginar(page, size);
+        }
+
+        return nacionalidadRepository.findByNombreContainingIgnoreCase(query.trim(), pageable);
     }
 
     @Override

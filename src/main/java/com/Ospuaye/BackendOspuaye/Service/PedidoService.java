@@ -5,6 +5,9 @@ import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.PedidoTipo;
 import com.Ospuaye.BackendOspuaye.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,26 @@ public class PedidoService extends BaseService<Pedido, Long> {
         super(pedidoRepository);
         this.pedidoRepository = pedidoRepository;
     }
+
+    @Transactional(readOnly = true)
+    public Page<Pedido> buscar(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return pedidoRepository.findAll(pageable);
+        }
+
+        String q = query.trim();
+        return pedidoRepository.findByBeneficiario_NombreContainingIgnoreCaseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseOrEmpresaContainingIgnoreCaseOrDelegacionContainingIgnoreCaseOrPaciente_NombreContainingIgnoreCaseOrMedico_NombreContainingIgnoreCase(
+                q, q, q, q, q, q, pageable
+        );
+    }
+
+
+
     // 🔍 VALIDACIONES COMUNES
     protected void validarPedidoComun(Pedido p) throws Exception {
         if (p == null) throw new Exception("El pedido no puede ser nulo");

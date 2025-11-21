@@ -2,6 +2,7 @@ package com.Ospuaye.BackendOspuaye.Controller;
 
 import com.Ospuaye.BackendOspuaye.Entity.Provincia;
 import com.Ospuaye.BackendOspuaye.Service.ProvinciaService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,4 +29,19 @@ public class ProvinciaController extends BaseController<Provincia, Long> {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<?> buscar(
+            @RequestParam(defaultValue = "") String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        try {
+            Page<Provincia> result = provinciaService.buscar(query, page, size);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 }

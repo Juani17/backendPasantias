@@ -3,6 +3,9 @@ package com.Ospuaye.BackendOspuaye.Service;
 import com.Ospuaye.BackendOspuaye.Entity.Departamento;
 import com.Ospuaye.BackendOspuaye.Repository.DepartamentoRepository;
 import com.Ospuaye.BackendOspuaye.Repository.ProvinciaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +25,24 @@ public class DepartamentoService extends BaseService<Departamento, Long> {
         this.provinciaRepository = provinciaRepository;
     }
 
-    @Override
+    @Transactional(readOnly = true)
+    public Page<Departamento> buscar(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginar(page, size);
+        }
+
+        String q = query.trim();
+        return departamentoRepository.findByNombreContainingIgnoreCaseOrProvincia_NombreContainingIgnoreCase(q, q, pageable);
+    }
+
+
+
+@Override
     public Departamento crear(Departamento entity) throws Exception {
         if (entity.getNombre() == null || entity.getNombre().isBlank()) {
             throw new Exception("El nombre del departamento es obligatorio");

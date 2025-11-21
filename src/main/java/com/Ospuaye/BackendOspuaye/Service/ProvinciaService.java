@@ -5,6 +5,9 @@ import com.Ospuaye.BackendOspuaye.Entity.Pais;
 import com.Ospuaye.BackendOspuaye.Entity.Provincia;
 import com.Ospuaye.BackendOspuaye.Repository.ProvinciaRepository;
 import com.Ospuaye.BackendOspuaye.Repository.PaisRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +23,21 @@ public class ProvinciaService extends BaseService<Provincia, Long> {
         super(provinciaRepository);
         this.provinciaRepository = provinciaRepository;
         this.paisRepository = paisRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Provincia> buscar(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginar(page, size);
+        }
+
+        String q = query.trim();
+        return provinciaRepository.findByNombreContainingIgnoreCaseOrPais_NombreContainingIgnoreCase(q, q, pageable);
     }
 
     @Override

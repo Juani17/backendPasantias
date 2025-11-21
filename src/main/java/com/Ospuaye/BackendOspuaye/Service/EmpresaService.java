@@ -5,6 +5,9 @@ import com.Ospuaye.BackendOspuaye.Entity.Empresa;
 import com.Ospuaye.BackendOspuaye.Repository.BeneficiarioRepository;
 import com.Ospuaye.BackendOspuaye.Repository.DomicilioRepository;
 import com.Ospuaye.BackendOspuaye.Repository.EmpresaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,22 @@ public class EmpresaService extends BaseService<Empresa, Long> {
         this.beneficiarioRepository = beneficiarioRepository;
         this.domicilioRepository = domicilioRepository;
     }
+
+    @Transactional(readOnly = true)
+    public Page<Empresa> buscar(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginar(page, size);
+        }
+
+        String q = query.trim();
+        return empresaRepository.findByCuitContainingIgnoreCaseOrRazonSocialContainingIgnoreCaseOrDomicilio_CalleContainingIgnoreCase(q, q, q, pageable);
+    }
+
 
     @Override
     @Transactional

@@ -7,9 +7,22 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface PedidoOrtopediaRepository extends JpaRepository<PedidoOrtopedia, Long> {
     List<PedidoOrtopedia> findByBeneficiario(Beneficiario beneficiario);
     List<PedidoOrtopedia> findByMedico(Medico medico);
+    Page<PedidoOrtopedia> findByBeneficiario_NombreContainingIgnoreCaseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseOrEmpresaContainingIgnoreCaseOrDelegacionContainingIgnoreCaseOrPaciente_NombreContainingIgnoreCaseOrMedico_NombreContainingIgnoreCaseOrMotivoConsultaContainingIgnoreCase(
+            String beneficiario,
+            String grupoFamiliar,
+            String empresa,
+            String delegacion,
+            String paciente,
+            String medico,
+            String motivoConsulta,
+            Pageable pageable
+    );
+
 }
