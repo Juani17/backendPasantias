@@ -20,4 +20,6 @@ public interface LocalidadRepository extends BaseRepository<Localidad, Long> {
             String codigoPostal,
             Pageable pageable
     );
+    List<Localidad> findByNombreContainingIgnoreCase(String nombre);
+
 }

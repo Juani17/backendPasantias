@@ -48,20 +48,21 @@ public class SecurityConfig {
                         // Solo ADMIN puede crear Áreas, Roles y Médicos
                         .requestMatchers("/api/areas/**").hasRole("ADMIN")
                         .requestMatchers("/api/roles/**").hasRole("ADMIN")
-                        .requestMatchers("/api/medicos/**").hasRole("ADMIN")
+                        .requestMatchers("/api/medicos/actualizar/**").hasAnyRole("ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO")
+                        .requestMatchers("/api/medicos/**").hasAnyRole("ADMIN", "MEDICO AUDITOR GENERAL")
                         .requestMatchers("/api/beneficiarios/**").hasRole("ADMIN")
                         // Users y Medicos
-                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/oftalmologia/actualizar/**").hasAnyRole("MEDICO OFTALMOLOGO", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/ortopedia/actualizar/**").hasAnyRole("MEDICO ORTOPEDIA", "ADMIN")
-                        .requestMatchers("/api/pedidos/ortopedia/**").hasAnyRole("USER", "ADMIN","MEDICO ORTOPEDIA")
-                        .requestMatchers("/api/pedidos/oftalmologia/**").hasAnyRole("USER", "ADMIN","MEDICO OFTALMOLOGO")
-                        .requestMatchers("/api/usuarios/cambiarContrasena").hasAnyRole("USER", "ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO")
-                        .requestMatchers("/api/pedidos/**").hasAnyRole( "ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO")
-                        .requestMatchers("/api/pedidos").hasAnyRole( "ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO")
+                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/oftalmologia/actualizar/**").hasAnyRole("MEDICO OFTALMOLOGO", "ADMIN", "MEDICO AUDITOR GENERAL")
+                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/ortopedia/actualizar/**").hasAnyRole("MEDICO ORTOPEDIA", "ADMIN", "MEDICO AUDITOR GENERAL")
+                        .requestMatchers("/api/pedidos/ortopedia/**").hasAnyRole("USER", "ADMIN","MEDICO ORTOPEDIA", "MEDICO AUDITOR GENERAL")
+                        .requestMatchers("/api/pedidos/oftalmologia/**").hasAnyRole("USER", "ADMIN","MEDICO OFTALMOLOGO", "MEDICO AUDITOR GENERAL")
+                        .requestMatchers("/api/usuarios/cambiarContrasena").hasAnyRole("USER", "ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO", "MEDICO AUDITOR GENERAL")
+                        .requestMatchers("/api/pedidos/**").hasAnyRole( "ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO", "MEDICO AUDITOR GENERAL")
+                        .requestMatchers("/api/pedidos").hasAnyRole( "ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO", "MEDICO AUDITOR GENERAL")
                         .requestMatchers(HttpMethod.PUT, "/api/pedidos/ortopedia/**")
-                        .hasAnyRole("MEDICO ORTOPEDIA", "ADMIN")
+                        .hasAnyRole("MEDICO ORTOPEDIA", "ADMIN", "MEDICO AUDITOR GENERAL")
                         .requestMatchers(HttpMethod.PUT, "/api/pedidos/oftalmologia/**")
-                        .hasAnyRole("MEDICO OFTALMOLOGO", "ADMIN")
+                        .hasAnyRole("MEDICO OFTALMOLOGO", "ADMIN", "MEDICO AUDITOR GENERAL")
 
 
 

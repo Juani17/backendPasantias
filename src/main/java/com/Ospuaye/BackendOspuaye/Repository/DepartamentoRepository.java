@@ -18,5 +18,6 @@ public interface DepartamentoRepository extends BaseRepository<Departamento, Lon
             String nombreProvincia,
             Pageable pageable
     );
+    List<Departamento> findByNombreContainingIgnoreCase(String nombre);
 
 }

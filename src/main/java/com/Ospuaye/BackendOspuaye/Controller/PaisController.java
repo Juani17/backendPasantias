@@ -74,4 +74,13 @@ public class PaisController extends BaseController<Pais, Long> {
         }
     }
 
+    @GetMapping("/buscar-simple")
+    public ResponseEntity<?> search(@RequestParam String nombre) {
+        try {
+            return ResponseEntity.ok(paisService.buscarPorNombre(nombre));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 }

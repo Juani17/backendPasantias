@@ -1,7 +1,10 @@
 package com.Ospuaye.BackendOspuaye.Controller;
 
+import com.Ospuaye.BackendOspuaye.Dto.PedidoOftalmologiaDTO;
+import com.Ospuaye.BackendOspuaye.Dto.PedidoOrtopediaDTO;
 import com.Ospuaye.BackendOspuaye.Entity.Documento;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
+import com.Ospuaye.BackendOspuaye.Entity.Pedido;
 import com.Ospuaye.BackendOspuaye.Entity.PedidoOftalmologia;
 import com.Ospuaye.BackendOspuaye.Entity.PedidoOrtopedia;
 import com.Ospuaye.BackendOspuaye.Service.DocumentoService;
@@ -141,6 +144,21 @@ public class PedidoOrtopediaController {
             return ResponseEntity.ok(pedidoOrtopediaService.buscar(query, page, size));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<PedidoOrtopediaDTO> obtenerPedidoPorId(@PathVariable Long id) {
+        PedidoOrtopediaDTO dto = pedidoOrtopediaService.obtenerDto(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/libres")
+    public ResponseEntity<?> TodosLosPedidosATomar() {
+        try {
+            List<PedidoOrtopedia> lista = pedidoOrtopediaService.listarPedidosOrtopediaSinMedico();
+            return ResponseEntity.ok(lista);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al cargar pedidos: " + e.getMessage());
         }
     }
 

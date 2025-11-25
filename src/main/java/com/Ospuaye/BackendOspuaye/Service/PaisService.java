@@ -82,4 +82,14 @@ public class PaisService extends BaseService<Pais, Long> {
                 .filter(p -> Boolean.TRUE.equals(p.getActivo()))
                 .toList();
     }
+    @Transactional(readOnly = true)
+    public List<Pais> buscarPorNombre(String nombre) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return paisRepository.findAll().stream()
+                    .filter(p -> Boolean.TRUE.equals(p.getActivo()))
+                    .toList();
+        }
+        return paisRepository.findByNombreContainingIgnoreCase(nombre.trim());
+    }
+
 }

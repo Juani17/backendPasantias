@@ -1,5 +1,8 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
+import com.Ospuaye.BackendOspuaye.Dto.DocumentoDTO;
+import com.Ospuaye.BackendOspuaye.Dto.PedidoOftalmologiaDTO;
+import com.Ospuaye.BackendOspuaye.Dto.PedidoOrtopediaDTO;
 import com.Ospuaye.BackendOspuaye.Entity.*;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.PedidoTipo;
@@ -159,5 +162,43 @@ public class PedidoOrtopediaService extends PedidoService {
                 "Cambio de estado a " + nuevoEstado);
 
         return pedidoOrtopediaRepository.save(pedido);
+    }
+
+    public PedidoOrtopediaDTO obtenerDto(Long id) {
+        PedidoOrtopedia pedido = pedidoOrtopediaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        PedidoOrtopediaDTO dto = new PedidoOrtopediaDTO();
+        dto.setId(pedido.getId());
+        dto.setNombre(pedido.getNombre());
+        dto.setMotivoConsulta(pedido.getMotivoConsulta());
+        dto.setRecetaMedica(pedido.getRecetaMedica());
+        dto.setFechaRevision(pedido.getFechaRevision());
+        dto.setObservacionMedico(pedido.getObservacionMedico());
+        dto.setBeneficiario(pedido.getBeneficiario());
+        dto.setDni(pedido.getDni());
+        dto.setTelefono(pedido.getTelefono());
+        dto.setEmpresa(pedido.getEmpresa());
+        dto.setDelegacion(pedido.getDelegacion());
+        dto.setMedico(pedido.getMedico());
+
+        // convertir documentos a DTO
+        List<DocumentoDTO> documentos = pedido.getDocumentos().stream()
+                .map(doc -> {
+                    DocumentoDTO d = new DocumentoDTO();
+                    d.setId(doc.getId());
+                    d.setNombreArchivo(doc.getNombreArchivo());
+                    d.setUrl("/api/documentos/" + doc.getId()); // <--- URL de descarga
+                    return d;
+                })
+                .toList();
+
+        dto.setDocumentos(documentos);
+
+        return dto;
+    }
+    @Transactional(readOnly = true)
+    public List<PedidoOrtopedia> listarPedidosOrtopediaSinMedico() {
+        return pedidoOrtopediaRepository.findByMedicoIsNull();
     }
 }

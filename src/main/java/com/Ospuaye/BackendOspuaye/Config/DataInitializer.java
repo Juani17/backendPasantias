@@ -99,7 +99,26 @@ public class DataInitializer {
                         return rolRepository.save(nuevoRol);
                     });
 
-            // 9) Crear usuario ADMIN si no existe
+            // 9) Crear área MEDICO MEDICO AUDITOR GENERAL si no existe
+            Area areaMedicoAud = areaRepository.findByNombre("MEDICO AUDITOR GENERAL")
+                    .orElseGet(() -> {
+                        Area nuevaArea = Area.builder()
+                                .nombre("MEDICO AUDITOR GENERAL")
+                                .build();
+                        return areaRepository.save(nuevaArea);
+                    });
+
+            // 10) Crear rol MEDICO MEDICO AUDITOR GENERAL si no existe
+            Rol rolMedicoAud = rolRepository.findByNombre("MEDICO MEDICO AUDITOR GENERAL")
+                    .orElseGet(() -> {
+                        Rol nuevoRol = Rol.builder()
+                                .nombre("MEDICO MEDICO AUDITOR GENERAL")
+                                .area(areaMedicoOft)
+                                .build();
+                        return rolRepository.save(nuevoRol);
+                    });
+
+            // 11) Crear usuario ADMIN si no existe
             if (usuarioRepository.findByEmail("admin@admin.com").isEmpty()) {
                 Usuario admin = Usuario.builder()
                         .email("admin@admin.com")

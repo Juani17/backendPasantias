@@ -91,4 +91,33 @@ public class LocalidadService extends BaseService<Localidad, Long> {
         return localidades;
     }
 
+    @Transactional
+    public Localidad actualizarLocalidad(Long id, Localidad data) {
+
+        Localidad loc = localidadRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Localidad no encontrada"));
+
+        loc.setNombre(data.getNombre());
+        loc.setCodigoPostal(data.getCodigoPostal());
+
+        if (data.getDepartamento() != null && data.getDepartamento().getId() != null) {
+            Departamento dep = departamentoRepository.findById(data.getDepartamento().getId())
+                    .orElseThrow(() -> new RuntimeException("Departamento no encontrado"));
+            loc.setDepartamento(dep);
+        }
+
+        return localidadRepository.save(loc);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Localidad> buscarSimplePorNombre(String nombre) {
+
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return List.of(); // devolver lista vacía si no hay texto
+        }
+
+        return localidadRepository.findByNombreContainingIgnoreCase(nombre.trim());
+    }
+
+
 }

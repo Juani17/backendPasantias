@@ -53,4 +53,26 @@ public class LocalidadController extends BaseController<Localidad, Long> {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<?> actualizarLocalidad(
+            @PathVariable Long id,
+            @RequestBody Localidad localidad
+    ) {
+        try {
+            return ResponseEntity.ok(localidadService.actualizarLocalidad(id, localidad));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/buscar-simple")
+    public ResponseEntity<?> buscarSimple(@RequestParam String nombre) {
+        try {
+            return ResponseEntity.ok(localidadService.buscarSimplePorNombre(nombre));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al buscar localidades");
+        }
+    }
 }

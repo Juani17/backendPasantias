@@ -1,8 +1,10 @@
 package com.Ospuaye.BackendOspuaye.Controller;
 
+import com.Ospuaye.BackendOspuaye.Dto.PedidoOftalmologiaDTO;
 import com.Ospuaye.BackendOspuaye.Entity.Documento;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
 import com.Ospuaye.BackendOspuaye.Entity.PedidoOftalmologia;
+import com.Ospuaye.BackendOspuaye.Entity.PedidoOrtopedia;
 import com.Ospuaye.BackendOspuaye.Service.DocumentoService;
 import com.Ospuaye.BackendOspuaye.Service.PedidoOftalmologiaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -87,18 +89,23 @@ public class PedidoOftalmologiaController {
             return ResponseEntity.badRequest().body("Error al obtener pedidos: " + e.getMessage());
         }
     }
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> actualizarPedido(
             @PathVariable Long id,
-            @RequestBody PedidoOftalmologia pedidoActualizado
+            @RequestPart("pedido") PedidoOftalmologia pedidoActualizado,
+            @RequestPart(value = "documentos", required = false) List<MultipartFile> documentos
     ) {
         try {
-            PedidoOftalmologia actualizado = pedidoOftalmologiaService.actualizarPedidoOftalmologia(id, pedidoActualizado);
+            PedidoOftalmologia actualizado =
+                    pedidoOftalmologiaService.actualizarPedidoOftalmologia(id, pedidoActualizado, documentos);
+
             return ResponseEntity.ok(actualizado);
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al actualizar el pedido: " + e.getMessage());
         }
     }
+
 
     @PutMapping("/actualizar/{id}")
     public ResponseEntity<?> actualizarEstado(
@@ -140,5 +147,21 @@ public class PedidoOftalmologiaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<PedidoOftalmologiaDTO> obtenerPedidoPorId(@PathVariable Long id) {
+        PedidoOftalmologiaDTO dto = pedidoOftalmologiaService.obtenerDto(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/libres")
+    public ResponseEntity<?> TodosLosPedidosATomar() {
+        try {
+            List<PedidoOftalmologia> lista = pedidoOftalmologiaService.listarPedidosOftalmologiaSinMedico();
+            return ResponseEntity.ok(lista);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al cargar pedidos: " + e.getMessage());
+        }
+    }
+
 
 }

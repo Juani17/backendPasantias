@@ -3,6 +3,7 @@ package com.Ospuaye.BackendOspuaye.Service;
 import com.Ospuaye.BackendOspuaye.Entity.*;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.*;
 import com.Ospuaye.BackendOspuaye.Repository.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,8 @@ public class ExcelBeneficiarioImporter {
     private final PaisRepository paisRepository;
     private final FamiliarRepository familiarRepository;
     private final DomicilioService domicilioService;
+    private final PasswordEncoder passwordEncoder;
+
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -52,7 +55,7 @@ public class ExcelBeneficiarioImporter {
                                      NacionalidadService nacionalidadService,
                                      ProvinciaService provinciaService,
                                      ProvinciaRepository provinciaRepository,
-                                     DepartamentoRepository departamentoRepository, RolRepository rolRepository, UsuarioRepository usuarioRepository, PaisRepository paisRepository, FamiliarRepository familiarRepository, DomicilioService domicilioService) {
+                                     DepartamentoRepository departamentoRepository, RolRepository rolRepository, UsuarioRepository usuarioRepository, PaisRepository paisRepository, FamiliarRepository familiarRepository, DomicilioService domicilioService, PasswordEncoder passwordEncoder) {
         this.beneficiarioRepository = beneficiarioRepository;
         this.grupoFamiliarRepository = grupoFamiliarRepository;
         this.empresaRepository = empresaRepository;
@@ -73,6 +76,7 @@ public class ExcelBeneficiarioImporter {
         this.paisRepository = paisRepository;
         this.familiarRepository = familiarRepository;
         this.domicilioService = domicilioService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -427,7 +431,7 @@ public class ExcelBeneficiarioImporter {
             } else {
                 user = Usuario.builder()
                         .email(emailGenerado)
-                        .contrasena(cuilTitular)
+                        .contrasena(passwordEncoder.encode(cuilTitular))
                         .rol(rolUser)
                         .activo(true)
                         .build();

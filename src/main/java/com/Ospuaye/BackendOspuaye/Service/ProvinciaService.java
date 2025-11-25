@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -103,6 +104,16 @@ public class ProvinciaService extends BaseService<Provincia, Long> {
             throw new IllegalArgumentException("No se encontro una provincia con ese id");
         }
         return provincia;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Provincia> buscarPorNombre(String nombre) {
+
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return List.of();
+        }
+
+        return provinciaRepository.findByNombreContainingIgnoreCase(nombre.trim());
     }
 }
 

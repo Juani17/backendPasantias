@@ -1,5 +1,6 @@
 package com.Ospuaye.BackendOspuaye.Repository;
 
+import com.Ospuaye.BackendOspuaye.Entity.Pedido;
 import com.Ospuaye.BackendOspuaye.Entity.PedidoOrtopedia;
 import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
 import com.Ospuaye.BackendOspuaye.Entity.Medico;
@@ -24,5 +25,7 @@ public interface PedidoOrtopediaRepository extends JpaRepository<PedidoOrtopedia
             String motivoConsulta,
             Pageable pageable
     );
+    List<PedidoOrtopedia> findByMedicoIsNull();
+
 
 }

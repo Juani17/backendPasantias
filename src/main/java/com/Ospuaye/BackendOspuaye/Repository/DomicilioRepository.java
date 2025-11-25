@@ -25,5 +25,10 @@ public interface DomicilioRepository extends BaseRepository<Domicilio, Long> {
             String razonSocial,
             Pageable pageable
     );
+    List<Domicilio> findTop20ByCalleContainingIgnoreCaseOrNumeracionContainingIgnoreCaseOrBarrioContainingIgnoreCase(
+            String calle,
+            String numeracion,
+            String barrio
+    );
 
 }

@@ -1,5 +1,6 @@
 package com.Ospuaye.BackendOspuaye.Controller;
 
+import com.Ospuaye.BackendOspuaye.Dto.UpdateMedicoDTO;
 import com.Ospuaye.BackendOspuaye.Entity.Medico;
 import com.Ospuaye.BackendOspuaye.Service.MedicoService;
 import org.springframework.http.HttpStatus;
@@ -58,4 +59,13 @@ public class MedicoController extends BaseController<Medico, Long> {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<?> update(
+            @PathVariable Long id,
+            @RequestBody UpdateMedicoDTO dto
+    ) {
+        return ResponseEntity.ok(medicoService.update(id, dto));
+    }
+
 }

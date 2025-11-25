@@ -2,7 +2,9 @@ package com.Ospuaye.BackendOspuaye.Controller;
 
 import com.Ospuaye.BackendOspuaye.Entity.Documento;
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
+import com.Ospuaye.BackendOspuaye.Entity.HistorialMovimiento;
 import com.Ospuaye.BackendOspuaye.Entity.Pedido;
+import com.Ospuaye.BackendOspuaye.Entity.PedidoOrtopedia;
 import com.Ospuaye.BackendOspuaye.Service.DocumentoService;
 import com.Ospuaye.BackendOspuaye.Service.PedidoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -198,5 +200,5 @@ public class PedidoController extends BaseController<Pedido, Long> {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
-
+    
 }

@@ -1,5 +1,6 @@
 package com.Ospuaye.BackendOspuaye.Repository;
 
+import com.Ospuaye.BackendOspuaye.Entity.Pedido;
 import com.Ospuaye.BackendOspuaye.Entity.PedidoOftalmologia;
 import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
 import com.Ospuaye.BackendOspuaye.Entity.Medico;
@@ -24,6 +25,7 @@ public interface PedidoOftalmologiaRepository extends JpaRepository<PedidoOftalm
             String motivoConsulta,
             Pageable pageable
     );
+    List<PedidoOftalmologia> findByMedicoIsNull();
 
 
 }

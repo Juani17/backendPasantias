@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -68,5 +69,9 @@ public class Pedido extends Base {
 
     @Enumerated(EnumType.STRING)
     private PedidoTipo pedidoTipo;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<HistorialMovimiento> historial = new ArrayList<>();
 
 }

@@ -61,4 +61,14 @@ public class DomicilioController extends BaseController<Domicilio, Long> {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @GetMapping("/buscar-simple")
+    public ResponseEntity<?> buscarSimple(@RequestParam String filtro) {
+        try {
+            return ResponseEntity.ok(domicilioService.buscarSimple(filtro));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 }

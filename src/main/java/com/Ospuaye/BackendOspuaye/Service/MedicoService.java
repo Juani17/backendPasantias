@@ -1,5 +1,6 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
+import com.Ospuaye.BackendOspuaye.Dto.UpdateMedicoDTO;
 import com.Ospuaye.BackendOspuaye.Entity.Medico;
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
 import com.Ospuaye.BackendOspuaye.Entity.Area;
@@ -137,4 +138,48 @@ public class MedicoService extends BaseService<Medico, Long> {
                 .orElseThrow(() -> new IllegalArgumentException("Área no encontrada"));
         return medicoRepository.findByArea(a);
     }
+
+    @Transactional
+    public Medico update(Long id, UpdateMedicoDTO dto) {
+
+        // Buscar médico
+        Medico medico = medicoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
+
+        // Actualizar datos básicos
+        medico.setNombre(dto.getNombre());
+        medico.setApellido(dto.getApellido());
+        medico.setDni(dto.getDni());
+        medico.setCuil(dto.getCuil());
+        medico.setTelefono(dto.getTelefono());
+        medico.setSexo(dto.getSexo());
+        medico.setEstado(dto.getEstado());
+        medico.setMatricula(dto.getMatricula());
+
+        // Actualizar área (si viene)
+        if (dto.getAreaId() != null) {
+            Area area = areaRepository.findById(dto.getAreaId())
+                    .orElseThrow(() -> new RuntimeException("Área no encontrada"));
+            medico.setArea(area);
+        }
+
+        // Actualizar usuario interno (email y/o contraseña)
+        if (medico.getUsuario() != null) {
+            Usuario usuario = medico.getUsuario();
+
+            if (dto.getEmail() != null) {
+                usuario.setEmail(dto.getEmail());
+            }
+
+            if (dto.getContrasena() != null && !dto.getContrasena().isBlank()) {
+                usuario.setContrasena(dto.getContrasena());
+            }
+
+            usuarioRepository.save(usuario);
+        }
+
+        // Guardar médico
+        return medicoRepository.save(medico);
+    }
+
 }

@@ -34,5 +34,12 @@ public interface BeneficiarioRepository extends BaseRepository<Beneficiario, Lon
 
     // 🔍 Buscar por DNI paginado
     Page<Beneficiario> findByDni(Long dni, Pageable pageable);
+    List<Beneficiario> findTop20ByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCaseOrDniEqualsOrCuilEquals(
+            String nombre,
+            String apellido,
+            Long dni,
+            Long cuil
+    );
+
 }
 

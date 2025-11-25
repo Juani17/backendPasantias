@@ -1,9 +1,12 @@
 package com.Ospuaye.BackendOspuaye.Entity;
 
 import com.Ospuaye.BackendOspuaye.Entity.Enum.Estado;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -19,7 +22,7 @@ public class HistorialMovimiento extends Base {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado")
-    private Estado estado; // <-- usa Estado del diagrama
+    private Estado estado;
 
     private String comentario;
 
@@ -29,5 +32,6 @@ public class HistorialMovimiento extends Base {
 
     @ManyToOne
     @JoinColumn(name = "pedido_id")
+    @JsonBackReference
     private Pedido pedido;
 }

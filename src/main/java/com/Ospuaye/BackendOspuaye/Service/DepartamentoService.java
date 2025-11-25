@@ -77,4 +77,15 @@ public class DepartamentoService extends BaseService<Departamento, Long> {
         }
         return dep.get();
     }
+
+    @Transactional(readOnly = true)
+    public List<Departamento> buscarSimplePorNombre(String nombre) {
+
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return List.of(); // retorna vacío si no hay texto
+        }
+
+        return departamentoRepository.findByNombreContainingIgnoreCase(nombre.trim());
+    }
+
 }

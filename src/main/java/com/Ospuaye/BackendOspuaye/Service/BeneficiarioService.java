@@ -182,4 +182,30 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
     public List<Beneficiario> listarAfiliadosSindicato() {
         return beneficiarioRepository.findByAfiliadoSindicalTrue();
     }
+    @Transactional(readOnly = true)
+    public List<Beneficiario> buscarSimple(String filtro) {
+
+        if (filtro == null || filtro.trim().isEmpty()) {
+            return List.of(); // ❌ No devolvemos miles de registros
+        }
+
+        String f = filtro.trim();
+
+        Long dni = null;
+        Long cuil = null;
+
+        if (f.matches("\\d+")) {  // Si es número, lo usamos para dni/cuil
+            try {
+                Long num = Long.parseLong(f);
+                dni = num;
+                cuil = num;
+            } catch (Exception ignored) {}
+        }
+
+        return beneficiarioRepository
+                .findTop20ByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCaseOrDniEqualsOrCuilEquals(
+                        f, f, dni, cuil
+                );
+    }
+
 }

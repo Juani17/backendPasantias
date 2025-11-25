@@ -143,4 +143,20 @@ public class DomicilioService extends BaseService<Domicilio, Long> {
             throw new IllegalArgumentException("Localidad no encontrada");
         return domicilioRepository.findByLocalidadIdAndActivoTrue(localidadId);
     }
+
+    @Transactional(readOnly = true)
+    public List<Domicilio> buscarSimple(String filtro) {
+
+        if (filtro == null || filtro.trim().isEmpty()) {
+            return List.of(); // No devolvemos todo para evitar carga masiva
+        }
+
+        String f = filtro.trim();
+
+        return domicilioRepository
+                .findTop20ByCalleContainingIgnoreCaseOrNumeracionContainingIgnoreCaseOrBarrioContainingIgnoreCase(
+                        f, f, f
+                );
+    }
+
 }
