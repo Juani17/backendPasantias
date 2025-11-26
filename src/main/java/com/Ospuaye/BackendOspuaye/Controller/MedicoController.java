@@ -3,7 +3,11 @@ package com.Ospuaye.BackendOspuaye.Controller;
 import com.Ospuaye.BackendOspuaye.Dto.UpdateMedicoDTO;
 import com.Ospuaye.BackendOspuaye.Entity.Medico;
 import com.Ospuaye.BackendOspuaye.Service.MedicoService;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,5 +71,18 @@ public class MedicoController extends BaseController<Medico, Long> {
     ) {
         return ResponseEntity.ok(medicoService.update(id, dto));
     }
+
+    @GetMapping("/export")
+    public ResponseEntity<Resource> exportarMedicosTXT() {
+
+        ByteArrayResource resource = medicoService.exportarTXT();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"medicos.txt\"")
+                .header(HttpHeaders.CONTENT_TYPE, "text/plain; charset=UTF-8")
+                .contentLength(resource.contentLength())
+                .body(resource);
+    }
+
 
 }

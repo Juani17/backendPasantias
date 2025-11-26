@@ -21,4 +21,8 @@ public interface MedicoRepository extends BaseRepository<Medico, Long> {
             String apellido,
             Pageable pageable
     );
+
+    //metodo para descargar medicos de la base
+    List<Medico> findAllByOrderByIdAsc();
+
 }

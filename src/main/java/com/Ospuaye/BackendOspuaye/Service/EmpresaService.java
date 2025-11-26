@@ -5,6 +5,7 @@ import com.Ospuaye.BackendOspuaye.Entity.Empresa;
 import com.Ospuaye.BackendOspuaye.Repository.BeneficiarioRepository;
 import com.Ospuaye.BackendOspuaye.Repository.DomicilioRepository;
 import com.Ospuaye.BackendOspuaye.Repository.EmpresaRepository;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -150,6 +151,40 @@ public class EmpresaService extends BaseService<Empresa, Long> {
         }
         return empresaRepository.findByCuit(cuit.trim());
     }
+
+    //Agrego metodo para descargar de la base
+    @Transactional(readOnly = true)
+    public ByteArrayResource exportarTXT() {
+
+        List<Empresa> empresas = empresaRepository.findAll();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("id|cuit|razonSocial|domicilio|beneficiariosCount|activo\n");
+
+        for (Empresa e : empresas) {
+
+            String domicilioStr = "SIN_DOMICILIO";
+            if (e.getDomicilio() != null) {
+                Domicilio d = e.getDomicilio();
+                domicilioStr =
+                        (d.getCalle() != null ? d.getCalle() : "") + " "
+                                + (d.getNumeracion() != null ? d.getNumeracion() : "") + " - "
+                                + (d.getLocalidad() != null ? d.getLocalidad().getNombre() : "");
+            }
+
+            sb.append(e.getId()).append("|")
+                    .append(e.getCuit() != null ? e.getCuit() : "").append("|")
+                    .append(e.getRazonSocial() != null ? e.getRazonSocial() : "").append("|")
+                    .append(domicilioStr).append("|")
+                    .append(e.getBeneficiarios() != null ? e.getBeneficiarios().size() : 0).append("|")
+                    .append(e.getActivo())
+                    .append("\n");
+        }
+
+        return new ByteArrayResource(sb.toString().getBytes());
+    }
+
+
 
 
 }

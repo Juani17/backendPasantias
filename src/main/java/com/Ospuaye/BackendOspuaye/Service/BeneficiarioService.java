@@ -213,32 +213,34 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
 
     //Agrego logica para descargar beneficiarios de la base
     @Transactional(readOnly = true)
-    public ByteArrayResource exportarBeneficiariosTXT() {
+    public ByteArrayResource exportarTXT() {
 
         List<Beneficiario> lista = beneficiarioRepository.findAll();
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("id|nombre|apellido|dni|cuil|empresaId|correo|telefono|fechaNacimiento\n");
-
         for (Beneficiario b : lista) {
-            sb.append(b.getId()).append("|")
-                    .append(nullSafe(b.getNombre())).append("|")
-                    .append(nullSafe(b.getApellido())).append("|")
-                    .append(nullSafe(b.getDni())).append("|")
-                    .append(nullSafe(b.getCuil())).append("|")
-                    .append(b.getEmpresa() != null ? b.getEmpresa().getId() : "").append("|")
-                    .append(nullSafe(b.getCorreoElectronico())).append("|")
-                    .append(nullSafe(b.getTelefono())).append("|")
-                    .append(b.getFechaNacimiento() != null ? b.getFechaNacimiento().getTime() : "")
-                    .append("\n");
+
+            String linea = String.join("|",
+                    safe(b.getId()),
+                    safe(b.getNombre()),
+                    safe(b.getApellido()),
+                    safe(b.getDni()),
+                    safe(b.getCuil()),
+                    safe(b.getEmpresa() != null ? b.getEmpresa().getId() : ""),
+                    safe(b.getCorreoElectronico()),
+                    safe(b.getTelefono()),
+                    safe(b.getFechaNacimiento())
+            );
+
+            sb.append(linea).append("\n");
         }
 
         return new ByteArrayResource(sb.toString().getBytes(StandardCharsets.UTF_8));
     }
 
-    private String nullSafe(Object value) {
-        return value != null ? value.toString() : "";
+    private String safe(Object o) {
+        return o == null ? "" : o.toString();
     }
 
 

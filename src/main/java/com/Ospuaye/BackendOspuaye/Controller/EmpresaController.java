@@ -5,7 +5,11 @@ import com.Ospuaye.BackendOspuaye.Entity.Empresa;
 import com.Ospuaye.BackendOspuaye.Service.BeneficiarioService;
 import com.Ospuaye.BackendOspuaye.Service.EmpresaService;
 import jakarta.validation.Valid;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -107,6 +111,18 @@ public class EmpresaController extends BaseController<Empresa, Long> {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<Resource> exportarEmpresasTXT() {
+
+        ByteArrayResource resource = empresaService.exportarTXT();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"empresas.txt\"")
+                .header(HttpHeaders.CONTENT_TYPE, "text/plain; charset=UTF-8")
+                .contentLength(resource.contentLength())
+                .body(resource);
     }
 
 }

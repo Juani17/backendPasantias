@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -161,16 +162,19 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
         }
     }
 
-    @GetMapping("/descargar")
-    public ResponseEntity<Resource> exportarBeneficiarios() throws Exception {
-        ByteArrayResource resource = beneficiarioService.exportarBeneficiariosTXT();
+    @GetMapping("/export")
+    public ResponseEntity<Resource> exportarBeneficiariosTXT() {
+
+        ByteArrayResource resource = beneficiarioService.exportarTXT();
 
         return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=beneficiarios.txt")
-                .contentType(MediaType.TEXT_PLAIN)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"beneficiarios.txt\"")
+                .header(HttpHeaders.CONTENT_TYPE, "text/plain; charset=UTF-8")
                 .contentLength(resource.contentLength())
                 .body(resource);
     }
+
+
 
 
 }
