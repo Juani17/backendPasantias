@@ -4,8 +4,11 @@ import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
 import com.Ospuaye.BackendOspuaye.Service.BeneficiarioService;
 import com.Ospuaye.BackendOspuaye.Service.EmpresaService;
 import jakarta.validation.Valid;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -157,5 +160,17 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @GetMapping("/descargar")
+    public ResponseEntity<Resource> exportarBeneficiarios() throws Exception {
+        ByteArrayResource resource = beneficiarioService.exportarBeneficiariosTXT();
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=beneficiarios.txt")
+                .contentType(MediaType.TEXT_PLAIN)
+                .contentLength(resource.contentLength())
+                .body(resource);
+    }
+
 
 }

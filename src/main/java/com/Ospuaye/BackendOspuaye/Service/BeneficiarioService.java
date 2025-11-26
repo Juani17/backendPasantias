@@ -5,11 +5,13 @@ import com.Ospuaye.BackendOspuaye.Entity.Empresa;
 import com.Ospuaye.BackendOspuaye.Repository.BeneficiarioRepository;
 import com.Ospuaye.BackendOspuaye.Repository.EmpresaRepository;
 import com.Ospuaye.BackendOspuaye.Repository.UsuarioRepository;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -207,5 +209,38 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
                         f, f, dni, cuil
                 );
     }
+
+
+    //Agrego logica para descargar beneficiarios de la base
+    @Transactional(readOnly = true)
+    public ByteArrayResource exportarBeneficiariosTXT() {
+
+        List<Beneficiario> lista = beneficiarioRepository.findAll();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("id|nombre|apellido|dni|cuil|empresaId|correo|telefono|fechaNacimiento\n");
+
+        for (Beneficiario b : lista) {
+            sb.append(b.getId()).append("|")
+                    .append(nullSafe(b.getNombre())).append("|")
+                    .append(nullSafe(b.getApellido())).append("|")
+                    .append(nullSafe(b.getDni())).append("|")
+                    .append(nullSafe(b.getCuil())).append("|")
+                    .append(b.getEmpresa() != null ? b.getEmpresa().getId() : "").append("|")
+                    .append(nullSafe(b.getCorreoElectronico())).append("|")
+                    .append(nullSafe(b.getTelefono())).append("|")
+                    .append(b.getFechaNacimiento() != null ? b.getFechaNacimiento().getTime() : "")
+                    .append("\n");
+        }
+
+        return new ByteArrayResource(sb.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    private String nullSafe(Object value) {
+        return value != null ? value.toString() : "";
+    }
+
+
 
 }
