@@ -113,7 +113,7 @@ public class DataInitializer {
                     .orElseGet(() -> {
                         Rol nuevoRol = Rol.builder()
                                 .nombre("MEDICO MEDICO AUDITOR GENERAL")
-                                .area(areaMedicoOft)
+                                .area(areaMedicoAud)
                                 .build();
                         return rolRepository.save(nuevoRol);
                     });
