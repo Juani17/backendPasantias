@@ -97,15 +97,34 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
     // ===============================================
     @Override
     @Transactional
-    public Beneficiario actualizar(Beneficiario entity) throws Exception {
+    public Beneficiario actualizar(Beneficiario entity) {
+
         if (entity == null || entity.getId() == null)
             throw new IllegalArgumentException("La entidad o su ID no pueden ser nulos");
 
         Beneficiario existente = beneficiarioRepository.findById(entity.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Beneficiario no encontrado"));
 
+        // === CAMPOS SIMPLES (PARCIAL) ===
+        if (entity.getNombre() != null)
+            existente.setNombre(entity.getNombre());
+
+        if (entity.getApellido() != null)
+            existente.setApellido(entity.getApellido());
+
+        if (entity.getDni() != null)
+            existente.setDni(entity.getDni());
+
+        if (entity.getCuil() != null)
+            existente.setCuil(entity.getCuil());
+
+        if (entity.getTelefono() != null)
+            existente.setTelefono(entity.getTelefono());
+
+        // === USUARIO ===
         if (entity.getUsuario() != null && entity.getUsuario().getId() != null) {
             Long nuevoUsuarioId = entity.getUsuario().getId();
+
             if (!usuarioRepository.existsById(nuevoUsuarioId))
                 throw new IllegalArgumentException("El usuario asociado no existe");
 
@@ -116,9 +135,11 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
             existente.setUsuario(entity.getUsuario());
         }
 
+        // === EMPRESA ===
         if (entity.getEmpresa() != null) {
             Long empresaId = entity.getEmpresa().getId();
-            if (empresaId == null) throw new IllegalArgumentException("La empresa debe tener id");
+            if (empresaId == null)
+                throw new IllegalArgumentException("La empresa debe tener id");
 
             Empresa empresa = empresaRepository.findById(empresaId)
                     .orElseThrow(() -> new IllegalArgumentException("La empresa asociada no existe"));
@@ -127,15 +148,20 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
                 throw new IllegalArgumentException("No se puede asociar a una empresa inactiva");
 
             existente.setEmpresa(empresa);
-        } else {
-            existente.setEmpresa(null);
         }
 
-        if (entity.getAfiliadoSindical() != null) existente.setAfiliadoSindical(entity.getAfiliadoSindical());
-        if (entity.getEsJubilado() != null) existente.setEsJubilado(entity.getEsJubilado());
+        // === FLAGS ===
+        if (entity.getAfiliadoSindical() != null)
+            existente.setAfiliadoSindical(entity.getAfiliadoSindical());
+
+        if (entity.getEsJubilado() != null)
+            existente.setEsJubilado(entity.getEsJubilado());
+
+        System.out.println("ACTUALIZACIÓN PARCIAL OK");
 
         return beneficiarioRepository.save(existente);
     }
+
 
     // ===============================================
     // ELIMINAR

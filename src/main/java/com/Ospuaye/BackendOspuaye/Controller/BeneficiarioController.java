@@ -44,6 +44,7 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody Beneficiario beneficiario) {
         try {
+            System.out.println("Ingresa beneficiario");
             beneficiario.setId(id);
             Beneficiario actualizado = beneficiarioService.actualizar(beneficiario);
             return ResponseEntity.ok(actualizado);
