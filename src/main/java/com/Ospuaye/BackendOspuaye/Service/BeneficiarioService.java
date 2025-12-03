@@ -237,37 +237,59 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
     }
 
 
-    //Agrego logica para descargar beneficiarios de la base
+
+
     @Transactional(readOnly = true)
     public ByteArrayResource exportarTXT() {
 
         List<Beneficiario> lista = beneficiarioRepository.findAll();
-
         StringBuilder sb = new StringBuilder();
 
+        // ----- CABECERA ALINEADA -----
+        sb.append(
+                pad("id", 10) + "|" +
+                        pad("nombre", 20) + "|" +
+                        pad("apellido", 20) + "|" +
+                        pad("dni", 12) + "|" +
+                        pad("cuil", 15) + "|" +
+                        pad("empresaId", 12) + "|" +
+                        pad("correo", 30) + "|" +
+                        pad("telefono", 15) + "|" +
+                        pad("fechaNacimiento", 15)
+        ).append("\n");
+
+        // ----- FILAS -----
         for (Beneficiario b : lista) {
 
-            String linea = String.join("|",
-                    safe(b.getId()),
-                    safe(b.getNombre()),
-                    safe(b.getApellido()),
-                    safe(b.getDni()),
-                    safe(b.getCuil()),
-                    safe(b.getEmpresa() != null ? b.getEmpresa().getId() : ""),
-                    safe(b.getCorreoElectronico()),
-                    safe(b.getTelefono()),
-                    safe(b.getFechaNacimiento())
-            );
+            String correo = (b.getUsuario() != null ? safe(b.getUsuario().getEmail()) : "");
 
-            sb.append(linea).append("\n");
+            sb.append(
+                    pad(safe(b.getId()), 10) + "|" +
+                            pad(safe(b.getNombre()), 20) + "|" +
+                            pad(safe(b.getApellido()), 20) + "|" +
+                            pad(safe(b.getDni()), 12) + "|" +
+                            pad(safe(b.getCuil()), 15) + "|" +
+                            pad(safe(b.getEmpresa() != null ? b.getEmpresa().getId() : ""), 12) + "|" +
+                            pad(correo, 30) + "|" +
+                            pad(safe(b.getTelefono()), 15) + "|" +
+                            pad(safe(b.getFechaNacimiento()), 15)
+            ).append("\n");
         }
 
         return new ByteArrayResource(sb.toString().getBytes(StandardCharsets.UTF_8));
     }
 
+    // Evita nulls
     private String safe(Object o) {
         return o == null ? "" : o.toString();
     }
+
+    // Alinea columnas
+    private String pad(Object value, int length) {
+        String v = value == null ? "" : value.toString();
+        return String.format("%-" + length + "s", v);
+    }
+
 
 
 

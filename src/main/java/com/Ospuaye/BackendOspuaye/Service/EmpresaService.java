@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -152,38 +153,60 @@ public class EmpresaService extends BaseService<Empresa, Long> {
         return empresaRepository.findByCuit(cuit.trim());
     }
 
-    //Agrego metodo para descargar de la base
     @Transactional(readOnly = true)
     public ByteArrayResource exportarTXT() {
 
         List<Empresa> empresas = empresaRepository.findAll();
         StringBuilder sb = new StringBuilder();
 
-        sb.append("id|cuit|razonSocial|domicilio|beneficiariosCount|activo\n");
+        // CABECERA — alineada con los mismos pad() que los datos
+        sb.append(
+                pad("id", 5) + "|" +
+                        pad("cuit", 12) + "|" +
+                        pad("razonSocial", 30) + "|" +
+                        pad("domicilio", 40) + "|" +
+                        pad("beneficiarios", 15) + "|" +
+                        pad("activo", 8)
+        ).append("\n");
 
+        // DATOS
         for (Empresa e : empresas) {
 
+            // Domicilio en un solo texto
             String domicilioStr = "SIN_DOMICILIO";
             if (e.getDomicilio() != null) {
                 Domicilio d = e.getDomicilio();
                 domicilioStr =
-                        (d.getCalle() != null ? d.getCalle() : "") + " "
-                                + (d.getNumeracion() != null ? d.getNumeracion() : "") + " - "
-                                + (d.getLocalidad() != null ? d.getLocalidad().getNombre() : "");
+                        safe(d.getCalle()) + " " +
+                                safe(d.getNumeracion()) + " - " +
+                                (d.getLocalidad() != null ? safe(d.getLocalidad().getNombre()) : "");
             }
 
-            sb.append(e.getId()).append("|")
-                    .append(e.getCuit() != null ? e.getCuit() : "").append("|")
-                    .append(e.getRazonSocial() != null ? e.getRazonSocial() : "").append("|")
-                    .append(domicilioStr).append("|")
-                    .append(e.getBeneficiarios() != null ? e.getBeneficiarios().size() : 0).append("|")
-                    .append(e.getActivo())
-                    .append("\n");
+            String linea =
+                    pad(safe(e.getId()), 5) + "|" +
+                            pad(safe(e.getCuit()), 12) + "|" +
+                            pad(safe(e.getRazonSocial()), 30) + "|" +
+                            pad(domicilioStr, 40) + "|" +
+                            pad(String.valueOf(e.getBeneficiarios() != null ? e.getBeneficiarios().size() : 0), 15) + "|" +
+                            pad(String.valueOf(e.getActivo()), 8);
+
+            sb.append(linea).append("\n");
         }
 
-        return new ByteArrayResource(sb.toString().getBytes());
+        return new ByteArrayResource(sb.toString().getBytes(StandardCharsets.UTF_8));
     }
 
+    // Evita nulls
+    private String safe(Object o) {
+        return o == null ? "" : o.toString();
+    }
+
+    // Alinea columnas agregando espacios
+    private String pad(String txt, int length) {
+        if (txt == null) txt = "";
+        if (txt.length() >= length) return txt;
+        return txt + " ".repeat(length - txt.length());
+    }
 
 
 

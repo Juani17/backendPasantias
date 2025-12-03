@@ -191,28 +191,48 @@ public class MedicoService extends BaseService<Medico, Long> {
         List<Medico> medicos = medicoRepository.findAll();
         StringBuilder sb = new StringBuilder();
 
-        sb.append("id|nombre|apellido|dni|cuil|telefono|matricula|area|correo\n");
+        // CABECERA
+        sb.append(
+                pad("id", 6) + "|" +
+                        pad("nombre", 15) + "|" +
+                        pad("apellido", 15) + "|" +
+                        pad("dni", 12) + "|" +
+                        pad("cuil", 15) + "|" +
+                        pad("telefono", 12) + "|" +
+                        pad("matricula", 15) + "|" +
+                        pad("area", 25) + "|" +
+                        pad("correo", 30)
+        ).append("\n");
 
+        // FILAS
         for (Medico m : medicos) {
-            sb.append(m.getId()).append("|")
-                    .append(m.getNombre() != null ? m.getNombre() : "").append("|")
-                    .append(m.getApellido() != null ? m.getApellido() : "").append("|")
-                    .append(m.getDni() != null ? m.getDni() : "").append("|")
-                    .append(m.getCuil() != null ? m.getCuil() : "").append("|")
-                    .append(m.getTelefono() != null ? m.getTelefono() : "").append("|")
-                    .append(m.getMatricula() != null ? m.getMatricula() : "").append("|")
-                    .append(m.getArea() != null ? m.getArea().getNombre() : "").append("|")
-                    .append(m.getCorreoElectronico() != null ? m.getCorreoElectronico() : "")
-                    .append("\n");
+
+            String correo = (m.getUsuario() != null ? safe(m.getUsuario().getEmail()) : "");
+            String areaStr = (m.getArea() != null ? safe(m.getArea().getNombre()) : "");
+
+            sb.append(
+                    pad(safe(m.getId()), 6) + "|" +
+                            pad(safe(m.getNombre()), 15) + "|" +
+                            pad(safe(m.getApellido()), 15) + "|" +
+                            pad(safe(m.getDni()), 12) + "|" +
+                            pad(safe(m.getCuil()), 15) + "|" +
+                            pad(safe(m.getTelefono()), 12) + "|" +
+                            pad(safe(m.getMatricula()), 15) + "|" +
+                            pad(areaStr, 25) + "|" +
+                            pad(correo, 30)
+            ).append("\n");
         }
 
-        return new ByteArrayResource(sb.toString().getBytes());
+        return new ByteArrayResource(sb.toString().getBytes(StandardCharsets.UTF_8));
     }
 
-    // Utilidad para evitar nulls
     private String safe(Object o) {
         return o == null ? "" : o.toString();
     }
 
+    private String pad(Object value, int length) {
+        String v = value == null ? "" : value.toString();
+        return String.format("%-" + length + "s", v);
+    }
 
 }
