@@ -121,18 +121,39 @@ public class PedidoController extends BaseController<Pedido, Long> {
         }
     }
 
-    @PutMapping("/editar/{id}")
+    @PutMapping(value = "/editar/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> actualizarPedido(
             @PathVariable Long id,
-            @RequestBody Pedido pedidoActualizado
+            @RequestPart("pedido") String pedidoJson,
+            @RequestPart(value = "documentos", required = false) List<MultipartFile> files
     ) {
         try {
-            Pedido actualizado = pedidoService.actualizarPedido(id, pedidoActualizado);
+            Pedido pedidoActualizado = objectMapper.readValue(pedidoJson, Pedido.class);
+
+            List<Documento> documentos = new ArrayList<>();
+            if (files != null) {
+                for (MultipartFile file : files) {
+                    String msg = documentoService.handleFileUpload(file);
+                    if (!"Archivo cargado correctamente".equals(msg)) {
+                        return ResponseEntity.badRequest().body(msg);
+                    }
+                    Documento doc = Documento.builder()
+                            .nombreArchivo(file.getOriginalFilename())
+                            .path("C://Ospuaye/documentos/" + file.getOriginalFilename())
+                            .observacion("Documento adjunto en edición")
+                            .build();
+                    documentos.add(doc);
+                }
+            }
+
+            Pedido actualizado = pedidoService.actualizarPedidoGeneral(id, pedidoActualizado, documentos);
             return ResponseEntity.ok(actualizado);
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al actualizar el pedido: " + e.getMessage());
         }
     }
+
 
     @PutMapping("/actualizar/{id}")
     public ResponseEntity<?> actualizarEstado(

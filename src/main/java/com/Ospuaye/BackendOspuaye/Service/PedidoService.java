@@ -281,6 +281,80 @@ public class PedidoService extends BaseService<Pedido, Long> {
     }
 
     @Transactional
+    public Pedido actualizarPedidoGeneral(Long id, Pedido datosActualizados, List<Documento> documentos) throws Exception {
+        if (id == null) throw new Exception("El ID del pedido no puede ser nulo");
+        if (datosActualizados == null) throw new Exception("Debe enviar los datos del pedido a actualizar");
+
+        Pedido existente = pedidoRepository.findById(id)
+                .orElseThrow(() -> new Exception("No se encontró el pedido con ID: " + id));
+
+        // 🔄 Actualiza solo los campos enviados (sin pisar todo el objeto)
+        if (datosActualizados.getNombre() != null)
+            existente.setNombre(datosActualizados.getNombre());
+
+        if (datosActualizados.getDni() != null)
+            existente.setDni(datosActualizados.getDni());
+
+        if (datosActualizados.getBeneficiario() != null && datosActualizados.getBeneficiario().getId() != null) {
+            Beneficiario beneficiario = beneficiarioRepository.findById(datosActualizados.getBeneficiario().getId())
+                    .orElseThrow(() -> new Exception("El beneficiario especificado no existe"));
+            existente.setBeneficiario(beneficiario);
+        }
+
+        if (datosActualizados.getMedico() != null && datosActualizados.getMedico().getId() != null) {
+            Medico medico = medicoRepository.findById(datosActualizados.getMedico().getId())
+                    .orElseThrow(() -> new Exception("El médico especificado no existe"));
+            existente.setMedico(medico);
+        }
+
+        if (datosActualizados.getPaciente() != null && datosActualizados.getPaciente().getId() != null) {
+            Familiar paciente = familiarRepository.findById(datosActualizados.getPaciente().getId())
+                    .orElseThrow(() -> new Exception("El paciente especificado no existe"));
+            existente.setPaciente(paciente);
+        }
+
+        if (datosActualizados.getGrupoFamiliar() != null && datosActualizados.getGrupoFamiliar().getId() != null) {
+            GrupoFamiliar grupo = grupoFamiliarRepository.findById(datosActualizados.getGrupoFamiliar().getId())
+                    .orElseThrow(() -> new Exception("El grupo familiar especificado no existe"));
+            existente.setGrupoFamiliar(grupo);
+        }
+        // Si se envió un médico, buscarlo
+        if (datosActualizados.getMedico() != null && datosActualizados.getMedico().getId() != null) {
+            Medico medicoExistente = medicoRepository.findById(datosActualizados.getMedico().getId())
+                    .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
+            existente.setMedico(medicoExistente);
+        } else {
+            existente.setMedico(null); // permitir quitar el médico
+        }
+
+        if (datosActualizados.getPedidoTipo() != null)
+            existente.setPedidoTipo(datosActualizados.getPedidoTipo());
+
+        if (datosActualizados.getEstado() != null)
+            existente.setEstado(datosActualizados.getEstado());
+
+        if (datosActualizados.getObservacionMedico() != null)
+            existente.setObservacionMedico(datosActualizados.getObservacionMedico());
+
+        // 🔧 Validar coherencia general (reutiliza tu validación)
+        validarPedidoComun(existente);
+
+        // 💾 Guardar cambios
+        Pedido actualizado = pedidoRepository.save(existente);
+
+        if (documentos != null && !documentos.isEmpty()) {
+            Usuario usuario = actualizado.getBeneficiario().getUsuario();
+            agregarDocumentos(actualizado, documentos, usuario);
+        }
+
+        // 🕐 Registrar movimiento
+        registrarMovimiento(actualizado, actualizado.getEstado(), actualizado.getBeneficiario().getUsuario(),
+                "Pedido actualizado");
+
+        return actualizado;
+    }
+
+    @Transactional
     public Pedido tomarPedidoGlobal(Long idPedido, Long medicoId) throws Exception {
         if (idPedido == null) throw new Exception("El ID del pedido es obligatorio.");
         if (medicoId == null) throw new Exception("El ID del médico es obligatorio.");
