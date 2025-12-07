@@ -367,15 +367,25 @@ public class ExcelBeneficiarioImporter {
 
         // --- Nacionalidad ---
         Nacionalidad nacionalidad = null;
-        System.out.println("Ejecuntando Nacionalidad");
+        System.out.println("Ejecutando Nacionalidad");
+
         if (nacionalidadNombre != null && !nacionalidadNombre.isBlank()) {
-            nacionalidad = nacionalidadService.ListarPorId(Long.parseLong(nacionalidadNombre.trim()))
+
+            // Convertimos el valor del TXT a número
+            Long numeroNacionalidad = Long.parseLong(nacionalidadNombre.trim());
+
+            // Si NO es 999, desplazamos +1
+            Long idBuscado = (numeroNacionalidad == 999) ? 999 : numeroNacionalidad + 1;
+
+            nacionalidad = nacionalidadService.ListarPorId(idBuscado)
                     .orElse(Nacionalidad.builder()
-                            .nombre(nacionalidadNombre)
+                            .nombre(nacionalidadNombre) // acá quizás quieras poner la descripción, pero dejo tu lógica
                             .activo(true)
                             .build());
+
             nacionalidadRepository.save(nacionalidad);
         }
+
 
 
 
