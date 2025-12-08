@@ -13,9 +13,6 @@ import java.util.List;
 @NoRepositoryBean
 public interface BaseRepository<E extends Base, ID extends Serializable> extends JpaRepository<E, ID> {
     List<E> findByActivoTrue();
+    Page<E> findByActivoTrue(Pageable pageable);
 
-    // 🔹 Paginado dinámico con búsqueda genérica
-    @Query("SELECT e FROM #{#entityName} e WHERE " +
-            "(LOWER(CAST(e AS string)) LIKE LOWER(CONCAT('%', :filtro, '%')) OR :filtro IS NULL)")
-    Page<E> buscarConPaginado(String filtro, Pageable pageable);
 }

@@ -32,7 +32,7 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
         if (page < 0) page = 0;
         if (size <= 0) size = 5;
         Pageable pageable = PageRequest.of(page, size);
-        return baseRepository.findAll(pageable);
+        return baseRepository.findByActivoTrue(pageable);
     }
 
     @Transactional(readOnly = true)
