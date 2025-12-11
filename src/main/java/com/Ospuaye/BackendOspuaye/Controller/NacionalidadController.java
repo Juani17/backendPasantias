@@ -66,19 +66,30 @@ public class NacionalidadController extends BaseController<Nacionalidad, Long> {
         }
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @GetMapping("/buscar")
-    public ResponseEntity<?> buscar(
-            @RequestParam(defaultValue = "") String query,
+    public ResponseEntity<Page<Nacionalidad>> buscar(
+            @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        try {
-            Page<Nacionalidad> result = nacionalidadService.buscar(query, page, size);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+            @RequestParam(defaultValue = "5") int size) {
+        Page<Nacionalidad> result = nacionalidadService.buscar(query, page, size);
+        return ResponseEntity.ok(result);
     }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @GetMapping("/buscar-inactivos")
+    public ResponseEntity<Page<Nacionalidad>> buscarInactivos(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Page<Nacionalidad> result = nacionalidadService.buscarInactivos(query, page, size);
+        return ResponseEntity.ok(result);
+    }
+
 
 
 }

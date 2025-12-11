@@ -16,15 +16,14 @@ public interface DomicilioRepository extends BaseRepository<Domicilio, Long> {
     List<Domicilio> findByLocalidadIdAndActivoTrue(Long localidadId);
     Optional<Domicilio> findByCalleAndNumeracion(String calle, String numeracion);
     Optional<Domicilio> findByCalleAndNumeracionAndLocalidad_Id(String calle, String numeracion, Long localidad );
-    Page<Domicilio> findByCalleContainingIgnoreCaseOrNumeracionContainingIgnoreCaseOrBarrioContainingIgnoreCaseOrManzanaPisoContainingIgnoreCaseOrCasaDepartamentoContainingIgnoreCaseOrEmpresa_RazonSocialContainingIgnoreCase(
-            String calle,
-            String numeracion,
-            String barrio,
-            String manzanaPiso,
-            String casaDepartamento,
-            String razonSocial,
-            Pageable pageable
-    );
+    // Activos
+    Page<Domicilio> findByCalleContainingIgnoreCaseAndActivoTrueOrNumeracionContainingIgnoreCaseAndActivoTrueOrBarrioContainingIgnoreCaseAndActivoTrueOrManzanaPisoContainingIgnoreCaseAndActivoTrueOrCasaDepartamentoContainingIgnoreCaseAndActivoTrueOrEmpresa_RazonSocialContainingIgnoreCaseAndActivoTrue(
+            String calle, String numeracion, String barrio, String manzanaPiso, String casaDepartamento, String razonSocial, Pageable pageable);
+
+    // Inactivos
+    Page<Domicilio> findByCalleContainingIgnoreCaseAndActivoFalseOrNumeracionContainingIgnoreCaseAndActivoFalseOrBarrioContainingIgnoreCaseAndActivoFalseOrManzanaPisoContainingIgnoreCaseAndActivoFalseOrCasaDepartamentoContainingIgnoreCaseAndActivoFalseOrEmpresa_RazonSocialContainingIgnoreCaseAndActivoFalse(
+            String calle, String numeracion, String barrio, String manzanaPiso, String casaDepartamento, String razonSocial, Pageable pageable);
+
     List<Domicilio> findTop20ByCalleContainingIgnoreCaseOrNumeracionContainingIgnoreCaseOrBarrioContainingIgnoreCase(
             String calle,
             String numeracion,

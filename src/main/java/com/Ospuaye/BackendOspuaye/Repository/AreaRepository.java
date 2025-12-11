@@ -12,5 +12,10 @@ public interface AreaRepository extends BaseRepository<Area, Long> {
     Optional<Area> findByNombre(String nombre);
     boolean existsByNombreIgnoreCase(String nombre);
 
-    Page<Area> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
+    // Activos
+    Page<Area> findByNombreContainingIgnoreCaseAndActivoTrue(String nombre, Pageable pageable);
+
+    // Inactivos
+    Page<Area> findByNombreContainingIgnoreCaseAndActivoFalse(String nombre, Pageable pageable);
+
 }

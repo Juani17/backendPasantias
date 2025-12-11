@@ -17,11 +17,13 @@ public interface EmpresaRepository extends BaseRepository<Empresa, Long> {
 
     boolean existsByCuit(String cuit);
 
-    Page<Empresa> findByCuitContainingIgnoreCaseOrRazonSocialContainingIgnoreCaseOrDomicilio_CalleContainingIgnoreCase(
-            String cuit,
-            String razonSocial,
-            String calle,
-            Pageable pageable
-    );
+    // Activos
+    Page<Empresa> findByCuitContainingIgnoreCaseAndActivoTrueOrRazonSocialContainingIgnoreCaseAndActivoTrueOrDomicilio_CalleContainingIgnoreCaseAndActivoTrue(
+            String cuit, String razonSocial, String calle, Pageable pageable);
+
+    // Inactivos
+    Page<Empresa> findByCuitContainingIgnoreCaseAndActivoFalseOrRazonSocialContainingIgnoreCaseAndActivoFalseOrDomicilio_CalleContainingIgnoreCaseAndActivoFalse(
+            String cuit, String razonSocial, String calle, Pageable pageable);
+
 
 }

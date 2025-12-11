@@ -27,6 +27,9 @@ public class DomicilioService extends BaseService<Domicilio, Long> {
         this.localidadRepository = localidadRepository;
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @Transactional(readOnly = true)
     public Page<Domicilio> buscar(String query, int page, int size) {
         if (page < 0) page = 0;
@@ -35,18 +38,35 @@ public class DomicilioService extends BaseService<Domicilio, Long> {
         Pageable pageable = PageRequest.of(page, size);
 
         if (query == null || query.trim().isEmpty()) {
-            return super.paginar(page, size);
+            return super.paginar(page, size); // ✅ activos por defecto
         }
 
         String q = query.trim();
-
-        return domicilioRepository
-                .findByCalleContainingIgnoreCaseOrNumeracionContainingIgnoreCaseOrBarrioContainingIgnoreCaseOrManzanaPisoContainingIgnoreCaseOrCasaDepartamentoContainingIgnoreCaseOrEmpresa_RazonSocialContainingIgnoreCase(
-                        q, q, q, q, q, q, pageable
-                );
+        return domicilioRepository.findByCalleContainingIgnoreCaseAndActivoTrueOrNumeracionContainingIgnoreCaseAndActivoTrueOrBarrioContainingIgnoreCaseAndActivoTrueOrManzanaPisoContainingIgnoreCaseAndActivoTrueOrCasaDepartamentoContainingIgnoreCaseAndActivoTrueOrEmpresa_RazonSocialContainingIgnoreCaseAndActivoTrue(
+                q, q, q, q, q, q, pageable);
     }
 
-    @Override
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<Domicilio> buscarInactivos(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginarInactivos(page, size); // ✅ inactivos por defecto
+        }
+
+        String q = query.trim();
+        return domicilioRepository.findByCalleContainingIgnoreCaseAndActivoFalseOrNumeracionContainingIgnoreCaseAndActivoFalseOrBarrioContainingIgnoreCaseAndActivoFalseOrManzanaPisoContainingIgnoreCaseAndActivoFalseOrCasaDepartamentoContainingIgnoreCaseAndActivoFalseOrEmpresa_RazonSocialContainingIgnoreCaseAndActivoFalse(
+                q, q, q, q, q, q, pageable);
+    }
+
+
+@Override
     @Transactional
     public Domicilio crear(Domicilio entity) throws Exception {
         if (entity == null) throw new IllegalArgumentException("El domicilio no puede ser nulo");

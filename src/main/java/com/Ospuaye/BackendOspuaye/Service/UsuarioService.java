@@ -27,7 +27,7 @@ public class UsuarioService extends BaseService<Usuario, Long> {
     }
 
     // ===============================================
-    // BUSQUEDA GLOBAL + PAGINADO
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
     // ===============================================
     @Transactional(readOnly = true)
     public Page<Usuario> buscar(String query, int page, int size) {
@@ -37,7 +37,7 @@ public class UsuarioService extends BaseService<Usuario, Long> {
         Pageable pageable = PageRequest.of(page, size);
 
         if (query == null || query.trim().isEmpty()) {
-            return super.paginar(page, size); // ✅ paginado genérico desde BaseService
+            return super.paginar(page, size); // ✅ activos por defecto
         }
 
         String q = query.trim().toLowerCase();
@@ -45,16 +45,47 @@ public class UsuarioService extends BaseService<Usuario, Long> {
         // Si es un email exacto
         if (q.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
             Optional<Usuario> usuario = usuarioRepository.findByEmail(q);
-            if (usuario.isPresent()) {
+            if (usuario.isPresent() && Boolean.TRUE.equals(usuario.get().getActivo())) {
                 return new PageImpl<>(List.of(usuario.get()), pageable, 1);
             } else {
                 return Page.empty(pageable);
             }
         }
 
-        // Si es texto parcial, buscar por email que contenga
-        return usuarioRepository.findByEmailContainingIgnoreCase(q, pageable);
+        // Si es texto parcial, buscar por email que contenga (solo activos)
+        return usuarioRepository.findByEmailContainingIgnoreCaseAndActivoTrue(q, pageable);
     }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<Usuario> buscarInactivos(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginarInactivos(page, size); // ✅ inactivos por defecto
+        }
+
+        String q = query.trim().toLowerCase();
+
+        // Si es un email exacto
+        if (q.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+            Optional<Usuario> usuario = usuarioRepository.findByEmail(q);
+            if (usuario.isPresent() && Boolean.FALSE.equals(usuario.get().getActivo())) {
+                return new PageImpl<>(List.of(usuario.get()), pageable, 1);
+            } else {
+                return Page.empty(pageable);
+            }
+        }
+
+        // Si es texto parcial, buscar por email que contenga (solo inactivos)
+        return usuarioRepository.findByEmailContainingIgnoreCaseAndActivoFalse(q, pageable);
+    }
+
 
     // ===============================================
     // CREAR

@@ -15,17 +15,16 @@ import org.springframework.data.domain.Pageable;
 public interface PedidoOftalmologiaRepository extends JpaRepository<PedidoOftalmologia, Long> {
     List<PedidoOftalmologia> findByBeneficiario(Beneficiario beneficiario);
     List<PedidoOftalmologia> findByMedico(Medico medico);
-    Page<PedidoOftalmologia> findByBeneficiario_NombreContainingIgnoreCaseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseOrEmpresaContainingIgnoreCaseOrDelegacionContainingIgnoreCaseOrPaciente_NombreContainingIgnoreCaseOrMedico_NombreContainingIgnoreCaseOrMotivoConsultaContainingIgnoreCase(
-            String beneficiario,
-            String grupoFamiliar,
-            String empresa,
-            String delegacion,
-            String paciente,
-            String medico,
-            String motivoConsulta,
-            Pageable pageable
-    );
-    List<PedidoOftalmologia> findByMedicoIsNull();
+    // Activos
+    Page<PedidoOftalmologia> findByBeneficiario_NombreContainingIgnoreCaseAndActivoTrueOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseAndActivoTrueOrEmpresaContainingIgnoreCaseAndActivoTrueOrDelegacionContainingIgnoreCaseAndActivoTrueOrPaciente_NombreContainingIgnoreCaseAndActivoTrueOrMedico_NombreContainingIgnoreCaseAndActivoTrueOrMotivoConsultaContainingIgnoreCaseAndActivoTrue(
+            String beneficiario, String grupoFamiliar, String empresa, String delegacion, String paciente, String medico, String motivoConsulta, Pageable pageable);
+
+    // Inactivos
+    Page<PedidoOftalmologia> findByBeneficiario_NombreContainingIgnoreCaseAndActivoFalseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseAndActivoFalseOrEmpresaContainingIgnoreCaseAndActivoFalseOrDelegacionContainingIgnoreCaseAndActivoFalseOrPaciente_NombreContainingIgnoreCaseAndActivoFalseOrMedico_NombreContainingIgnoreCaseAndActivoFalseOrMotivoConsultaContainingIgnoreCaseAndActivoFalse(
+            String beneficiario, String grupoFamiliar, String empresa, String delegacion, String paciente, String medico, String motivoConsulta, Pageable pageable);
+
+
+List<PedidoOftalmologia> findByMedicoIsNull();
 
 
 }

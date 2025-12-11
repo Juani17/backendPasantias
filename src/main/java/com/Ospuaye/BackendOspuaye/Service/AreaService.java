@@ -29,6 +29,9 @@ public class AreaService extends BaseService<Area, Long> {
         return super.crear(entity);
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @Transactional(readOnly = true)
     public Page<Area> buscar(String query, int page, int size) {
         if (page < 0) page = 0;
@@ -37,10 +40,28 @@ public class AreaService extends BaseService<Area, Long> {
         Pageable pageable = PageRequest.of(page, size);
 
         if (query == null || query.trim().isEmpty()) {
-            return super.paginar(page, size);
+            return super.paginar(page, size); // ✅ activos por defecto
         }
 
-        return areaRepository.findByNombreContainingIgnoreCase(query.trim(), pageable);
+        return areaRepository.findByNombreContainingIgnoreCaseAndActivoTrue(query.trim(), pageable);
     }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<Area> buscarInactivos(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginarInactivos(page, size); // ✅ inactivos por defecto
+        }
+
+        return areaRepository.findByNombreContainingIgnoreCaseAndActivoFalse(query.trim(), pageable);
+    }
+
 
 }

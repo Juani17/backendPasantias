@@ -3,6 +3,7 @@ package com.Ospuaye.BackendOspuaye.Controller;
 import com.Ospuaye.BackendOspuaye.Entity.Domicilio;
 import com.Ospuaye.BackendOspuaye.Service.DomicilioService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,18 +50,30 @@ public class DomicilioController extends BaseController<Domicilio, Long> {
         }
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @GetMapping("/buscar")
-    public ResponseEntity<?> buscar(
-            @RequestParam(defaultValue = "") String query,
+    public ResponseEntity<Page<Domicilio>> buscar(
+            @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        try {
-            return ResponseEntity.ok(domicilioService.buscar(query, page, size));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+            @RequestParam(defaultValue = "5") int size) {
+        Page<Domicilio> result = domicilioService.buscar(query, page, size);
+        return ResponseEntity.ok(result);
     }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @GetMapping("/buscar-inactivos")
+    public ResponseEntity<Page<Domicilio>> buscarInactivos(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Page<Domicilio> result = domicilioService.buscarInactivos(query, page, size);
+        return ResponseEntity.ok(result);
+    }
+
 
     @GetMapping("/buscar-simple")
     public ResponseEntity<?> buscarSimple(@RequestParam String filtro) {

@@ -32,6 +32,9 @@ public class EmpresaService extends BaseService<Empresa, Long> {
         this.domicilioRepository = domicilioRepository;
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @Transactional(readOnly = true)
     public Page<Empresa> buscar(String query, int page, int size) {
         if (page < 0) page = 0;
@@ -40,11 +43,31 @@ public class EmpresaService extends BaseService<Empresa, Long> {
         Pageable pageable = PageRequest.of(page, size);
 
         if (query == null || query.trim().isEmpty()) {
-            return super.paginar(page, size);
+            return super.paginar(page, size); // ✅ activos por defecto
         }
 
         String q = query.trim();
-        return empresaRepository.findByCuitContainingIgnoreCaseOrRazonSocialContainingIgnoreCaseOrDomicilio_CalleContainingIgnoreCase(q, q, q, pageable);
+        return empresaRepository.findByCuitContainingIgnoreCaseAndActivoTrueOrRazonSocialContainingIgnoreCaseAndActivoTrueOrDomicilio_CalleContainingIgnoreCaseAndActivoTrue(
+                q, q, q, pageable);
+    }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<Empresa> buscarInactivos(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginarInactivos(page, size); // ✅ inactivos por defecto
+        }
+
+        String q = query.trim();
+        return empresaRepository.findByCuitContainingIgnoreCaseAndActivoFalseOrRazonSocialContainingIgnoreCaseAndActivoFalseOrDomicilio_CalleContainingIgnoreCaseAndActivoFalse(
+                q, q, q, pageable);
     }
 
 

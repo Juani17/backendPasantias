@@ -154,6 +154,20 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<Beneficiario>> buscarInactivos(
+            @RequestParam(defaultValue = "") String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        try {
+            return ResponseEntity.ok(beneficiarioService.buscarInactivos(query, page, size));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @GetMapping("/buscar-simple")
     public ResponseEntity<?> buscarSimple(@RequestParam String filtro) {
         try {

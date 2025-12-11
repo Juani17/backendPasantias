@@ -10,11 +10,14 @@ import java.util.Optional;
 @Repository
 public interface RolRepository extends BaseRepository<Rol, Long> {
     Optional<Rol> findByNombre(String nombre);
-    Page<Rol> findByNombreContainingIgnoreCaseOrArea_NombreContainingIgnoreCase(
-            String nombreRol,
-            String nombreArea,
-            Pageable pageable
-    );
+    // Activos
+    Page<Rol> findByNombreContainingIgnoreCaseAndActivoTrueOrArea_NombreContainingIgnoreCaseAndActivoTrue(
+            String nombre, String areaNombre, Pageable pageable);
+
+    // Inactivos
+    Page<Rol> findByNombreContainingIgnoreCaseAndActivoFalseOrArea_NombreContainingIgnoreCaseAndActivoFalse(
+            String nombre, String areaNombre, Pageable pageable);
+
 
 
 }

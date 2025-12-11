@@ -4,6 +4,7 @@ import com.Ospuaye.BackendOspuaye.Dto.CambiarContrasenaRequest;
 import com.Ospuaye.BackendOspuaye.Entity.Usuario;
 import com.Ospuaye.BackendOspuaye.Service.UsuarioService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -119,16 +120,28 @@ public class UsuarioController extends BaseController<Usuario, Long> {
         }
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @GetMapping("/buscar")
-    public ResponseEntity<?> buscar(
-            @RequestParam(defaultValue = "") String query,
+    public ResponseEntity<Page<Usuario>> buscar(
+            @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        try {
-            return ResponseEntity.ok(usuarioService.buscar(query, page, size));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+            @RequestParam(defaultValue = "5") int size) {
+        Page<Usuario> result = usuarioService.buscar(query, page, size);
+        return ResponseEntity.ok(result);
     }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @GetMapping("/buscar-inactivos")
+    public ResponseEntity<Page<Usuario>> buscarInactivos(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Page<Usuario> result = usuarioService.buscarInactivos(query, page, size);
+        return ResponseEntity.ok(result);
+    }
+
 }

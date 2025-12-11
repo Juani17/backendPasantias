@@ -12,6 +12,7 @@ import com.Ospuaye.BackendOspuaye.Service.PedidoOrtopediaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -132,18 +133,21 @@ public class PedidoOrtopediaController {
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<?> buscar(
-            @RequestParam(defaultValue = "") String query,
+    public ResponseEntity<Page<Pedido>> buscar(
+            @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        try {
-            // 🔹 Llama al método buscar de PedidoOrtopediaService
-            return ResponseEntity.ok(pedidoOrtopediaService.buscar(query, page, size));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(pedidoOrtopediaService.buscar(query, page, size));
     }
+
+    @GetMapping("/buscar-inactivos")
+    public ResponseEntity<Page<Pedido>> buscarInactivos(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(pedidoOrtopediaService.buscarInactivos(query, page, size));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<PedidoOrtopediaDTO> obtenerPedidoPorId(@PathVariable Long id) {
         PedidoOrtopediaDTO dto = pedidoOrtopediaService.obtenerDto(id);

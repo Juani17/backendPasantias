@@ -61,18 +61,21 @@ public class PaisController extends BaseController<Pais, Long> {
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<?> buscar(
-            @RequestParam(defaultValue = "") String query,
+    public ResponseEntity<Page<Pais>> buscar(
+            @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        try {
-            Page<Pais> result = paisService.buscar(query, page, size);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(paisService.buscar(query, page, size));
     }
+
+    @GetMapping("/buscar-inactivos")
+    public ResponseEntity<Page<Pais>> buscarInactivos(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(paisService.buscarInactivos(query, page, size));
+    }
+
 
     @GetMapping("/buscar-simple")
     public ResponseEntity<?> search(@RequestParam String nombre) {

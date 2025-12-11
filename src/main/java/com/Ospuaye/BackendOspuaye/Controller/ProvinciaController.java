@@ -31,18 +31,21 @@ public class ProvinciaController extends BaseController<Provincia, Long> {
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<?> buscar(
-            @RequestParam(defaultValue = "") String query,
+    public ResponseEntity<Page<Provincia>> buscar(
+            @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        try {
-            Page<Provincia> result = provinciaService.buscar(query, page, size);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(provinciaService.buscar(query, page, size));
     }
+
+    @GetMapping("/buscar-inactivos")
+    public ResponseEntity<Page<Provincia>> buscarInactivos(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(provinciaService.buscarInactivos(query, page, size));
+    }
+
 
     @GetMapping("/buscar-simple")
     public ResponseEntity<?> buscarSimple(@RequestParam String nombre) {

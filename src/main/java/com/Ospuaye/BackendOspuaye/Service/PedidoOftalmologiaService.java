@@ -30,13 +30,12 @@ public class PedidoOftalmologiaService extends PedidoService {
     }
 
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @Transactional(readOnly = true)
-    @Override
     public Page<Pedido> buscar(String query, int page, int size) {
-        if (page < 0) page = 0;
-        if (size <= 0) size = 5;
-
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(Math.max(page, 0), size <= 0 ? 5 : size);
 
         if (query == null || query.trim().isEmpty()) {
             // map() convierte cada PedidoOftalmologia en Pedido
@@ -45,10 +44,29 @@ public class PedidoOftalmologiaService extends PedidoService {
 
         String q = query.trim();
         return pedidoOftalmologiaRepository
-                .findByBeneficiario_NombreContainingIgnoreCaseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseOrEmpresaContainingIgnoreCaseOrDelegacionContainingIgnoreCaseOrPaciente_NombreContainingIgnoreCaseOrMedico_NombreContainingIgnoreCaseOrMotivoConsultaContainingIgnoreCase(
-                        q, q, q, q, q, q, q, pageable
-                ).map(p -> (Pedido) p);
+                .findByBeneficiario_NombreContainingIgnoreCaseAndActivoTrueOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseAndActivoTrueOrEmpresaContainingIgnoreCaseAndActivoTrueOrDelegacionContainingIgnoreCaseAndActivoTrueOrPaciente_NombreContainingIgnoreCaseAndActivoTrueOrMedico_NombreContainingIgnoreCaseAndActivoTrueOrMotivoConsultaContainingIgnoreCaseAndActivoTrue(
+                        q, q, q, q, q, q, q, pageable)
+                .map(p -> (Pedido) p);
     }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<Pedido> buscarInactivos(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(page, 0), size <= 0 ? 5 : size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return pedidoOftalmologiaRepository.findAll(pageable).map(p -> (Pedido) p);
+        }
+
+        String q = query.trim();
+        return pedidoOftalmologiaRepository
+                .findByBeneficiario_NombreContainingIgnoreCaseAndActivoFalseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseAndActivoFalseOrEmpresaContainingIgnoreCaseAndActivoFalseOrDelegacionContainingIgnoreCaseAndActivoFalseOrPaciente_NombreContainingIgnoreCaseAndActivoFalseOrMedico_NombreContainingIgnoreCaseAndActivoFalseOrMotivoConsultaContainingIgnoreCaseAndActivoFalse(
+                        q, q, q, q, q, q, q, pageable)
+                .map(p -> (Pedido) p);
+    }
+
 
     // NOTE: NO definir constructor que haga super(pedidoOftalmologiaRepository)
 

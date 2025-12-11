@@ -22,6 +22,9 @@ public class NacionalidadService extends BaseService<Nacionalidad, Long> {
         this.nacionalidadRepository = nacionalidadRepository;
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @Transactional(readOnly = true)
     public Page<Nacionalidad> buscar(String query, int page, int size) {
         if (page < 0) page = 0;
@@ -30,11 +33,31 @@ public class NacionalidadService extends BaseService<Nacionalidad, Long> {
         Pageable pageable = PageRequest.of(page, size);
 
         if (query == null || query.trim().isEmpty()) {
-            return super.paginar(page, size);
+            return super.paginar(page, size); // ✅ activos por defecto
         }
 
-        return nacionalidadRepository.findByNombreContainingIgnoreCase(query.trim(), pageable);
+        String q = query.trim();
+        return nacionalidadRepository.findByNombreContainingIgnoreCaseAndActivoTrue(q, pageable);
     }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<Nacionalidad> buscarInactivos(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginarInactivos(page, size); // ✅ inactivos por defecto
+        }
+
+        String q = query.trim();
+        return nacionalidadRepository.findByNombreContainingIgnoreCaseAndActivoFalse(q, pageable);
+    }
+
 
     @Override
     @Transactional

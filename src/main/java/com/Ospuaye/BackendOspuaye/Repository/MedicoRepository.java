@@ -15,12 +15,14 @@ public interface MedicoRepository extends BaseRepository<Medico, Long> {
     List<Medico> findByArea(Area area);
     Page<Medico> findByDni(Long dni, Pageable pageable);
 
-    Page<Medico> findByMatriculaContainingIgnoreCaseOrNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(
-            String matricula,
-            String nombre,
-            String apellido,
-            Pageable pageable
-    );
+    // Activos
+    Page<Medico> findByNombreContainingIgnoreCaseAndActivoTrueOrApellidoContainingIgnoreCaseAndActivoTrueOrMatriculaContainingIgnoreCaseAndActivoTrue(
+            String nombre, String apellido, String matricula, Pageable pageable);
+
+    // Inactivos
+    Page<Medico> findByNombreContainingIgnoreCaseAndActivoFalseOrApellidoContainingIgnoreCaseAndActivoFalseOrMatriculaContainingIgnoreCaseAndActivoFalse(
+            String nombre, String apellido, String matricula, Pageable pageable);
+
 
     //metodo para descargar medicos de la base
     List<Medico> findAllByOrderByIdAsc();

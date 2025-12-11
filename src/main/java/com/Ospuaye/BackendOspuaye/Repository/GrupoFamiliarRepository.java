@@ -12,10 +12,12 @@ public interface GrupoFamiliarRepository extends BaseRepository<GrupoFamiliar, L
     Optional<GrupoFamiliar> findByTitularId(Long titularId);
     Optional<GrupoFamiliar> findByTitularIdAndActivoTrue(Long titularId);
     boolean existsByNombreGrupoAndTitularId(String nombreGrupo, Long titularId);
-    Page<GrupoFamiliar> findByNombreGrupoContainingIgnoreCaseOrTitular_NombreContainingIgnoreCaseOrTitular_ApellidoContainingIgnoreCase(
-            String nombreGrupo,
-            String nombreTitular,
-            String apellidoTitular,
-            Pageable pageable
-    );
+    // Activos
+    Page<GrupoFamiliar> findByNombreGrupoContainingIgnoreCaseAndActivoTrueOrTitular_NombreContainingIgnoreCaseAndActivoTrueOrTitular_ApellidoContainingIgnoreCaseAndActivoTrue(
+            String nombreGrupo, String titularNombre, String titularApellido, Pageable pageable);
+
+    // Inactivos
+    Page<GrupoFamiliar> findByNombreGrupoContainingIgnoreCaseAndActivoFalseOrTitular_NombreContainingIgnoreCaseAndActivoFalseOrTitular_ApellidoContainingIgnoreCaseAndActivoFalse(
+            String nombreGrupo, String titularNombre, String titularApellido, Pageable pageable);
+
 }

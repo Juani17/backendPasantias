@@ -29,12 +29,8 @@ public class PedidoOrtopediaService extends PedidoService {
     }
 
     @Transactional(readOnly = true)
-    @Override
     public Page<Pedido> buscar(String query, int page, int size) {
-        if (page < 0) page = 0;
-        if (size <= 0) size = 5;
-
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(Math.max(page, 0), size <= 0 ? 5 : size);
 
         if (query == null || query.trim().isEmpty()) {
             return pedidoOrtopediaRepository.findAll(pageable).map(p -> (Pedido) p);
@@ -42,9 +38,24 @@ public class PedidoOrtopediaService extends PedidoService {
 
         String q = query.trim();
         return pedidoOrtopediaRepository
-                .findByBeneficiario_NombreContainingIgnoreCaseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseOrEmpresaContainingIgnoreCaseOrDelegacionContainingIgnoreCaseOrPaciente_NombreContainingIgnoreCaseOrMedico_NombreContainingIgnoreCaseOrMotivoConsultaContainingIgnoreCase(
-                        q, q, q, q, q, q, q, pageable
-                ).map(p -> (Pedido) p);
+                .findByBeneficiario_NombreContainingIgnoreCaseAndActivoTrueOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseAndActivoTrueOrEmpresaContainingIgnoreCaseAndActivoTrueOrDelegacionContainingIgnoreCaseAndActivoTrueOrPaciente_NombreContainingIgnoreCaseAndActivoTrueOrMedico_NombreContainingIgnoreCaseAndActivoTrueOrMotivoConsultaContainingIgnoreCaseAndActivoTrue(
+                        q, q, q, q, q, q, q, pageable)
+                .map(p -> (Pedido) p);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Pedido> buscarInactivos(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(page, 0), size <= 0 ? 5 : size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return pedidoOrtopediaRepository.findAll(pageable).map(p -> (Pedido) p);
+        }
+
+        String q = query.trim();
+        return pedidoOrtopediaRepository
+                .findByBeneficiario_NombreContainingIgnoreCaseAndActivoFalseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseAndActivoFalseOrEmpresaContainingIgnoreCaseAndActivoFalseOrDelegacionContainingIgnoreCaseAndActivoFalseOrPaciente_NombreContainingIgnoreCaseAndActivoFalseOrMedico_NombreContainingIgnoreCaseAndActivoFalseOrMotivoConsultaContainingIgnoreCaseAndActivoFalse(
+                        q, q, q, q, q, q, q, pageable)
+                .map(p -> (Pedido) p);
     }
 
 

@@ -2,6 +2,7 @@ package com.Ospuaye.BackendOspuaye.Controller;
 
 import com.Ospuaye.BackendOspuaye.Entity.Localidad;
 import com.Ospuaye.BackendOspuaye.Service.LocalidadService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,18 +42,30 @@ public class LocalidadController extends BaseController<Localidad, Long> {
         }
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @GetMapping("/buscar")
-    public ResponseEntity<?> buscar(
-            @RequestParam(defaultValue = "") String query,
+    public ResponseEntity<Page<Localidad>> buscar(
+            @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        try {
-            return ResponseEntity.ok(localidadService.buscar(query, page, size));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+            @RequestParam(defaultValue = "5") int size) {
+        Page<Localidad> result = localidadService.buscar(query, page, size);
+        return ResponseEntity.ok(result);
     }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @GetMapping("/buscar-inactivos")
+    public ResponseEntity<Page<Localidad>> buscarInactivos(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Page<Localidad> result = localidadService.buscarInactivos(query, page, size);
+        return ResponseEntity.ok(result);
+    }
+
 
     @PutMapping("/actualizar/{id}")
     public ResponseEntity<?> actualizarLocalidad(

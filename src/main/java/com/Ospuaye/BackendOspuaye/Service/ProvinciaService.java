@@ -26,6 +26,9 @@ public class ProvinciaService extends BaseService<Provincia, Long> {
         this.paisRepository = paisRepository;
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @Transactional(readOnly = true)
     public Page<Provincia> buscar(String query, int page, int size) {
         if (page < 0) page = 0;
@@ -34,12 +37,33 @@ public class ProvinciaService extends BaseService<Provincia, Long> {
         Pageable pageable = PageRequest.of(page, size);
 
         if (query == null || query.trim().isEmpty()) {
-            return super.paginar(page, size);
+            return super.paginar(page, size); // ✅ activos por defecto
         }
 
         String q = query.trim();
-        return provinciaRepository.findByNombreContainingIgnoreCaseOrPais_NombreContainingIgnoreCase(q, q, pageable);
+        return provinciaRepository.findByNombreContainingIgnoreCaseAndActivoTrueOrPais_NombreContainingIgnoreCaseAndActivoTrue(
+                q, q, pageable);
     }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<Provincia> buscarInactivos(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginarInactivos(page, size); // ✅ inactivos por defecto
+        }
+
+        String q = query.trim();
+        return provinciaRepository.findByNombreContainingIgnoreCaseAndActivoFalseOrPais_NombreContainingIgnoreCaseAndActivoFalse(
+                q, q, pageable);
+    }
+
 
     @Override
     @Transactional

@@ -36,20 +36,30 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
     @Transactional(readOnly = true)
     public Page<Pedido> buscar(String query, int page, int size) {
-        if (page < 0) page = 0;
-        if (size <= 0) size = 5;
-
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(Math.max(page, 0), size <= 0 ? 5 : size);
 
         if (query == null || query.trim().isEmpty()) {
-            return pedidoRepository.findAll(pageable);
+            return super.paginar(page, size);
         }
 
         String q = query.trim();
-        return pedidoRepository.findByBeneficiario_NombreContainingIgnoreCaseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseOrEmpresaContainingIgnoreCaseOrDelegacionContainingIgnoreCaseOrPaciente_NombreContainingIgnoreCaseOrMedico_NombreContainingIgnoreCase(
-                q, q, q, q, q, q, pageable
-        );
+        return pedidoRepository.findByBeneficiario_NombreContainingIgnoreCaseAndActivoTrueOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseAndActivoTrueOrEmpresaContainingIgnoreCaseAndActivoTrueOrDelegacionContainingIgnoreCaseAndActivoTrueOrPaciente_NombreContainingIgnoreCaseAndActivoTrueOrMedico_NombreContainingIgnoreCaseAndActivoTrue(
+                q, q, q, q, q, q, pageable);
     }
+
+    @Transactional(readOnly = true)
+    public Page<Pedido> buscarInactivos(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(page, 0), size <= 0 ? 5 : size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginarInactivos(page, size);
+        }
+
+        String q = query.trim();
+        return pedidoRepository.findByBeneficiario_NombreContainingIgnoreCaseAndActivoFalseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseAndActivoFalseOrEmpresaContainingIgnoreCaseAndActivoFalseOrDelegacionContainingIgnoreCaseAndActivoFalseOrPaciente_NombreContainingIgnoreCaseAndActivoFalseOrMedico_NombreContainingIgnoreCaseAndActivoFalse(
+                q, q, q, q, q, q, pageable);
+    }
+
 
 
 

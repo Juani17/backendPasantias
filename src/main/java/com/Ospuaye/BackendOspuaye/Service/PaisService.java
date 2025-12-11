@@ -20,6 +20,9 @@ public class PaisService extends BaseService<Pais, Long> {
         this.paisRepository = paisRepository;
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @Transactional(readOnly = true)
     public Page<Pais> buscar(String query, int page, int size) {
         if (page < 0) page = 0;
@@ -28,11 +31,29 @@ public class PaisService extends BaseService<Pais, Long> {
         Pageable pageable = PageRequest.of(page, size);
 
         if (query == null || query.trim().isEmpty()) {
-            return super.paginar(page, size);
+            return super.paginar(page, size); // ✅ activos por defecto
         }
 
-        return paisRepository.findByNombreContainingIgnoreCase(query.trim(), pageable);
+        return paisRepository.findByNombreContainingIgnoreCaseAndActivoTrue(query.trim(), pageable);
     }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<Pais> buscarInactivos(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginarInactivos(page, size); // ✅ inactivos por defecto
+        }
+
+        return paisRepository.findByNombreContainingIgnoreCaseAndActivoFalse(query.trim(), pageable);
+    }
+
 
 
     @Override

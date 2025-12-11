@@ -14,7 +14,12 @@ import java.util.List;
 public interface PaisRepository extends BaseRepository<Pais, Long> {
 
     Optional<Pais> findByNombre(String nombre);
-    Page<Pais> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
+    // Activos
+    Page<Pais> findByNombreContainingIgnoreCaseAndActivoTrue(String nombre, Pageable pageable);
+
+    // Inactivos
+    Page<Pais> findByNombreContainingIgnoreCaseAndActivoFalse(String nombre, Pageable pageable);
+
     List<Pais> findByNombreContainingIgnoreCase(String nombre);
 
 }

@@ -10,6 +10,13 @@ import java.util.Optional;
 public interface NacionalidadRepository extends BaseRepository<Nacionalidad, Long> {
     Optional<Nacionalidad> findById(Long id);
     Optional<Nacionalidad> findByNombre(String nombre);
-    Page<Nacionalidad> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
+    // Activos
+    Page<Nacionalidad> findByNombreContainingIgnoreCaseAndActivoTrue(
+            String nombre, Pageable pageable);
+
+    // Inactivos
+    Page<Nacionalidad> findByNombreContainingIgnoreCaseAndActivoFalse(
+            String nombre, Pageable pageable);
+
 
 }

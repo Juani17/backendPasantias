@@ -15,11 +15,14 @@ public interface LocalidadRepository extends BaseRepository<Localidad, Long> {
     List<Localidad> findByActivoTrue();
     Optional<Localidad> findByNombre(String nombre);
     boolean existsByNombreAndDepartamento_Id(String nombre, Long departamentoId);
-    Page<Localidad> findByNombreContainingIgnoreCaseOrCodigoPostalContainingIgnoreCase(
-            String nombre,
-            String codigoPostal,
-            Pageable pageable
-    );
+    // Activos
+    Page<Localidad> findByNombreContainingIgnoreCaseAndActivoTrueOrCodigoPostalContainingIgnoreCaseAndActivoTrue(
+            String nombre, String codigoPostal, Pageable pageable);
+
+    // Inactivos
+    Page<Localidad> findByNombreContainingIgnoreCaseAndActivoFalseOrCodigoPostalContainingIgnoreCaseAndActivoFalse(
+            String nombre, String codigoPostal, Pageable pageable);
+
     List<Localidad> findByNombreContainingIgnoreCase(String nombre);
 
 }

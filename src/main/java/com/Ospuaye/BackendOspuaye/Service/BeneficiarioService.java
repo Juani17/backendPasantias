@@ -32,15 +32,15 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
     }
 
     // ===============================================
-    // BUSQUEDA GLOBAL + PAGINADO
-    // ===============================================
+// BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+// ===============================================
     @Transactional(readOnly = true)
     public Page<Beneficiario> buscar(String query, int page, int size) {
         if (page < 0) page = 0;
         if (size <= 0) size = 5;
 
         if (query == null || query.trim().isEmpty()) {
-            return super.paginar(page, size); // ✅ paginado genérico
+            return super.paginar(page, size); // ✅ paginado genérico de activos
         }
 
         String q = query.trim();
@@ -48,12 +48,37 @@ public class BeneficiarioService extends BaseService<Beneficiario, Long> {
         if (q.matches("\\d+")) {
             try {
                 Long dni = Long.parseLong(q);
-                return beneficiarioRepository.findByDni(dni, PageRequest.of(page, size));
+                return beneficiarioRepository.findByDniAndActivoTrue(dni, PageRequest.of(page, size));
             } catch (NumberFormatException ignored) {}
         }
 
-        return beneficiarioRepository
-                .findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(q, q, PageRequest.of(page, size));
+        return beneficiarioRepository.findByNombreContainingIgnoreCaseAndActivoTrueOrApellidoContainingIgnoreCaseAndActivoTrue(
+                q, q, PageRequest.of(page, size));
+    }
+
+    // ===============================================
+// BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+// ===============================================
+    @Transactional(readOnly = true)
+    public Page<Beneficiario> buscarInactivos(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginarInactivos(page, size); // ✅ paginado genérico de inactivos
+        }
+
+        String q = query.trim();
+
+        if (q.matches("\\d+")) {
+            try {
+                Long dni = Long.parseLong(q);
+                return beneficiarioRepository.findByDniAndActivoFalse(dni, PageRequest.of(page, size));
+            } catch (NumberFormatException ignored) {}
+        }
+
+        return beneficiarioRepository.findByNombreContainingIgnoreCaseAndActivoFalseOrApellidoContainingIgnoreCaseAndActivoFalse(
+                q, q, PageRequest.of(page, size));
     }
 
     // ===============================================

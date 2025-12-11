@@ -141,6 +141,19 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
     }
 
     @Transactional(readOnly = true)
+    public List<E> listarInactivos() throws Exception {
+        return baseRepository.findByActivoFalse();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<E> paginarInactivos(int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+        Pageable pageable = PageRequest.of(page, size);
+        return baseRepository.findByActivoFalse(pageable);
+    }
+
+    @Transactional(readOnly = true)
     public Page<E> buscarConPaginado(String filtro, int page, int size) throws Exception {
         Pageable pageable = PageRequest.of(page, size);
 

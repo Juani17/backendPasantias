@@ -15,16 +15,13 @@ import org.springframework.data.domain.Pageable;
 public interface PedidoOrtopediaRepository extends JpaRepository<PedidoOrtopedia, Long> {
     List<PedidoOrtopedia> findByBeneficiario(Beneficiario beneficiario);
     List<PedidoOrtopedia> findByMedico(Medico medico);
-    Page<PedidoOrtopedia> findByBeneficiario_NombreContainingIgnoreCaseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseOrEmpresaContainingIgnoreCaseOrDelegacionContainingIgnoreCaseOrPaciente_NombreContainingIgnoreCaseOrMedico_NombreContainingIgnoreCaseOrMotivoConsultaContainingIgnoreCase(
-            String beneficiario,
-            String grupoFamiliar,
-            String empresa,
-            String delegacion,
-            String paciente,
-            String medico,
-            String motivoConsulta,
-            Pageable pageable
-    );
+    // Activos
+    Page<PedidoOrtopedia> findByBeneficiario_NombreContainingIgnoreCaseAndActivoTrueOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseAndActivoTrueOrEmpresaContainingIgnoreCaseAndActivoTrueOrDelegacionContainingIgnoreCaseAndActivoTrueOrPaciente_NombreContainingIgnoreCaseAndActivoTrueOrMedico_NombreContainingIgnoreCaseAndActivoTrueOrMotivoConsultaContainingIgnoreCaseAndActivoTrue(
+            String beneficiario, String grupoFamiliar, String empresa, String delegacion, String paciente, String medico, String motivoConsulta, Pageable pageable);
+
+    // Inactivos
+    Page<PedidoOrtopedia> findByBeneficiario_NombreContainingIgnoreCaseAndActivoFalseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseAndActivoFalseOrEmpresaContainingIgnoreCaseAndActivoFalseOrDelegacionContainingIgnoreCaseAndActivoFalseOrPaciente_NombreContainingIgnoreCaseAndActivoFalseOrMedico_NombreContainingIgnoreCaseAndActivoFalseOrMotivoConsultaContainingIgnoreCaseAndActivoFalse(
+            String beneficiario, String grupoFamiliar, String empresa, String delegacion, String paciente, String medico, String motivoConsulta, Pageable pageable);
     List<PedidoOrtopedia> findByMedicoIsNull();
 
 

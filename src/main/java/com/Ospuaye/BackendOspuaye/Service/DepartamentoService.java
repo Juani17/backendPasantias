@@ -25,6 +25,9 @@ public class DepartamentoService extends BaseService<Departamento, Long> {
         this.provinciaRepository = provinciaRepository;
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @Transactional(readOnly = true)
     public Page<Departamento> buscar(String query, int page, int size) {
         if (page < 0) page = 0;
@@ -33,16 +36,37 @@ public class DepartamentoService extends BaseService<Departamento, Long> {
         Pageable pageable = PageRequest.of(page, size);
 
         if (query == null || query.trim().isEmpty()) {
-            return super.paginar(page, size);
+            return super.paginar(page, size); // ✅ activos por defecto
         }
 
         String q = query.trim();
-        return departamentoRepository.findByNombreContainingIgnoreCaseOrProvincia_NombreContainingIgnoreCase(q, q, pageable);
+        return departamentoRepository.findByNombreContainingIgnoreCaseAndActivoTrueOrProvincia_NombreContainingIgnoreCaseAndActivoTrue(
+                q, q, pageable);
+    }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<Departamento> buscarInactivos(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginarInactivos(page, size); // ✅ inactivos por defecto
+        }
+
+        String q = query.trim();
+        return departamentoRepository.findByNombreContainingIgnoreCaseAndActivoFalseOrProvincia_NombreContainingIgnoreCaseAndActivoFalse(
+                q, q, pageable);
     }
 
 
 
-@Override
+
+    @Override
     public Departamento crear(Departamento entity) throws Exception {
         if (entity.getNombre() == null || entity.getNombre().isBlank()) {
             throw new Exception("El nombre del departamento es obligatorio");

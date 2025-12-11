@@ -13,11 +13,14 @@ public interface ProvinciaRepository extends BaseRepository<Provincia, Long> {
 
     Optional<Provincia> findByNombre(String nombre);
     Optional<Provincia> findById(Long id);
-    Page<Provincia> findByNombreContainingIgnoreCaseOrPais_NombreContainingIgnoreCase(
-            String nombreProvincia,
-            String nombrePais,
-            Pageable pageable
-    );
+    // Activos
+    Page<Provincia> findByNombreContainingIgnoreCaseAndActivoTrueOrPais_NombreContainingIgnoreCaseAndActivoTrue(
+            String nombre, String paisNombre, Pageable pageable);
+
+    // Inactivos
+    Page<Provincia> findByNombreContainingIgnoreCaseAndActivoFalseOrPais_NombreContainingIgnoreCaseAndActivoFalse(
+            String nombre, String paisNombre, Pageable pageable);
+
     List<Provincia> findByNombreContainingIgnoreCase(String nombre);
 
 

@@ -14,5 +14,9 @@ public interface UsuarioRepository extends BaseRepository<Usuario, Long> {
     Optional<Usuario> findByEmail(String email);
     boolean existsByEmail(String email);
     List<Usuario> findByRol_NombreIgnoreCase(String nombreRol);
-    Page<Usuario> findByEmailContainingIgnoreCase(String email, Pageable pageable);
+    // Activos
+    Page<Usuario> findByEmailContainingIgnoreCaseAndActivoTrue(String email, Pageable pageable);
+
+    // Inactivos
+    Page<Usuario> findByEmailContainingIgnoreCaseAndActivoFalse(String email, Pageable pageable);
 }

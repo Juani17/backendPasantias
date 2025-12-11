@@ -1,15 +1,18 @@
 package com.Ospuaye.BackendOspuaye.Service;
 
 import com.Ospuaye.BackendOspuaye.Entity.Beneficiario;
+import com.Ospuaye.BackendOspuaye.Entity.Familiar;
 import com.Ospuaye.BackendOspuaye.Entity.GrupoFamiliar;
 import com.Ospuaye.BackendOspuaye.Repository.BeneficiarioRepository;
 import com.Ospuaye.BackendOspuaye.Repository.GrupoFamiliarRepository;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Optional;
 
@@ -26,6 +29,9 @@ public class GrupoFamiliarService extends BaseService<GrupoFamiliar, Long> {
         this.beneficiarioRepository = beneficiarioRepository;
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @Transactional(readOnly = true)
     public Page<GrupoFamiliar> buscar(String query, int page, int size) {
         if (page < 0) page = 0;
@@ -34,16 +40,33 @@ public class GrupoFamiliarService extends BaseService<GrupoFamiliar, Long> {
         Pageable pageable = PageRequest.of(page, size);
 
         if (query == null || query.trim().isEmpty()) {
-            return super.paginar(page, size);
+            return super.paginar(page, size); // ✅ activos por defecto
         }
 
         String q = query.trim();
-
-        return grupoFamiliarRepository
-                .findByNombreGrupoContainingIgnoreCaseOrTitular_NombreContainingIgnoreCaseOrTitular_ApellidoContainingIgnoreCase(
-                        q, q, q, pageable
-                );
+        return grupoFamiliarRepository.findByNombreGrupoContainingIgnoreCaseAndActivoTrueOrTitular_NombreContainingIgnoreCaseAndActivoTrueOrTitular_ApellidoContainingIgnoreCaseAndActivoTrue(
+                q, q, q, pageable);
     }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<GrupoFamiliar> buscarInactivos(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginarInactivos(page, size); // ✅ inactivos por defecto
+        }
+
+        String q = query.trim();
+        return grupoFamiliarRepository.findByNombreGrupoContainingIgnoreCaseAndActivoFalseOrTitular_NombreContainingIgnoreCaseAndActivoFalseOrTitular_ApellidoContainingIgnoreCaseAndActivoFalse(
+                q, q, q, pageable);
+    }
+
 
     @Override
     public GrupoFamiliar crear(GrupoFamiliar gf) throws Exception {
@@ -99,4 +122,83 @@ public class GrupoFamiliarService extends BaseService<GrupoFamiliar, Long> {
 
         return grupoFamiliar;
     }
+
+    //metodod e exportar txt
+    @Transactional(readOnly = true)
+    public ByteArrayResource exportarTXT(Long grupoId) {
+
+        GrupoFamiliar g = grupoFamiliarRepository.findById(grupoId)
+                .orElseThrow(() -> new RuntimeException("Grupo familiar no encontrado"));
+
+        StringBuilder sb = new StringBuilder();
+
+        // ================= TITULAR =====================
+        sb.append("=== TITULAR ===\n");
+        sb.append(
+                pad("id", 6) + "|" +
+                        pad("nombre", 15) + "|" +
+                        pad("apellido", 15) + "|" +
+                        pad("dni", 12) + "|" +
+                        pad("cuil", 15) + "|" +
+                        pad("correo", 30) + "|" +
+                        pad("telefono", 15) + "|" +
+                        pad("fechaNacimiento", 20)
+        ).append("\n");
+
+        var t = g.getTitular();
+        String correoTit = t.getUsuario() != null ? safe(t.getUsuario().getEmail()) : "";
+
+        sb.append(
+                pad(t.getId(), 6) + "|" +
+                        pad(t.getNombre(), 15) + "|" +
+                        pad(t.getApellido(), 15) + "|" +
+                        pad(t.getDni(), 12) + "|" +
+                        pad(t.getCuil(), 15) + "|" +
+                        pad(correoTit, 30) + "|" +
+                        pad(t.getTelefono(), 15) + "|" +
+                        pad(t.getFechaNacimiento(), 20)
+        ).append("\n\n");
+
+        // ================= FAMILIARES =====================
+        sb.append("=== FAMILIARES ===\n");
+        sb.append(
+                pad("id", 6) + "|" +
+                        pad("nombre", 15) + "|" +
+                        pad("apellido", 15) + "|" +
+                        pad("dni", 12) + "|" +
+                        pad("cuil", 15) + "|" +
+                        pad("parentesco", 15) + "|" +
+                        pad("correo", 30) + "|" +
+                        pad("telefono", 15) + "|" +
+                        pad("fechaNacimiento", 20)
+        ).append("\n");
+
+        for (Familiar f : g.getFamiliares()) {
+
+            sb.append(
+                    pad(f.getId(), 6) + "|" +
+                            pad(f.getNombre(), 15) + "|" +
+                            pad(f.getApellido(), 15) + "|" +
+                            pad(f.getDni(), 12) + "|" +
+                            pad(f.getCuil(), 15) + "|" +
+                            pad(f.getTipoParentesco(), 15) + "|" +
+                            pad(f.getCorreoElectronico(), 30) + "|" +
+                            pad(f.getTelefono(), 15) + "|" +
+                            pad(f.getFechaNacimiento(), 20)
+            ).append("\n");
+        }
+
+        return new ByteArrayResource(sb.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    private String safe(Object o) {
+        return o == null ? "" : o.toString();
+    }
+
+    private String pad(Object o, int length) {
+        String s = safe(o);
+        return String.format("%-" + length + "s", s);
+    }
+
+
 }

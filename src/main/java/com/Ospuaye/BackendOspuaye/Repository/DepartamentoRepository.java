@@ -13,11 +13,13 @@ public interface DepartamentoRepository extends BaseRepository<Departamento, Lon
     List<Departamento> findByProvincia_Id(Long provinciaId);
     List<Departamento> findByActivoTrue();
     Optional<Departamento> findByNombre(String nombre);
-    Page<Departamento> findByNombreContainingIgnoreCaseOrProvincia_NombreContainingIgnoreCase(
-            String nombreDepartamento,
-            String nombreProvincia,
-            Pageable pageable
-    );
+    // Activos
+    Page<Departamento> findByNombreContainingIgnoreCaseAndActivoTrueOrProvincia_NombreContainingIgnoreCaseAndActivoTrue(
+            String nombre, String provinciaNombre, Pageable pageable);
+
+    // Inactivos
+    Page<Departamento> findByNombreContainingIgnoreCaseAndActivoFalseOrProvincia_NombreContainingIgnoreCaseAndActivoFalse(
+            String nombre, String provinciaNombre, Pageable pageable);
     List<Departamento> findByNombreContainingIgnoreCase(String nombre);
 
 }

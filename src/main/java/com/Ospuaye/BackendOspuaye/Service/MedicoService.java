@@ -33,6 +33,11 @@ public class MedicoService extends BaseService<Medico, Long> {
         this.usuarioRepository = usuarioRepository;
         this.areaRepository = areaRepository;
     }
+
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @Transactional(readOnly = true)
     public Page<Medico> buscar(String query, int page, int size) {
         if (page < 0) page = 0;
@@ -41,24 +46,33 @@ public class MedicoService extends BaseService<Medico, Long> {
         Pageable pageable = PageRequest.of(page, size);
 
         if (query == null || query.trim().isEmpty()) {
-            return super.paginar(page, size);
+            return super.paginar(page, size); // ✅ activos por defecto
         }
 
         String q = query.trim();
+        return medicoRepository.findByNombreContainingIgnoreCaseAndActivoTrueOrApellidoContainingIgnoreCaseAndActivoTrueOrMatriculaContainingIgnoreCaseAndActivoTrue(
+                q, q, q, pageable);
+    }
 
-        // 🔍 Si es numérico → buscar por DNI
-        if (q.matches("\\d+")) {
-            try {
-                Long dni = Long.parseLong(q);
-                return medicoRepository.findByDni(dni, pageable);
-            } catch (NumberFormatException ignored) {}
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @Transactional(readOnly = true)
+    public Page<Medico> buscarInactivos(String query, int page, int size) {
+        if (page < 0) page = 0;
+        if (size <= 0) size = 5;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (query == null || query.trim().isEmpty()) {
+            return super.paginarInactivos(page, size); // ✅ inactivos por defecto
         }
 
-        // 🔍 Si es texto → buscar por matrícula, nombre o apellido
-        return medicoRepository.findByMatriculaContainingIgnoreCaseOrNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(
-                q, q, q, pageable
-        );
+        String q = query.trim();
+        return medicoRepository.findByNombreContainingIgnoreCaseAndActivoFalseOrApellidoContainingIgnoreCaseAndActivoFalseOrMatriculaContainingIgnoreCaseAndActivoFalse(
+                q, q, q, pageable);
     }
+
 
     @Override
     @Transactional

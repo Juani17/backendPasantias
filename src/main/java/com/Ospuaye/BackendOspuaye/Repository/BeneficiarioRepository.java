@@ -24,16 +24,23 @@ public interface BeneficiarioRepository extends BaseRepository<Beneficiario, Lon
     Optional<Beneficiario> findByUsuario_Id(Long usuarioId);
 
     Optional<Beneficiario> findByCuil(Long cuil);
+
+    Page<Beneficiario> findByActivoTrue(Pageable pageable);
+
+    Page<Beneficiario> findByActivoFalse(Pageable pageable);
+
     // 🔍 Buscar por nombre o apellido
 
-    Page<Beneficiario> findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(
-            String nombre,
-            String apellido,
-            Pageable pageable
-    );
+    // Activos
+    Page<Beneficiario> findByDniAndActivoTrue(Long dni, Pageable pageable);
+    Page<Beneficiario> findByNombreContainingIgnoreCaseAndActivoTrueOrApellidoContainingIgnoreCaseAndActivoTrue(
+            String nombre, String apellido, Pageable pageable);
 
-    // 🔍 Buscar por DNI paginado
-    Page<Beneficiario> findByDni(Long dni, Pageable pageable);
+    // Inactivos
+    Page<Beneficiario> findByDniAndActivoFalse(Long dni, Pageable pageable);
+    Page<Beneficiario> findByNombreContainingIgnoreCaseAndActivoFalseOrApellidoContainingIgnoreCaseAndActivoFalse(
+            String nombre, String apellido, Pageable pageable);
+
     List<Beneficiario> findTop20ByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCaseOrDniEqualsOrCuilEquals(
             String nombre,
             String apellido,

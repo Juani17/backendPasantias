@@ -32,15 +32,14 @@ public interface PedidoRepository extends BaseRepository<Pedido, Long> {
     @Query("SELECT p FROM Pedido p WHERE LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))")
     List<Pedido> searchByNombre(@Param("nombre") String nombre);
 
-    Page<Pedido> findByBeneficiario_NombreContainingIgnoreCaseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseOrEmpresaContainingIgnoreCaseOrDelegacionContainingIgnoreCaseOrPaciente_NombreContainingIgnoreCaseOrMedico_NombreContainingIgnoreCase(
-            String beneficiario,
-            String grupoFamiliar,
-            String empresa,
-            String delegacion,
-            String paciente,
-            String medico,
-            Pageable pageable
-    );
+    // Activos
+    Page<Pedido> findByBeneficiario_NombreContainingIgnoreCaseAndActivoTrueOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseAndActivoTrueOrEmpresaContainingIgnoreCaseAndActivoTrueOrDelegacionContainingIgnoreCaseAndActivoTrueOrPaciente_NombreContainingIgnoreCaseAndActivoTrueOrMedico_NombreContainingIgnoreCaseAndActivoTrue(
+            String beneficiario, String grupoFamiliar, String empresa, String delegacion, String paciente, String medico, Pageable pageable);
+
+    // Inactivos
+    Page<Pedido> findByBeneficiario_NombreContainingIgnoreCaseAndActivoFalseOrGrupoFamiliar_NombreGrupoContainingIgnoreCaseAndActivoFalseOrEmpresaContainingIgnoreCaseAndActivoFalseOrDelegacionContainingIgnoreCaseAndActivoFalseOrPaciente_NombreContainingIgnoreCaseAndActivoFalseOrMedico_NombreContainingIgnoreCaseAndActivoFalse(
+            String beneficiario, String grupoFamiliar, String empresa, String delegacion, String paciente, String medico, Pageable pageable);
+
 
 
 }

@@ -7,6 +7,7 @@ import com.Ospuaye.BackendOspuaye.Service.EmpresaService;
 import jakarta.validation.Valid;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -100,18 +101,30 @@ public class EmpresaController extends BaseController<Empresa, Long> {
         }
     }
 
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (ACTIVOS)
+    // ===============================================
     @GetMapping("/buscar")
-    public ResponseEntity<?> buscar(
-            @RequestParam(defaultValue = "") String query,
+    public ResponseEntity<Page<Empresa>> buscar(
+            @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        try {
-            return ResponseEntity.ok(empresaService.buscar(query, page, size));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+            @RequestParam(defaultValue = "5") int size) {
+        Page<Empresa> result = empresaService.buscar(query, page, size);
+        return ResponseEntity.ok(result);
     }
+
+    // ===============================================
+    // BUSQUEDA GLOBAL + PAGINADO (INACTIVOS)
+    // ===============================================
+    @GetMapping("/buscar-inactivos")
+    public ResponseEntity<Page<Empresa>> buscarInactivos(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Page<Empresa> result = empresaService.buscarInactivos(query, page, size);
+        return ResponseEntity.ok(result);
+    }
+
 
     @GetMapping("/export")
     public ResponseEntity<Resource> exportarEmpresasTXT() {
