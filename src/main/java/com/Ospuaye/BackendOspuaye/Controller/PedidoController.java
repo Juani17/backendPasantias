@@ -50,13 +50,11 @@ public class PedidoController extends BaseController<Pedido, Long> {
             List<Documento> documentos = new ArrayList<>();
             if (files != null) {
                 for (MultipartFile file : files) {
-                    String msg = documentoService.handleFileUpload(file);
-                    if (!"Archivo cargado correctamente".equals(msg)) {
-                        return ResponseEntity.badRequest().body(msg);
-                    }
+                    String nombreArchivo = documentoService.handleFileUpload(file);
+                    // ✅ Guardar solo el nombre del archivo, no la ruta completa
                     Documento doc = Documento.builder()
                             .nombreArchivo(file.getOriginalFilename())
-                            .path("C://Ospuaye/documentos/" + file.getOriginalFilename())
+                            .path(nombreArchivo)  // Solo el nombre único generado
                             .observacion("Documento adjunto")
                             .build();
                     documentos.add(doc);
@@ -133,14 +131,12 @@ public class PedidoController extends BaseController<Pedido, Long> {
             List<Documento> documentos = new ArrayList<>();
             if (files != null) {
                 for (MultipartFile file : files) {
-                    String msg = documentoService.handleFileUpload(file);
-                    if (!"Archivo cargado correctamente".equals(msg)) {
-                        return ResponseEntity.badRequest().body(msg);
-                    }
+                    String nombreArchivo = documentoService.handleFileUpload(file);
+                    // ✅ Guardar solo el nombre del archivo, no la ruta completa
                     Documento doc = Documento.builder()
                             .nombreArchivo(file.getOriginalFilename())
-                            .path("C://Ospuaye/documentos/" + file.getOriginalFilename())
-                            .observacion("Documento adjunto en edición")
+                            .path(nombreArchivo)  // Solo el nombre único generado
+                            .observacion("Documento adjunto")
                             .build();
                     documentos.add(doc);
                 }

@@ -40,6 +40,7 @@ public class Pedido extends Base {
     private String delegacion;
 
     @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern = "dd-MM-yyyy", timezone = "America/Argentina/Buenos_Aires")
     private Date fechaIngreso;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -61,9 +62,9 @@ public class Pedido extends Base {
     @JoinColumn(name = "medico_id", nullable = true)
     private Medico medico;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern = "dd-MM-yyyy", timezone = "America/Argentina/Buenos_Aires")
     private Date fechaRevision;
-
 
     private String observacionMedico;
 
@@ -73,5 +74,4 @@ public class Pedido extends Base {
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<HistorialMovimiento> historial = new ArrayList<>();
-
 }
