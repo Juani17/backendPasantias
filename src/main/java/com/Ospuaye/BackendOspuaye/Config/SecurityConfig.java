@@ -48,9 +48,8 @@ public class SecurityConfig {
                         // Solo ADMIN puede crear Áreas, Roles y Médicos
                         .requestMatchers("/api/areas/**").hasRole("ADMIN")
                         .requestMatchers("/api/roles/**").hasRole("ADMIN")
-                        .requestMatchers("/api/medicos/actualizar/**").hasAnyRole("ADMIN", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO")
-                        .requestMatchers("/api/medicos/**").hasAnyRole("ADMIN", "MEDICO AUDITOR GENERAL")
-                        .requestMatchers("/api/beneficiarios/**").hasRole("ADMIN")
+                        .requestMatchers("/api/medicos/**").hasAnyRole("ADMIN", "MEDICO AUDITOR GENERAL", "MEDICO ORTOPEDIA", "MEDICO OFTALMOLOGO")
+                        .requestMatchers("/api/beneficiarios/**").hasAnyRole("ADMIN", "USER")
                         // Users y Medicos
                         .requestMatchers(HttpMethod.PUT, "/api/pedidos/oftalmologia/actualizar/**").hasAnyRole("MEDICO OFTALMOLOGO", "ADMIN", "MEDICO AUDITOR GENERAL")
                         .requestMatchers(HttpMethod.PUT, "/api/pedidos/ortopedia/actualizar/**").hasAnyRole("MEDICO ORTOPEDIA", "ADMIN", "MEDICO AUDITOR GENERAL")

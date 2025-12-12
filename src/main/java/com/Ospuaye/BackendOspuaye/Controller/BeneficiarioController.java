@@ -155,7 +155,7 @@ public class BeneficiarioController extends BaseController<Beneficiario, Long> {
         }
     }
 
-    @GetMapping("/buscar")
+    @GetMapping("/buscar/inactivos")
     public ResponseEntity<Page<Beneficiario>> buscarInactivos(
             @RequestParam(defaultValue = "") String query,
             @RequestParam(defaultValue = "0") int page,
