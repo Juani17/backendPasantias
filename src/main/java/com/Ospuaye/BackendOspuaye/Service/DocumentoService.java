@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -133,5 +134,15 @@ public class DocumentoService extends BaseService<Documento, Long> {
      */
     public boolean existeArchivo(String nombreArchivo) {
         return Files.exists(obtenerRutaArchivo(nombreArchivo));
+    }
+
+    public List<Documento> obtenerDocumentosPorPedido(Long pedidoId) throws Exception {
+        if (pedidoId == null) {
+            throw new Exception("El ID del pedido no puede ser nulo");
+        }
+        if (!pedidoRepository.existsById(pedidoId)) {
+            throw new Exception("El pedido no existe");
+        }
+        return documentoRepository.findByPedidoId(pedidoId);
     }
 }

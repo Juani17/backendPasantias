@@ -5,12 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9e82dc1f-9b89-4eec-a91e-a75d0b85ffc0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/BeneficiarioController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/BeneficiarioController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Controller/DocumentoController.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Controller/DocumentoController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/DocumentoService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/DocumentoService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/PedidoService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/PedidoService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/UsuarioService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/Ospuaye/BackendOspuaye/Service/UsuarioService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Config/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Config/DataInitializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/DocumentoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Controller/DocumentoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Dto/DocumentoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Dto/DocumentoDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/DocumentoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Repository/DocumentoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/DocumentoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/DocumentoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/PedidoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/PedidoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/UsuarioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Ospuaye/BackendOspuaye/Service/UsuarioService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

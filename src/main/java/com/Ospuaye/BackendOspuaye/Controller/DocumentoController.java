@@ -91,15 +91,16 @@ public class DocumentoController extends BaseController<Documento, Long> {
     }
 
     /**
-     * ✅ Obtener lista de documentos con URLs completas
+     * ✅ Obtener lista de documentos con URLs completas por pedido
      */
     @GetMapping("/pedido/{pedidoId}")
     public ResponseEntity<?> obtenerDocumentosPorPedido(@PathVariable Long pedidoId) {
         try {
-            List<Documento> documentos = documentoService.listar()
-                    .stream()
-                    .filter(d -> d.getPedido() != null && d.getPedido().getId().equals(pedidoId))
-                    .collect(Collectors.toList());
+            List<Documento> documentos = documentoService.obtenerDocumentosPorPedido(pedidoId);
+
+            if (documentos.isEmpty()) {
+                return ResponseEntity.ok(List.of()); // ✅ Retorna lista vacía en lugar de error
+            }
 
             // Convertir a DTO con URLs completas
             List<DocumentoDTO> dtos = documentos.stream()
@@ -107,16 +108,24 @@ public class DocumentoController extends BaseController<Documento, Long> {
                         DocumentoDTO dto = new DocumentoDTO();
                         dto.setId(doc.getId());
                         dto.setNombreArchivo(doc.getNombreArchivo());
-                        // Extraer solo el nombre del archivo del path
-                        String nombreArchivo = doc.getPath() != null
+                        dto.setObservacion(doc.getObservacion());
+                        dto.setFechaSubida(doc.getFechaSubida());
+                        dto.setSubidoPor(doc.getSubidoPor() != null ? doc.getSubidoPor().getEmail() : null);
+
+                        // ✅ Extraer solo el nombre del archivo del path
+                        String nombreArchivo = doc.getPath() != null && !doc.getPath().isEmpty()
                                 ? doc.getPath().substring(doc.getPath().lastIndexOf("/") + 1)
                                 : doc.getNombreArchivo();
+
                         dto.setUrl(urlBase + "/" + nombreArchivo);
+                        dto.setPath(nombreArchivo); // ✅ Solo el nombre del archivo
+
                         return dto;
                     })
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(dtos);
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }

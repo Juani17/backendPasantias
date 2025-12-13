@@ -109,10 +109,10 @@ public class DataInitializer {
                     });
 
             // 10) Crear rol MEDICO MEDICO AUDITOR GENERAL si no existe
-            Rol rolMedicoAud = rolRepository.findByNombre("MEDICO MEDICO AUDITOR GENERAL")
+            Rol rolMedicoAud = rolRepository.findByNombre("MEDICO AUDITOR GENERAL")
                     .orElseGet(() -> {
                         Rol nuevoRol = Rol.builder()
-                                .nombre("MEDICO MEDICO AUDITOR GENERAL")
+                                .nombre("MEDICO AUDITOR GENERAL")
                                 .area(areaMedicoAud)
                                 .build();
                         return rolRepository.save(nuevoRol);

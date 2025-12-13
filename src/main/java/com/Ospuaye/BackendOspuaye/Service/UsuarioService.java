@@ -115,10 +115,9 @@ public class UsuarioService extends BaseService<Usuario, Long> {
 
         return usuarioRepository.save(entity);
     }
-
-    // ===============================================
-    // ACTUALIZAR
-    // ===============================================
+// ===============================================
+// ACTUALIZAR
+// ===============================================
     @Override
     @Transactional
     public Usuario actualizar(Usuario entity) throws Exception {
@@ -139,6 +138,14 @@ public class UsuarioService extends BaseService<Usuario, Long> {
             }
 
             existente.setEmail(nuevoEmail);
+        }
+
+        // Hashear la contraseña si se está actualizando
+        if (entity.getContrasena() != null && !entity.getContrasena().isBlank()) {
+            if (entity.getContrasena().length() < 6)
+                throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres");
+
+            existente.setContrasena(passwordEncoder.encode(entity.getContrasena()));
         }
 
         if (entity.getRol() != null) {

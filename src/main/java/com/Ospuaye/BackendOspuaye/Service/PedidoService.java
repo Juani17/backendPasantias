@@ -123,7 +123,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
         if (documentos != null && !documentos.isEmpty())
             agregarDocumentos(guardado, documentos, usuario);
 
-        registrarMovimiento(guardado, Estado.Pendiente, usuario, "Pedido genérico creado");
+        registrarMovimiento(guardado, Estado.Pendiente, usuario, "Pedido creado");
         return guardado;
     }
 
@@ -406,7 +406,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
                 if (usuarioRegistro != null) {
                     registrarMovimiento(guardado, Estado.Pendiente, usuarioRegistro,
-                            "Pedido tomado por el médico (Oftalmología), ID médico=" + medico.getId());
+                            "Pedido tomado por el médico");
                 }
 
                 return guardado;
@@ -422,7 +422,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
                 if (usuarioRegistro != null) {
                     registrarMovimiento(guardado, Estado.Pendiente, usuarioRegistro,
-                            "Pedido tomado por el médico (Ortopedia), ID médico=" + medico.getId());
+                            "Pedido tomado por el médico");
                 }
 
                 return guardado;
@@ -432,7 +432,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
                 if (usuarioRegistro != null) {
                     registrarMovimiento(guardado, Estado.Pendiente, usuarioRegistro,
-                            "Pedido tomado por el médico (General), ID médico=" + medico.getId());
+                            "Pedido tomado por el médico");
                 }
 
                 return guardado;
@@ -442,7 +442,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
                 if (usuarioRegistro != null) {
                     registrarMovimiento(guardado, Estado.Pendiente, usuarioRegistro,
-                            "Pedido tomado por el médico (Tipo desconocido), ID médico=" + medico.getId());
+                            "Pedido tomado por el médicoo");
                 }
 
                 return guardado;
