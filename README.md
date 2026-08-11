@@ -2,7 +2,7 @@
 
 API REST para la gestión de reintegros de la **Obra Social de los Profesionales Universitarios del Agua y la Energía Eléctrica (OSPUAYE)**, desarrollada como Práctica Profesionalizante de la Tecnicatura Universitaria en Programación (UTN — Facultad Regional Mendoza).
 
-El sistema centraliza la lógica de negocio, la seguridad, el acceso a los datos y la exposición de los servicios que consume el [frontend de OSPUAYE](https://github.com/Fbarraco1/OspuayeFront), permitiendo la gestión digital de solicitudes de reintegro por prestaciones de **Oftalmología** y **Ortopedia**.
+El sistema centraliza la lógica de negocio, la seguridad, el acceso a los datos y la exposición de los servicios que consume el [frontend de OSPUAYE](https://github.com/Fbarraco1/Ospuaye-Front), permitiendo la gestión digital de solicitudes de reintegro por prestaciones de **Oftalmología** y **Ortopedia**.
 
 ---
 
