@@ -1,182 +1,50 @@
-# Sistema Web OSPUAYE — Backend
+# OSPUAYE — Backend de práctica profesionalizante
 
-API REST para la gestión de reintegros de la **Obra Social de los Profesionales Universitarios del Agua y la Energía Eléctrica (OSPUAYE)**, desarrollada como Práctica Profesionalizante de la Tecnicatura Universitaria en Programación (UTN — Facultad Regional Mendoza).
+API REST desarrollada en el marco de la Tecnicatura Universitaria en Programación de la UTN, Facultad Regional Mendoza, para la experiencia de pasantía con OSPUAYE. Incluye gestión de beneficiarios, grupos familiares, usuarios y solicitudes de prestaciones de oftalmología y ortopedia.
 
-El sistema centraliza la lógica de negocio, la seguridad, el acceso a los datos y la exposición de los servicios que consume el [frontend de OSPUAYE](https://github.com/Fbarraco1/Ospuaye-Front), permitiendo la gestión digital de solicitudes de reintegro por prestaciones de **Oftalmología** y **Ortopedia**.
+## Tecnologías
 
----
+Java 17, Spring Boot 3.5.3, Spring Web, Spring Data JPA/Hibernate, Spring Security, JWT (JJWT), MySQL, Gradle y Lombok. Las versiones y dependencias se encuentran en `build.gradle`.
 
-## 🧩 Stack Tecnológico
+## Alcance implementado
 
-- **Java** — Lenguaje principal del backend.
-- **Spring Boot** — Framework para el desarrollo de la API REST.
-- **Spring Data JPA / Hibernate** — Persistencia y acceso a la base de datos.
-- **Spring Security** — Autenticación y autorización de usuarios (JWT).
-- **MySQL** — Base de datos relacional.
-- **Gradle** — Gestión de dependencias y build del proyecto.
-- **Docker** — Contenerización y despliegue en entorno productivo.
+- Registro e inicio de sesión; emisión y validación de JWT.
+- Controladores REST para usuarios, beneficiarios, médicos, roles y grupos familiares.
+- Modelos y servicios para pedidos de oftalmología y ortopedia, documentación e historial de movimientos.
+- Persistencia relacional mediante repositorios JPA.
 
----
+El repositorio representa la implementación de una práctica profesionalizante; no constituye una garantía de preparación para producción.
 
-## 👥 Roles y accesos
+## Estructura
 
-| Funcionalidad | Afiliado | Médico Auditor | Administrador |
-|---|:---:|:---:|:---:|
-| Registro / Login | ✔️ | ✔️ | ✔️ |
-| Carga de reintegros | ✔️ | ❌ | ✔️ |
-| Subida de documentación | ✔️ | ✔️ (solo lectura) | ✔️ |
-| Evaluación médica | ❌ | ✔️ | ❌ |
-| Cambio de estado (auditoría) | ❌ | ✔️ | ❌ |
-| Aprobación final del reintegro | ❌ | ❌ | ✔️ |
-| Registro de pago | ❌ | ❌ | ✔️ |
-| Migración del padrón | ❌ | ❌ | ✔️ |
-| Administración de usuarios | ❌ | ❌ | ✔️ |
+La raíz contiene un proyecto Gradle completo: `build.gradle`, `gradlew`, `gradle/` y `src/`. En `src/main/java/` se encuentran controladores, servicios, repositorios, entidades y seguridad.
 
----
+También existe otro proyecto Gradle dentro de `BackendOspuaye/`. Comparte gran parte del código con la raíz, pero difiere en el manejo de documentos y en su configuración. Se conserva su estructura original; las instrucciones siguientes corresponden al proyecto de la raíz.
 
-## ⚙️ Requisitos previos
+## Ejecución local
 
-- [Java JDK](https://www.oracle.com/java/technologies/downloads/) (versión 17 o superior recomendada)
-- [MySQL](https://www.mysql.com/) instalado y corriendo localmente (o acceso a una instancia remota)
-- Gradle **no es necesario instalarlo aparte**: el proyecto incluye el Gradle Wrapper (`gradlew` / `gradlew.bat`)
-- (Opcional) [Docker](https://www.docker.com/) si se desea levantar el entorno contenerizado
-
----
-
-## 🚀 Instalación y ejecución en desarrollo
-
-1. **Clonar el repositorio**
-
-   ```bash
-   git clone https://github.com/Juani17/backendPasantias.git
-   cd backendPasantias/BackendOspuaye
-   ```
-
-2. **Configurar la base de datos**
-
-   Crear una base de datos MySQL para el proyecto y configurar las credenciales de conexión en el archivo `src/main/resources/application.properties` (o `application.yml`), por ejemplo:
-
-   ```properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/ospuaye
-   spring.datasource.username=root
-   spring.datasource.password=tu_password
-   spring.jpa.hibernate.ddl-auto=update
-   ```
-
-3. **Ejecutar el proyecto con el Gradle Wrapper**
-
-   En Linux / macOS:
-   ```bash
-   ./gradlew bootRun
-   ```
-
-   En Windows:
-   ```bash
-   gradlew.bat bootRun
-   ```
-
-4. **Verificar que la API esté corriendo**
-
-   Por defecto el servidor levanta en `http://localhost:8080` (o el puerto configurado en `application.properties`).
-
----
-
-## 📦 Build del proyecto
-
-Para generar el `.jar` ejecutable:
+Requisitos: JDK 17, MySQL y una base local de desarrollo. El Gradle Wrapper está incluido. Usar únicamente datos de prueba.
 
 ```bash
-./gradlew build
+git clone https://github.com/Juani17/backendPasantias.git
+cd backendPasantias
 ```
 
-El archivo se genera dentro de `build/libs/`. Para ejecutarlo directamente:
+Configurar la conexión mediante las variables de entorno estándar de Spring Boot `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` y `SPRING_DATASOURCE_PASSWORD`. La URL debe usar el formato JDBC de MySQL y apuntar a la base local. Exportar estas variables en la terminal o configurarlas en el IDE; este proyecto no carga automáticamente archivos `.env`.
 
 ```bash
-java -jar build/libs/nombre-del-jar.jar
+./gradlew bootRun
 ```
 
----
+En PowerShell: `.\gradlew.bat bootRun`. Consultar `src/main/resources/application.properties` para los demás ajustes. La configuración original puede actualizar el esquema mediante Hibernate: utilizar una base descartable de desarrollo.
 
-## 🐳 Ejecución con Docker
+## Repositorios relacionados
 
-El proyecto puede desplegarse utilizando Docker para asegurar un entorno consistente:
+- [Frontend OSPUAYE](https://github.com/Fbarraco1/Ospuaye-Front).
+- [backendOspuaye](https://github.com/Juani17/backendOspuaye): variante con código propio y archivos de despliegue Docker. No es una copia idéntica de este repositorio.
 
-```bash
-docker build -t ospuaye-backend .
-docker run -p 8080:8080 ospuaye-backend
-```
+## Equipo y contexto
 
-> En el entorno productivo, el backend se despliega junto con la base de datos MySQL dentro de contenedores Docker sobre un servidor **DonWeb (IaaS)**.
+Desarrollo: Francisco Barraco y Juan Emilio Frery. Proyecto de práctica profesionalizante UTN–OSPUAYE. Se conserva el contexto y la autoría de la documentación original.
 
----
-
-## 🏗️ Arquitectura
-
-El backend implementa una **arquitectura basada en API REST** bajo el modelo **cliente-servidor**, organizada en capas:
-
-- **Controller** — Expone los endpoints REST consumidos por el frontend.
-- **Service** — Contiene la lógica de negocio y las validaciones del sistema.
-- **Repository** — Acceso a datos mediante Spring Data JPA.
-- **Security** — Autenticación y autorización basada en JWT con Spring Security.
-
-Esta separación mejora la organización del código, la seguridad y facilita el mantenimiento y la escalabilidad de la aplicación.
-
-### Flujo de una solicitud de reintegro
-
-```
-Solicitado → Pendiente de Revisión Médica → En Revisión Médica → 
-Observado (opcional) → Pendiente de Revisión Administrativa → 
-Aprobado / Rechazado → Pagado
-```
-
----
-
-## 📁 Estructura del proyecto (resumen)
-
-```
-backendPasantias/
-└── BackendOspuaye/
-    ├── src/
-    │   └── main/
-    │       ├── java/          # Código fuente (controllers, services, repositories, entities)
-    │       └── resources/     # application.properties, configuración
-    ├── build.gradle
-    ├── settings.gradle
-    ├── gradlew / gradlew.bat
-    └── README.md
-```
-
----
-
-## 🌐 Despliegue
-
-El sistema fue desplegado en un entorno productivo utilizando:
-
-- **Servidor:** DonWeb (IaaS sobre Ubuntu Linux)
-- **Contenerización:** Docker
-- **Base de datos:** MySQL
-
----
-
-## 👨‍💻 Equipo de desarrollo
-
-Proyecto desarrollado en el marco de la Práctica Profesionalizante — UTN Facultad Regional Mendoza.
-
-- **Francisco Barraco** — Desarrollo Full Stack
-- **Juan Emilio Frery** — Desarrollo Full Stack
-- **Lic. Leandro Spadaro** — Tutor institucional / Dueño del Producto (OSPUAYE)
-- **Ing. Diego Cornejo** — Scrum Master
-
-Metodología de trabajo: **Scrum**, con sprints de 2 semanas, tablero Kanban en Trello y estimaciones mediante Planning Poker.
-
----
-
-## 🔗 Repositorios relacionados
-
-- Frontend: [OspuayeFront](https://github.com/Fbarraco1/Ospuaye-Front)
-
----
-
-## 📄 Licencia
-
-Este proyecto fue desarrollado con fines académicos y de práctica profesional para OSPUAYE. Su uso, distribución o reutilización está sujeto a la autorización de la organización y de los autores.
+El uso, distribución o reutilización del proyecto está sujeto a la autorización de la organización y de sus autores.
